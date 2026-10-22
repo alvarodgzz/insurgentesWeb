@@ -101,7 +101,28 @@ fi
 # Push first: GitHub Pages cannot be initialized reliably on an empty repository.
 # Reuse gh authentication for HTTPS without changing global Git credentials.
 # No force push: existing remote history must remain intact.
-git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push -u origin main
+push_auth=(-c credential.helper= -c 'credential.helper=!gh auth git-credential')
+push_log="$(mktemp "${TMPDIR:-/tmp}/insurgentes-push.XXXXXX")"
+trap 'rm -f -- "$push_log"' EXIT
+if git "${push_auth[@]}" push -u origin main 2>&1 | tee "$push_log"; then
+  :
+elif grep -Fq 'RPC failed; HTTP 400' "$push_log"; then
+  # Some older Git/libcurl or intermediary combinations reject chunked uploads.
+  # Buffer this project's ~33 MiB initial pack for this retry only. Git documents
+  # this as a chunked-transfer workaround, not a general fix for push failures.
+  printf '\nHTTP 400 during upload. Retrying once with HTTP/1.1 and a 64 MiB buffer.\n'
+  git "${push_auth[@]}" -c http.version=HTTP/1.1 -c http.postBuffer=67108864 push -u origin main
+else
+  fail 'Git push failed. The local commit and remote are preserved; GitHub Pages setup has not run.'
+fi
+
+# A disconnected upload can print "Everything up-to-date" after an error.
+# Confirm the actual branch on GitHub before requesting any deployment.
+remote_main="$(git "${push_auth[@]}" ls-remote --exit-code origin refs/heads/main)" || fail 'Could not verify main on GitHub. Pages setup has not run.'
+read -r remote_commit remote_ref <<< "$remote_main"
+local_commit="$(git rev-parse refs/heads/main)"
+[[ "$remote_commit" == "$local_commit" && "$remote_ref" == 'refs/heads/main' ]] || fail 'GitHub main does not match the local commit. Pages setup has not run.'
+printf '\nGitHub main verified: %s\n' "$remote_commit"
 
 # Updating only build_type preserves any existing domain and HTTPS settings.
 if pages_type="$(gh api --hostname github.com "repos/${repository}/pages" --jq '.build_type // ""' 2>/dev/null)"; then

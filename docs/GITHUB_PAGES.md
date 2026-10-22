@@ -23,6 +23,8 @@ El flujo sigue la [documentación oficial de publicación con GitHub Actions](ht
 
 ## Contenido y futuras actualizaciones
 
+Si el primer envío falla con `RPC failed; HTTP 400`, vuelve a ejecutar `bash scripts/publish-github.sh`. El script conserva el repositorio y el remoto existentes y reintenta ese error una vez con HTTP/1.1 y un búfer de 64 MiB, solo para ese comando. Es un ajuste de compatibilidad para transferencias HTTP, descrito en la [configuración de Git](https://git-scm.com/docs/git-config#Documentation/git-config.txt-httppostBuffer); no cambia tu configuración global. Antes de activar Pages, el script comprueba que el commit local coincide con `main` en GitHub. Si el reintento falla, conserva el trabajo y se detiene.
+
 Las fotos y los archivos JSON de `content/` son la fuente del sitio. El editor en `admin/` permite preparar cambios y exportarlos o guardarlos en una carpeta elegida por el usuario. No inicia sesión en GitHub ni publica por sí solo. Para publicar, sube los archivos modificados al repositorio y confirma el cambio en `main`, o abre un pull request para revisión.
 
 El flujo ejecuta, en este orden:
