@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Editar sitio · Los Insurgentes</title>
+  <link rel="icon" href="../images/favicon-32.png">
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <a class="skip" href="#editor">Saltar al editor</a>
+  <header class="editor-header">
+    <a href="../" aria-label="Ver sitio de Los Insurgentes"><img src="../assets/logos/logo-full-white.png" width="1600" height="561" alt="Los Insurgentes"></a>
+    <span>Editor del sitio</span>
+  </header>
+  <div class="editor-layout">
+    <aside>
+      <p class="eyebrow">CONTENIDO DE LA BANDA</p>
+      <nav aria-label="Secciones del editor">
+        <a href="#portada">01 · Portada</a><a href="#fotos">02 · Fotos</a><a href="#banda">03 · La banda</a><a href="#musica">04 · Música</a><a href="#fechas">05 · Fechas</a><a href="#letras">06 · Letras</a><a href="#contacto">07 · Contacto</a>
+      </nav>
+      <a class="back" href="../" target="_blank" rel="noopener">Ver sitio actual ↗</a>
+    </aside>
+    <main id="editor">
+      <div class="intro">
+        <p class="eyebrow">UN SITIO QUE CRECE CON LA BANDA</p>
+        <h1>Cambia las fotos.<br>Cuenta lo que sigue.</h1>
+        <p>Edita el contenido, revisa la vista previa y descarga la actualización. Los cambios se publican al subirlos a GitHub.</p>
+      </div>
+      <div class="import-box">
+        <div><h2>La carpeta compartida de Google Drive</h2><p>Descarga la carpeta completa de Drive, extrae el ZIP e impórtala aquí. Sus secciones tienen nombres como <code>01 - Inicio</code> y <code>05 - Galeria</code>. También puedes importar la carpeta <code>content</code> del proyecto.</p><p>Edita los textos y las fotos aquí; «Descargar para Drive» prepara los archivos para reemplazarlos en las mismas secciones. No crees copias con el mismo nombre. Los cambios se publican al subir la actualización a GitHub.</p></div>
+        <label class="button secondary file-button">Importar carpeta<input id="importFolder" type="file" webkitdirectory multiple></label>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Cargando el contenido…</p>
+      <div id="errors" class="errors" role="alert" tabindex="-1" hidden></div>
+      <form id="contentForm" novalidate>
+        <div id="sections"></div>
+      </form>
+      <section class="preview-section" aria-labelledby="previewTitle">
+        <div class="preview-heading"><h2 id="previewTitle">Vista previa</h2><span>Los cambios todavía son locales.</span></div>
+        <iframe id="preview" title="Vista previa del sitio actualizado" sandbox="allow-scripts allow-same-origin allow-popups" hidden></iframe>
+        <p id="previewEmpty">Pulsa «Vista previa» para revisar cómo se verá la página.</p>
+      </section>
+      <p class="editor-footnote">Las fotos seleccionadas se conservan en esta pestaña hasta descargar o guardar la actualización. Los borradores guardan solo texto. Este editor prepara archivos y no accede a tu cuenta de Drive ni publica cambios por sí solo. La carpeta de la banda puede seguir privada.</p>
+    </main>
+  </div>
+  <footer class="actions" aria-label="Guardar y revisar cambios">
+    <div class="draft-actions"><button type="button" id="saveDraft" class="text-button" disabled>Guardar borrador</button><button type="button" id="restoreDraft" class="text-button" hidden>Restaurar borrador</button></div>
+    <div><button type="button" id="previewButton" class="button secondary" disabled>Vista previa</button><button type="button" id="saveFolder" class="button secondary" hidden disabled>Guardar en carpeta</button><button type="button" id="downloadDrive" class="button secondary" disabled>Descargar para Drive</button><button type="button" id="download" class="button" disabled>Descargar para GitHub</button></div>
+  </footer>
+  <noscript><p class="errors">Este editor necesita JavaScript para crear la actualización. El sitio de la banda sigue disponible en el enlace superior.</p></noscript>
+  <script type="module" src="editor.mjs"></script>
+</body>
+</html>

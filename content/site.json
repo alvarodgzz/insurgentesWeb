@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "site": {
+    "title": "Los Insurgentes — Maratón, el nuevo álbum",
+    "description": "Los Insurgentes: rock alternativo desde Monterrey, Nuevo León. Escucha nuestra música, conoce la banda y descubre nuestras próximas fechas.",
+    "url": "https://losinsurgentes.mx/"
+  },
+  "hero": {
+    "title": "Maratón",
+    "tagline": "El nuevo álbum — Próximamente",
+    "announcement": "Próximo sencillo · Noviembre 2026",
+    "image": "content/photos/01-inicio.jpg",
+    "position": "center 35%"
+  },
+  "about": {
+    "paragraphs": [
+      "Los Insurgentes nacieron en Monterrey, Nuevo León, en febrero de 2017, cuando cuatro estudiantes que apenas se conocían decidieron construir algo juntos. Desde entonces han forjado un sonido de rock alternativo con raíces en el rock mexicano old-school y una actitud abiertamente underground.",
+      "Su trayectoria se resume en una trilogía sónica de EPs — La Marcha (2018), La Resistencia (2020) y El Gran Final (2022) — además de sencillos más recientes. Su música ha tocado temas que van de la política a la crítica social, incluyendo “19 de Septiembre”, un homenaje espontáneo a los rescatistas del sismo de 2017."
+    ],
+    "image": "content/photos/02-banda.jpg",
+    "imageAlt": "Los Insurgentes en vivo en Foro DiDi, Monterrey",
+    "members": [
+      {
+        "name": "Diego Garza “Diegoshky”",
+        "role": "Guitarra & voz"
+      },
+      {
+        "name": "Jose Andrés Yunes",
+        "role": "Guitarra"
+      },
+      {
+        "name": "Leonardo “Viko IV” Guerra",
+        "role": "Batería"
+      },
+      {
+        "name": "Álvaro Rodríguez",
+        "role": "Bajo"
+      }
+    ],
+    "width": 1400,
+    "height": 933
+  },
+  "singles": [
+    {
+      "title": "Tácticas de Guerra",
+      "year": 2025,
+      "spotifyUrl": "https://open.spotify.com/album/7z2MtC88layaORkxYPIvk5",
+      "appleMusicUrl": "https://music.apple.com/us/song/1837766992",
+      "youtubeUrl": ""
+    },
+    {
+      "title": "Resucítame",
+      "year": 2025,
+      "spotifyUrl": "https://open.spotify.com/album/5kNzBFvVUZdvCEv5yYnAKm",
+      "appleMusicUrl": "https://music.apple.com/us/album/resuc%C3%ADtame-single/1850782428",
+      "youtubeUrl": ""
+    }
+  ],
+  "gallery": [
+    {
+      "image": "content/photos/galeria/01.jpg",
+      "alt": "Retrato de Los Insurgentes durante su sesión fotográfica en el desierto, con sombrero",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/02.jpg",
+      "alt": "Retrato de la banda en el desierto junto a una cruz",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/03.jpg",
+      "alt": "Detrás de cámaras de la sesión fotográfica en el desierto",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 933
+    },
+    {
+      "image": "content/photos/galeria/04.jpg",
+      "alt": "Silueta del baterista de Los Insurgentes al atardecer en el desierto",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/05.jpg",
+      "alt": "El bajista y el baterista de Los Insurgentes durante la sesión en el desierto",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/06.jpg",
+      "alt": "El baterista de Los Insurgentes con una cerveza durante un descanso de la sesión en el desierto",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/07.jpg",
+      "alt": "Miembro de la banda de perfil sobre un cerro, sesión fotográfica en Zapal",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/08.jpg",
+      "alt": "Primer plano del vocalista cantando, sesión fotográfica en Zapal",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/09.jpg",
+      "alt": "Los guitarristas de Los Insurgentes durante la sesión fotográfica en Zapal",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2100
+    },
+    {
+      "image": "content/photos/galeria/10.jpg",
+      "alt": "El vocalista de Los Insurgentes en blanco y negro, en vivo en Foro DiDi, Monterrey",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 934
+    },
+    {
+      "image": "content/photos/galeria/11.jpg",
+      "alt": "Los guitarristas de Los Insurgentes sonriendo en vivo en Foro DiDi, Monterrey",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2097
+    },
+    {
+      "image": "content/photos/galeria/12.jpg",
+      "alt": "Los Insurgentes en vivo en Foro DiDi, Monterrey, con destello de luz de color",
+      "tall": true,
+      "enabled": true,
+      "width": 1400,
+      "height": 2097
+    },
+    {
+      "image": "content/photos/galeria/13.jpg",
+      "alt": "Los Insurgentes en vivo en Foro DiDi, Monterrey, tomada con lente ojo de pez",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 933
+    },
+    {
+      "image": "content/photos/galeria/14.jpg",
+      "alt": "El baterista en vivo en Foro DiDi, Monterrey, bajo luz verde",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 933
+    },
+    {
+      "image": "content/photos/galeria/15.jpg",
+      "alt": "Primer plano del cantante en vivo en Foro DiDi, Monterrey",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 933
+    },
+    {
+      "image": "content/photos/galeria/16.jpg",
+      "alt": "Los Insurgentes en vivo, en el show con Siddhartha, con iluminación en tonos cian y naranja",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 933
+    },
+    {
+      "image": "content/photos/galeria/17.jpg",
+      "alt": "Los Insurgentes a contraluz frente al público, en el show con Siddhartha",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 933
+    },
+    {
+      "image": "content/photos/galeria/18.jpg",
+      "alt": "Los Insurgentes en vivo ante el público en Guadalajara",
+      "tall": false,
+      "enabled": true,
+      "width": 1400,
+      "height": 1050
+    }
+  ],
+  "shows": {
+    "upcoming": [],
+    "past": [
+      {
+        "date": "2022-05-06",
+        "label": "6 MAY 2022",
+        "venue": "Foro DiDi",
+        "city": "Monterrey, N.L.",
+        "note": "Presentación de El Gran Final",
+        "ticketUrl": "",
+        "enabled": true
+      },
+      {
+        "date": "",
+        "label": "10 DIC",
+        "venue": "Auditorio Río 70 — Tour de Ciencia Ficción",
+        "city": "Monterrey, N.L.",
+        "note": "Año por confirmar",
+        "ticketUrl": "",
+        "enabled": false
+      }
+    ]
+  },
+  "contact": {
+    "email": "",
+    "instagramUrl": "https://instagram.com/insurgentes.mx"
+  },
+  "socials": [
+    {
+      "label": "Instagram",
+      "url": "https://instagram.com/insurgentes.mx"
+    },
+    {
+      "label": "Facebook",
+      "url": "https://www.facebook.com/losinsurgentes.mx/"
+    },
+    {
+      "label": "YouTube",
+      "url": "https://www.youtube.com/@LosInsurgentes"
+    },
+    {
+      "label": "Spotify",
+      "url": "https://open.spotify.com/artist/3ukFu8umbFWty86yaubSR6"
+    },
+    {
+      "label": "Apple Music",
+      "url": "https://music.apple.com/us/artist/los-insurgentes/1231291746"
+    }
+  ]
+}

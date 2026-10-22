@@ -1,0 +1,38 @@
+LOS INSURGENTES · FOTOS DEL SITIO
+
+01-inicio.jpg → Fondo de la primera pantalla. Foto horizontal de la banda.
+02-banda.jpg  → Foto de la sección “La banda”. Foto horizontal.
+galeria/01.jpg ... galeria/18.jpg → Fotos de la galería, en ese orden.
+
+Para identificar cada foto visualmente, abre el editor del sitio (/admin/)
+y selecciona “Fotos”. Cada espacio muestra su nombre y su imagen.
+
+Puedes reemplazar una foto conservando su nombre y extensión. Usa un JPG
+real, no cambies solamente la extensión de otro formato. El editor también
+acepta PNG/WebP y los convierte a JPG al reemplazar la imagen.
+
+Para agregar/quitar fotos, cambiar descripciones o editar textos, usa el
+editor. Sus archivos de contenido están un nivel arriba: site.json,
+releases.json y lyrics.json. No necesitas editarlos a mano.
+
+GUARDAR Y PUBLICAR SON PASOS DISTINTOS
+Reemplazar archivos en esta carpeta cambia el contenido fuente. Para que
+aparezcan en la página pública, sube/guarda los cambios en el repositorio
+de GitHub. GitHub Actions genera y publica la página con GitHub Pages.
+
+La banda usa Google Drive con carpetas por sección:
+01 - Inicio/01-inicio.jpg
+02 - La banda/02-banda.jpg
+05 - Galeria/01.jpg ... 18.jpg
+
+En Drive, reemplaza la foto con “Administrar versiones → Subir nueva
+versión”. Conserva un único archivo por espacio y su nombre original.
+Para textos y descripciones, usa el editor y “Descargar para Drive”.
+La guía completa está en docs/GOOGLE_DRIVE.md y en la carpeta compartida:
+https://drive.google.com/drive/folders/1mtafaa-JIJ9N9zaEBIQihOqGPx8qOzt1
+
+Subir fotos a Drive no actualiza la página pública. Una persona designada
+descarga, revisa e importa el contenido y publica los cambios con GitHub.
+La sincronización automática entre Drive y GitHub no está configurada.
+
+No agregues aquí contraseñas, documentos privados o fotos no aprobadas.

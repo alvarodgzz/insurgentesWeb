@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{{META}}
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="256x256" href="images/favicon-256.png">
+<link rel="apple-touch-icon" href="images/favicon-256.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/spotify.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <nav class="nav" aria-label="Navegación principal">
+    <a href="#top" class="nav-brand"><img src="assets/logos/logo-full-white.png" alt="Los Insurgentes — inicio" width="1600" height="561"></a>
+    <button type="button" class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">&#9776;</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#sencillos">Sencillos</a></li><li><a href="#music">Música</a></li><li><a href="#about">Nosotros</a></li><li><a href="#gallery">Galería</a></li><li><a href="#lyrics">Letras</a></li><li><a href="#shows">Shows</a></li><li><a href="#contact">Contacto</a></li>
+    </ul>
+  </nav>
+</header>
+<main id="main" tabindex="-1">
+{{HERO}}
+{{TICKER}}
+{{SINGLES}}
+{{ABOUT}}
+{{MUSIC}}
+{{GALLERY}}
+{{LYRICS}}
+{{SHOWS}}
+{{CONTACT}}
+</main>
+{{FOOTER}}
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de fotos de la galería" aria-hidden="true">
+  <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Cerrar visor de fotos">&times;</button>
+  <button type="button" class="lightbox-arrow lightbox-prev" id="lightboxPrev" aria-label="Foto anterior">&#10094;</button>
+  <button type="button" class="lightbox-arrow lightbox-next" id="lightboxNext" aria-label="Foto siguiente">&#10095;</button>
+  <div class="lightbox-content"><div class="lightbox-stage"><img class="lightbox-img" id="lightboxImg" alt=""></div><p class="lightbox-caption" id="lightboxCaption"></p><span class="lightbox-counter" id="lightboxCounter" aria-live="polite" aria-atomic="true"></span><div class="lightbox-filmstrip" id="lightboxFilmstrip"></div></div>
+</div>
+<script src="js/main.js" defer></script>
+<script src="js/spotify.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+.claude/
+.codex/
+.agents/
+.aws/
+.env*
+!.env.example
+.DS_Store
+_site/
+node_modules/
+*.log
