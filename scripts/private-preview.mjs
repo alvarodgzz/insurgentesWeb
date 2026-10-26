@@ -1,12 +1,15 @@
 import { webcrypto } from 'node:crypto';
 import { copyFile, lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, posix, resolve } from 'node:path';
+import { renderAnalytics } from '../js/analytics-render.mjs';
+import { readAnalytics } from './analytics-config.mjs';
 
 export const GATE_FILES = Object.freeze([
   'css/access.css', 'js/access.js',
   'assets/logos/logo-full-white.png', 'assets/logos/skull-icon-orange.png',
   'assets/fonts/Pragmatica-Light.ttf', 'assets/fonts/VoskaRound.otf',
   'images/favicon-32.png',
+  'js/analytics.js', 'css/stats.css', 'admin/estadisticas/index.html',
 ]);
 const iterations = 600000;
 const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
@@ -73,7 +76,8 @@ export async function makeSelfContained(root) {
     const script = (await safeRead(root, assetPath(src))).toString('utf8');
     return `<script>${script.replace(/<\/script/gi, '<\\/script')}</script>`;
   });
-  html = html.replace(/<meta\b[^>]*\bname=["']robots["'][^>]*>/gi, '')
+  html = html.replace(/<html\b/i, '<html data-private-preview="true"')
+    .replace(/<meta\b[^>]*\bname=["']robots["'][^>]*>/gi, '')
     .replace('</head>', '<meta name="robots" content="noindex,nofollow,noarchive"></head>')
     .replace('</body>', '<button type="button" id="previewLock" style="position:fixed;bottom:16px;right:16px;z-index:99999;padding:10px 16px;border:1px solid #f86927;border-radius:4px;background:#111;color:#dcd9d0;font:14px system-ui;cursor:pointer">Cerrar vista previa</button><script>document.getElementById("previewLock").addEventListener("click",()=>location.reload());addEventListener("pageshow",event=>{if(event.persisted)location.reload()});</script></body>');
   return html;
@@ -98,7 +102,9 @@ export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'htt
   await mkdir(output, { recursive: true });
   const base = new URL(siteUrl).pathname.replace(/\/?$/, '/');
   if (!/^\/[a-zA-Z0-9/_-]*$/.test(base)) throw new Error('Invalid preview base path');
-  const gate = (await safeRead(root, 'templates/access.html')).toString('utf8').replaceAll('{{BASE}}', base);
+  const gate = (await safeRead(root, 'templates/access.html')).toString('utf8')
+    .replaceAll('{{BASE}}', base)
+    .replaceAll('{{TELEMETRY}}', renderAnalytics(await readAnalytics(root), 'gate'));
   for (const path of GATE_FILES) {
     // Read first to refuse symlinks and nested traversal before copying.
     await safeRead(root, path);

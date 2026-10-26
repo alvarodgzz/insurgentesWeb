@@ -2,12 +2,13 @@ import { readFile, writeFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { renderSite, photoSlots, escapeHtml } from '../js/site-render.mjs';
+import { readAnalytics } from './analytics-config.mjs';
 
 export async function build(root = resolve(fileURLToPath(new URL('..', import.meta.url))), siteUrl = process.env.SITE_URL) {
   const read = path => readFile(resolve(root,path),'utf8');
   const [template,siteText,releasesText,lyricsText] = await Promise.all(['templates/page.html','content/site.json','content/releases.json','content/lyrics.json'].map(read));
   const site = JSON.parse(siteText);
-  const html = renderSite(template,site,JSON.parse(releasesText),JSON.parse(lyricsText),{siteUrl});
+  const html = renderSite(template,site,JSON.parse(releasesText),JSON.parse(lyricsText),{siteUrl, analytics: await readAnalytics(root)});
   const requiredPhotos = photoSlots(site).filter(photo => photo.group !== 'gallery' || site.gallery[photo.index].enabled !== false);
   await Promise.all(requiredPhotos.map(photo => access(resolve(root,photo.path))));
   await writeFile(resolve(root,'index.html'),html);

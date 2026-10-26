@@ -44,7 +44,7 @@ La banda eligió Google Drive. La carpeta [Los Insurgentes — Sitio web](https:
 
 **Guardar archivos o subirlos a Drive no publica el sitio.** Una persona designada revisa e importa el contenido en el proyecto y sube los cambios al repositorio de GitHub. El flujo de GitHub Pages genera la página y la publica. La sincronización automática de Drive a GitHub no está configurada.
 
-El editor no tiene acceso de escritura al servidor. Durante la vista previa protegida, `/admin/` solo está disponible en tu servidor local; el paquete de Pages no lo publica.
+El editor no tiene acceso de escritura al servidor. Durante la vista previa protegida, el editor `/admin/` solo está disponible en tu servidor local; el paquete de Pages no lo publica. La ruta `/admin/estadisticas/` es una página pública independiente que enlaza al panel privado de Umami.
 
 ## Spotify y letras
 
@@ -54,7 +54,7 @@ Las letras pueden ser texto proporcionado por la banda o enlaces verificados a G
 
 ## Vista previa con contraseña y GitHub Pages
 
-El repositorio es [alvarodgzz/insurgentesWeb](https://github.com/alvarodgzz/insurgentesWeb). El propietario ya mostró una publicación correcta en GitHub Pages y configuró `losinsurgentes.mx`. **La nueva portada de acceso todavía debe publicarse.**
+El repositorio es [alvarodgzz/insurgentesWeb](https://github.com/alvarodgzz/insurgentesWeb). El propietario ya mostró una publicación correcta en GitHub Pages y configuró `losinsurgentes.mx`. La portada de acceso ya está guardada en el repositorio; no se ha verificado su publicación desde esta sesión.
 
 Por petición del propietario, el empaquetado ahora prepara una portada con la calaca, el logo y una contraseña. El sitio completo se cifra antes de subirlo a Pages; las fotos, los textos y el editor no se publican como archivos sueltos. Sin contraseña de compilación se publica únicamente la portada, sin el contenido cifrado. La navegación dentro de la vista previa requiere JavaScript y HTTPS; `localhost` también permite probarla.
 
@@ -70,6 +70,12 @@ El script valida el sitio y, si encuentra ese archivo, configura el secreto de A
 
 Los registros DNS suministrados por el propietario apuntan a GitHub Pages. En la última captura, GitHub todavía estaba emitiendo el certificado TLS. Cuando termine, activa **Enforce HTTPS** en **Settings → Pages**. No restaures el preset **Squarespace Defaults**, porque volvería a apuntar al alojamiento anterior.
 
+## Estadísticas
+
+El propietario eligió Umami Cloud Hobby y vinculó su cuenta de GitHub. El propietario ya proporcionó el **Website ID** de `losinsurgentes.mx`; la integración quedó configurada y activada localmente en `content/analytics.json`. Falta publicar con `bash scripts/publish-github.sh` y comprobar la llegada de visitas en Umami. Para cambiar el sitio de medición se usa `node scripts/configure-analytics.mjs WEBSITE_ID`. No se necesita compartir contraseñas de cuenta ni claves API.
+
+La página `/admin/estadisticas/` enlaza al panel de Umami, que requiere su propia cuenta autorizada. Una vez activada y publicada, registra visitas de la portada del dominio y métricas como horarios, dispositivo y ubicación aproximada; excluye formularios, contraseñas, parámetros de URL, editor y vista previa descifrada. Las cifras empiezan después de activar y publicar, sin historial anterior. Consulta [la configuración y los límites](docs/ANALYTICS.md).
+
 ## Desarrollo
 
 ```bash
@@ -79,8 +85,8 @@ node scripts/check.mjs
 node scripts/prepare-pages.mjs
 ```
 
-- `content/`: contenido que mantiene la banda y fotos numeradas.
-- `admin/`: editor visual sin dependencias ni servidor de escritura.
+- `content/`: contenido que mantiene la banda, fotos numeradas y configuración `analytics.json`.
+- `admin/`: editor visual sin dependencias ni servidor de escritura; `admin/estadisticas/` enlaza al panel externo.
 - `templates/page.html`: estructura de la página.
 - `js/site-render.mjs`, `music-render.mjs`, `lyrics-render.mjs`: contenido estático, también usado en la vista previa.
 - `index.html`: página generada; no editar directamente.

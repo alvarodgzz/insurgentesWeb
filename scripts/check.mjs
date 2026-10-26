@@ -4,6 +4,7 @@ import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { validateContent } from '../js/site-render.mjs';
+import { readAnalytics } from './analytics-config.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -80,7 +81,9 @@ try {
   const releases = JSON.parse(await read('content/releases.json'));
   const lyrics = JSON.parse(await read('content/lyrics.json'));
   errors.push(...validateContent(site, releases, lyrics).map((error) => `Content: ${error}`));
+  await readAnalytics(root);
   const tagCount = await inspectHTML('index.html');
+  await inspectHTML('admin/estadisticas/index.html');
   // Admin navigation and form labels are generated at runtime; check its static
   // asset references without treating those future targets as missing elements.
   const adminHTML = (await read('admin/index.html')).replace(/<!--[\s\S]*?-->/g, '');
@@ -88,11 +91,11 @@ try {
     const attrs = attributes(tag[0]);
     for (const attribute of ['href', 'src']) if (attrs[attribute]) await localReference(attrs[attribute], 'admin/index.html');
   }
-  for (const file of ['css/style.css', 'css/spotify.css', 'css/access.css', 'admin/editor.css']) {
+  for (const file of ['css/style.css', 'css/spotify.css', 'css/access.css', 'css/stats.css', 'admin/editor.css']) {
     const css = (await read(file)).replace(/\/\*[\s\S]*?\*\//g, '');
     for (const value of cssURLs(css)) await localReference(value, file);
   }
-  for (const file of ['js/main.js', 'js/spotify.js', 'js/access.js', 'js/site-render.mjs', 'js/lyrics-render.mjs', 'js/music-render.mjs', 'js/update-bundle.mjs', 'admin/editor.mjs', 'scripts/build.mjs', 'scripts/preview.mjs', 'scripts/prepare-pages.mjs', 'scripts/private-preview.mjs', 'scripts/lookup-lyrics.mjs']) {
+  for (const file of ['js/main.js', 'js/spotify.js', 'js/access.js', 'js/analytics.js', 'js/analytics-render.mjs', 'js/site-render.mjs', 'js/lyrics-render.mjs', 'js/music-render.mjs', 'js/update-bundle.mjs', 'admin/editor.mjs', 'scripts/build.mjs', 'scripts/preview.mjs', 'scripts/prepare-pages.mjs', 'scripts/private-preview.mjs', 'scripts/analytics-config.mjs', 'scripts/configure-analytics.mjs', 'scripts/lookup-lyrics.mjs']) {
     const result = spawnSync(process.execPath, ['--check', resolve(root, file)], { encoding: 'utf8' });
     if (result.status !== 0) errors.push(`${file}: syntax check failed\n${result.stderr}`);
   }

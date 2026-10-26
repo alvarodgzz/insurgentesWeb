@@ -1,5 +1,6 @@
 import { renderMusic, spotifyAlbumId } from './music-render.mjs';
 import { renderLyrics, lyricSource } from './lyrics-render.mjs';
+import { renderAnalytics } from './analytics-render.mjs';
 
 export const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const e = escapeHtml;
@@ -149,6 +150,7 @@ export function renderSite(template, site, releases, lyrics, options = {}) {
   if (options.siteUrl && !secureUrl(options.siteUrl)) errors.push('SITE_URL debe usar HTTPS.');
   if (errors.length) throw new Error(errors.join('\n'));
   const blocks = {
+    TELEMETRY: renderAnalytics(options.analytics),
     META: renderMeta(site,options), HERO: renderHero(site), TICKER: renderTicker(site), SINGLES: renderSingles(site,releases), ABOUT: renderAbout(site), MUSIC: renderMusic(releases), GALLERY: renderGallery(site), LYRICS: renderLyrics(lyrics), SHOWS: renderShows(site), CONTACT: renderContact(site),
     FOOTER: `<footer class="site-footer"><img src="assets/logos/logo-full-white.png" alt="Los Insurgentes" class="footer-mark" width="1600" height="561"><div class="social-row">${site.socials.map(s => external(s.url,e(s.label))).join('')}</div><p class="footer-fine">&copy; <span id="year">${new Date().getUTCFullYear()}</span> Los Insurgentes · Monterrey, N.L.</p></footer>`
   };
