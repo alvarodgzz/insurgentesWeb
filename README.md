@@ -44,7 +44,7 @@ La banda eligió Google Drive. La carpeta [Los Insurgentes — Sitio web](https:
 
 **Guardar archivos o subirlos a Drive no publica el sitio.** Una persona designada revisa e importa el contenido en el proyecto y sube los cambios al repositorio de GitHub. El flujo de GitHub Pages genera la página y la publica. La sincronización automática de Drive a GitHub no está configurada.
 
-El editor no guarda contraseñas ni tiene acceso de escritura al servidor. Abrir `/admin/` en un sitio público permite preparar una copia local; no permite modificar la web de la banda.
+El editor no tiene acceso de escritura al servidor. Durante la vista previa protegida, `/admin/` solo está disponible en tu servidor local; el paquete de Pages no lo publica.
 
 ## Spotify y letras
 
@@ -52,13 +52,23 @@ La página incluye un reproductor oficial de Spotify y 14 lanzamientos verificad
 
 Las letras pueden ser texto proporcionado por la banda o enlaces verificados a Genius, Musixmatch o videos oficiales. **Flores** ya enlaza al lyric video del canal de la banda. Los títulos sin texto/enlace quedan fuera de la página pública. Consulta [las opciones de letras](docs/LYRICS.md).
 
-## GitHub Pages
+## Vista previa con contraseña y GitHub Pages
 
-El destino elegido es la cuenta **alvarodgzz**, con repositorio propuesto **insurgentesWeb**. La configuración está preparada en `.github/workflows/pages.yml`.
+El repositorio es [alvarodgzz/insurgentesWeb](https://github.com/alvarodgzz/insurgentesWeb). El propietario ya mostró una publicación correcta en GitHub Pages y configuró `losinsurgentes.mx`. **La nueva portada de acceso todavía debe publicarse.**
 
-Consulta [la guía para conectar y publicar](docs/GITHUB_PAGES.md). La creación del repositorio y la publicación deben confirmarse con GitHub; estos archivos por sí solos no significan que el sitio ya esté en línea.
+Por petición del propietario, el empaquetado ahora prepara una portada con la calaca, el logo y una contraseña. El sitio completo se cifra antes de subirlo a Pages; las fotos, los textos y el editor no se publican como archivos sueltos. Sin contraseña de compilación se publica únicamente la portada, sin el contenido cifrado. La navegación dentro de la vista previa requiere JavaScript y HTTPS; `localhost` también permite probarla.
 
-El dominio `losinsurgentes.mx` sigue siendo el dominio previsto. El flujo usa la URL real que entrega GitHub Pages para generar los enlaces de compartir; aún no se ha cambiado el DNS ni configurado un dominio personalizado.
+La contraseña local se guarda en `.env.preview-password`, un archivo ignorado por Git. No la agregues al repositorio. Ejecuta desde tu terminal:
+
+```bash
+bash scripts/publish-github.sh
+```
+
+El script valida el sitio y, si encuentra ese archivo, configura el secreto de Actions `PREVIEW_PASSWORD`. Después sube los cambios e inicia Pages. Para revisar la portada localmente: `node scripts/preview.mjs --protected --open`. Consulta [los pasos y límites de la protección](docs/GITHUB_PAGES.md).
+
+**El repositorio actual es público y ya contiene el código, los textos y las fotos en su historial.** El cifrado protege el nuevo paquete de Pages, pero no vuelve privados esos archivos de GitHub ni los retira del historial. Esta vista previa no equivale a autenticación en un servidor. Para confidencialidad del material también se debe resolver la visibilidad del repositorio y sus copias existentes.
+
+Los registros DNS suministrados por el propietario apuntan a GitHub Pages. En la última captura, GitHub todavía estaba emitiendo el certificado TLS. Cuando termine, activa **Enforce HTTPS** en **Settings → Pages**. No restaures el preset **Squarespace Defaults**, porque volvería a apuntar al alojamiento anterior.
 
 ## Desarrollo
 
@@ -76,6 +86,8 @@ node scripts/prepare-pages.mjs
 - `index.html`: página generada; no editar directamente.
 - `css/`, `js/main.js`, `js/spotify.js`: diseño e interacciones.
 - `assets/`: identidad original y archivo fotográfico. Nunca imitar el logotipo con texto/CSS.
-- `_site/`: archivos públicos preparados para GitHub Pages; se genera y se excluye de Git.
+- `_site/`: portada y paquete cifrado preparados para GitHub Pages; se genera y se excluye de Git.
+- `scripts/private-preview.mjs`: empaquetado de la vista previa protegida.
+- `.env.preview-password`: contraseña local ignorada por Git; nunca se publica.
 
-Usa `SITE_URL=https://alvarodgzz.github.io/insurgentesWeb/ node scripts/build.mjs` para generar metadatos para esa URL. No incluyas claves API, configuraciones de Claude/Codex ni archivos privados al publicar.
+`index.html` sigue siendo la página completa para revisión y edición local; el comando `prepare-pages` genera por separado la portada de `_site/`. La opción `--public` de ese comando es exclusiva del lanzamiento futuro: no la uses mientras la vista previa deba permanecer protegida. No incluyas claves API, configuraciones de Claude/Codex ni archivos privados al publicar.

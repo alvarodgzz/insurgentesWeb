@@ -19,7 +19,7 @@ command -v node >/dev/null || fail 'Install Node.js 22 or later, then run this s
 
 # Finish all local validation before changing Git or GitHub.
 node --test tests/*.test.mjs
-SITE_URL='https://alvarodgzz.github.io/insurgentesWeb/' node scripts/build.mjs
+SITE_URL='https://losinsurgentes.mx/' node scripts/build.mjs
 node scripts/check.mjs
 node scripts/prepare-pages.mjs
 
@@ -98,6 +98,12 @@ else
   fi
 fi
 
+# Keep the preview password out of Git and command-line arguments. The ignored
+# local file is only read by gh on stdin; Actions receives a repository secret.
+if [[ -s .env.preview-password ]]; then
+  gh secret set PREVIEW_PASSWORD --repo "$repository" < .env.preview-password
+fi
+
 # Push first: GitHub Pages cannot be initialized reliably on an empty repository.
 # Reuse gh authentication for HTTPS without changing global Git credentials.
 # No force push: existing remote history must remain intact.
@@ -140,4 +146,4 @@ gh workflow run pages.yml --repo "$repository" --ref main
 
 printf '\nChanges pushed and deployment requested. Check the GitHub Actions result:\n'
 printf 'https://github.com/%s/actions\n' "$repository"
-printf 'Expected site after a successful deployment: https://alvarodgzz.github.io/insurgentesWeb/\n'
+printf 'Expected protected preview after a successful deployment: https://losinsurgentes.mx/\n'

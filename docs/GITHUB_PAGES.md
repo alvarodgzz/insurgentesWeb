@@ -1,61 +1,67 @@
-# Publicar Los Insurgentes con GitHub Pages
+# Publicar la vista previa de Los Insurgentes
 
-La configuración está preparada para el repositorio `alvarodgzz/insurgentesWeb`, con la rama principal `main`. La dirección prevista es [alvarodgzz.github.io/insurgentesWeb](https://alvarodgzz.github.io/insurgentesWeb/). Esa dirección solo estará disponible después de crear el repositorio, subir los archivos y completar la primera publicación. La presencia de estos archivos locales no confirma que el sitio esté publicado.
+El repositorio existente es [alvarodgzz/insurgentesWeb](https://github.com/alvarodgzz/insurgentesWeb), rama `main`. GitHub Pages usa GitHub Actions y el dominio `losinsurgentes.mx`. El propietario mostró una publicación correcta del sitio anterior; la portada protegida de esta actualización aún requiere publicar los cambios.
 
-## Primera publicación
+## Publicar con contraseña
 
-Con Git y GitHub CLI instalados, inicia sesión como `alvarodgzz` con `gh auth login --hostname github.com`. Después ejecuta desde este proyecto:
+La contraseña de compilación se guarda localmente en `.env.preview-password`, excluido por `.gitignore`. Su contenido es únicamente la contraseña, nunca código ni una asignación de variable. No la pegues en un commit, documentación o comando que quede en el historial de la terminal.
+
+Desde la carpeta del proyecto, con GitHub CLI autenticado como `alvarodgzz`, ejecuta:
 
 ```sh
 bash scripts/publish-github.sh
 ```
 
-El script comprueba el sitio, prepara un commit, crea `alvarodgzz/insurgentesWeb` como **repositorio público** si aún no existe y sube `main`. Después activa Pages con GitHub Actions e inicia una publicación. Este orden permite configurar Pages cuando el repositorio ya tiene contenido; si el primer flujo disparado por el push falla por falta de configuración, revisa el flujo posterior iniciado por el script. Conserva la visibilidad de un repositorio existente y no reemplaza remotos, cambia de rama ni fuerza el historial. Solo completa la identidad local de Git si falta. La activación de Pages utiliza los [endpoints oficiales de GitHub](https://docs.github.com/en/rest/pages/pages#create-a-github-pages-site). Este script se entrega para ejecutarlo en tu terminal; su presencia no significa que se haya ejecutado ni que el sitio esté publicado.
+El script valida el proyecto. Si existe el archivo local, envía su contenido al secreto de Actions **PREVIEW_PASSWORD**, sin incluirlo en el commit, y después sube `main` e inicia la publicación. Conserva el remoto, la visibilidad del repositorio, el dominio y la configuración HTTPS existentes. Si el archivo no existe, se puede configurar el mismo secreto desde **Settings → Secrets and variables → Actions → New repository secret**.
 
-También puedes hacer la publicación manualmente:
+Revisa [Actions](https://github.com/alvarodgzz/insurgentesWeb/actions) y espera a que los trabajos `build` y `deploy` terminen correctamente. Los cambios posteriores en `main` vuelven a publicar. Un cambio del secreto por sí solo requiere ejecutar de nuevo **Actions → Validate and publish GitHub Pages → Run workflow**.
 
-1. En la cuenta `alvarodgzz`, crea el repositorio `insurgentesWeb` y sube este proyecto a la rama `main`. GitHub Pages está disponible para repositorios públicos con GitHub Free; los repositorios privados requieren un plan compatible. Consulta la [disponibilidad de GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).
-2. En el repositorio, abre **Settings → Pages** y selecciona **GitHub Actions** como origen de publicación.
-3. En **Actions → Validate and publish GitHub Pages**, selecciona **Run workflow**, usando la rama `main`. Los siguientes cambios que lleguen a `main` publicarán automáticamente.
-4. Espera a que los trabajos `build` y `deploy` terminen correctamente. Abre la dirección del entorno **github-pages** mostrada por GitHub y comprueba la página desde computadora y teléfono.
+**Sin contraseña de compilación, el paquete solo contiene la portada:** no incluye el sitio completo ni un acceso alterno. Esto permite sustituir el sitio anterior sin exponer contenido por falta del secreto. La portada nueva no reemplaza la página desplegada hasta que el flujo de Pages termine correctamente.
 
-El flujo sigue la [documentación oficial de publicación con GitHub Actions](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages). Usa Node.js 22, sin instalación de paquetes ni servidores externos. Los permisos de publicación se limitan al trabajo `deploy` y no hace falta guardar una contraseña o un token personal. Al generar la página, `SITE_URL` toma la dirección real que proporciona GitHub Pages para los metadatos y las imágenes sociales; en un pull request usa la dirección prevista del proyecto.
+Si un envío falla con `RPC failed; HTTP 400`, el script reintenta una vez con HTTP/1.1 y un búfer de 64 MiB, solo para ese comando. No modifica la configuración global ni fuerza el historial. Comprueba que `main` local coincida con el remoto antes de pedir la publicación. Conserva el trabajo y se detiene si el envío o su verificación fallan.
 
-## Contenido y futuras actualizaciones
+## Qué protege la portada
 
-Si el primer envío falla con `RPC failed; HTTP 400`, vuelve a ejecutar `bash scripts/publish-github.sh`. El script conserva el repositorio y el remoto existentes y reintenta ese error una vez con HTTP/1.1 y un búfer de 64 MiB, solo para ese comando. Es un ajuste de compatibilidad para transferencias HTTP, descrito en la [configuración de Git](https://git-scm.com/docs/git-config#Documentation/git-config.txt-httppostBuffer); no cambia tu configuración global. Antes de activar Pages, el script comprueba que el commit local coincide con `main` en GitHub. Si el reintento falla, conserva el trabajo y se detiene.
+`scripts/prepare-pages.mjs` prepara por defecto una vista previa protegida. `scripts/private-preview.mjs` reúne el HTML, fotos, estilos, fuentes y scripts necesarios en un documento, deriva una clave con PBKDF2-SHA-256 y 600 000 iteraciones y lo cifra con AES-GCM de 256 bits. El navegador descarga el paquete cifrado y lo abre con la contraseña introducida. La contraseña no se incluye en los archivos publicados.
 
-Las fotos y los archivos JSON de `content/` son la fuente del sitio. El editor en `admin/` permite preparar cambios y exportarlos o guardarlos en una carpeta elegida por el usuario. No inicia sesión en GitHub ni publica por sí solo. Para publicar, sube los archivos modificados al repositorio y confirma el cambio en `main`, o abre un pull request para revisión.
+`_site/` contiene solamente la portada, sus recursos de marca y acceso, y `preview.json` cuando existe contraseña. El editor, los JSON de contenido, las plantillas y las fotos del sitio completo no tienen rutas públicas separadas en este paquete. El `index.html` de la raíz del proyecto sigue siendo la página completa para el editor y la revisión local; no es el `index.html` que se publica durante esta fase.
 
-El flujo ejecuta, en este orden:
+Se necesita JavaScript y un contexto seguro para descifrar: HTTPS en el dominio o `localhost` al revisar. La portada explica este requisito cuando no está disponible. Los reproductores de Spotify siguen dependiendo de sus servicios externos.
 
-```sh
-node --test tests/*.test.mjs
-node scripts/build.mjs
-node scripts/check.mjs
-node scripts/prepare-pages.mjs
-```
+**Límite esencial:** GitHub Pages sirve archivos estáticos y esta solución no crea una sesión de autenticación en un servidor. El repositorio actual es público y ya expuso código, fotos y contenido en su historial; el nuevo cifrado no retira esas copias ni hace privado GitHub. La [publicación privada nativa de Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site) exige una organización con GitHub Enterprise Cloud. No cambies de proveedor ni de plan sin decisión del propietario.
 
-Si alguna comprobación falla, la publicación se detiene. Los pull requests ejecutan las mismas comprobaciones sin publicar. La página pública ya contiene el texto generado: la navegación, la biografía y el catálogo no necesitan JavaScript para mostrar el contenido.
+## Revisar localmente
 
-Para revisar localmente el mismo resultado que se subirá a Pages, ejecuta los comandos anteriores y después:
+El sitio completo y el editor siguen disponibles con:
 
 ```sh
-python3 -m http.server 8000 --bind 127.0.0.1 --directory _site
+node scripts/preview.mjs --open
 ```
 
-Abre `http://127.0.0.1:8000/`. El editor estará en `http://127.0.0.1:8000/admin/`. Si tu entorno restringe los servidores locales, la vista previa deberá hacerse desde otro entorno permitido.
+Para revisar exactamente el paquete protegido, ejecuta:
 
-## Archivos publicados
+```sh
+node scripts/preview.mjs --protected --open
+```
 
-`scripts/prepare-pages.mjs` recrea `_site/` copiando únicamente `index.html` y los directorios `assets/`, `css/`, `js/`, `images/`, `content/`, `admin/` y `templates/`. Excluye archivos ocultos dentro de ellos y rechaza enlaces simbólicos. Añade `.nojekyll` al resultado. GitHub recibe únicamente `_site/`, sin el historial Git, las instrucciones de agentes, los scripts, la documentación ni las carpetas de herramientas locales.
+Abre `http://127.0.0.1:8000/`. El editor no está incluido en `_site/`. Detén el servidor con `Ctrl+C` antes de abrir otro en el mismo puerto. Si el entorno bloquea servidores locales, realiza la revisión en tu terminal habitual.
 
-Todo el contenido copiado, incluidos JSON, fotos y plantillas, será público. Guarda aquí solo material que la banda quiera publicar; las letras completas que se agreguen a los JSON también serán accesibles como archivos públicos. Los borradores privados deben conservarse fuera de estos directorios.
+## Dominio y HTTPS
 
-## Dominio propio
+El propietario configuró `losinsurgentes.mx` en **Settings → Pages** y confirmó estos registros de Squarespace:
 
-Esta configuración usa inicialmente el subdirectorio de GitHub Pages. No añade `CNAME` ni modifica DNS. Cuando se confirme el dominio definitivo, habrá que configurar ese dominio en GitHub Pages y actualizar las direcciones de metadatos del sitio. Las rutas de fotos, estilos y scripts deben mantenerse relativas para funcionar tanto en el subdirectorio como en el dominio futuro.
+| Tipo | Nombre | Destino |
+| --- | --- | --- |
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| CNAME | `www` | `alvarodgzz.github.io` |
 
-## Verificación de lanzamiento
+La captura más reciente de GitHub muestra **DNS check successful** y el certificado TLS todavía en emisión. Cuando esté disponible, activa **Enforce HTTPS** y comprueba tanto `https://losinsurgentes.mx` como `https://www.losinsurgentes.mx`. No omitas una advertencia de certificado del navegador. El aviso de Squarespace que pide restaurar **Squarespace Defaults** corresponde a su alojamiento anterior; restaurarlo cambiaría estos destinos.
 
-Después de la primera publicación, comprueba en el sitio real: navegación en móvil, enlaces de Spotify, reproductores, galería y teclado; confirma también que los textos de Maratón y del próximo sencillo siguen vigentes. Revisa que el último flujo publicado corresponde al cambio más reciente en `main`. Una comprobación local correcta no sustituye esta revisión del dominio publicado.
+## Lanzamiento futuro
+
+El empaquetador admite `node scripts/prepare-pages.mjs --public` para el lanzamiento deliberado, pero la configuración actual de Actions no lo utiliza. Esa opción copia el sitio completo y sus recursos, incluido el editor y el contenido, como archivos públicos. No cambies el flujo a `--public` hasta que el propietario autorice el lanzamiento.
+
+Antes de anunciarlo, revisa navegación móvil, galería, teclado, enlaces y reproducción de Spotify en el dominio real. Confirma que Maratón y el próximo sencillo mantienen su estado correcto. Las comprobaciones locales no sustituyen esa revisión.

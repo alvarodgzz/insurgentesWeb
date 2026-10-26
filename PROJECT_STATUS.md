@@ -1,4 +1,4 @@
-# Project status — October 21, 2026
+# Project status — October 23, 2026
 
 ## Confirmed direction
 
@@ -7,7 +7,8 @@
 - Give the band a simple way to update photos and content.
 - Use a personal Google Drive folder, organized by site section, for band collaboration. The owner supplied `insurgentes.mx@gmail.com` as the initial collaboration account; this is not authorization to use it as the public booking address.
 - Include an on-page Spotify catalog and investigate lyric providers.
-- Use GitHub account `alvarodgzz` and GitHub Pages. Proposed repository: `insurgentesWeb`.
+- Use GitHub account `alvarodgzz`, existing repository `insurgentesWeb`, GitHub Pages and domain `losinsurgentes.mx`.
+- Do not launch publicly yet: the owner requested a temporary branded password gate. Keep the supplied password out of tracked files and logs.
 - The owner explicitly requested subagents for parallel work.
 
 ## Implemented locally
@@ -23,25 +24,33 @@
 - Static HTML generation shared between the editor and Node build. Public text does not depend on client-side JSON fetching.
 - GitHub Pages workflow, public-file packaging allowlist, `.gitignore`, validation scripts, regression tests and a user-runnable first-publication script.
 
+## Temporary protected preview
+
+The Pages packaging now prepares a branded password gate and an encrypted, self-contained copy of the complete site. It uses PBKDF2-SHA-256 (600 000 iterations) and AES-GCM-256. Public output omits the editor, raw photos, JSON content and templates. A missing compilation password produces only the holding gate, without the full site. The local root `index.html` remains the complete site for editing.
+
+The local ignored `.env.preview-password` supplies local builds; the publishing script synchronizes it to the Actions secret `PREVIEW_PASSWORD` when present. Actions uses that secret during packaging. Decryption needs JavaScript and HTTPS, or localhost. The explicit packaging option `--public` is for a future launch, which the owner has not yet authorized.
+
+The repository is already public, including prior source/content history. Encrypting the new Pages artifact does not remove that exposure or provide server authentication. Do not claim that all band material is private. The password gate is a local implementation until the owner publishes it and verifies the live site.
+
 ## How to review
 
-Run `node scripts/preview.mjs --open` or double-click `start.command`. The editor opens at `http://127.0.0.1:8000/admin/`; the public site is at `/`.
+Run `node scripts/preview.mjs --open` or double-click `start.command`. The editor opens at `http://127.0.0.1:8000/admin/`; the complete local site is at `/`. To review only the protected Pages package, use `node scripts/preview.mjs --protected --open`; this mode does not serve the editor or raw content.
 
 ## Validation
 
-Content/rendering/ZIP/packaging tests and simulated navigation/gallery interaction tests pass. Generated HTML, assets, fragment targets, accessibility names, editor references and JavaScript syntax have been checked. The publish script passes Bash syntax validation.
+Content/rendering/ZIP/packaging tests and simulated navigation/gallery/access interaction tests pass. New coverage verifies authenticated encryption, wrong passwords, tampering, retries, missing passwords, removal of raw content and local asset bundling. Generated HTML, assets, fragment targets, accessibility names, editor references and JavaScript syntax have been checked. The publish script passes Bash syntax validation.
 
 The in-app browser backend was unavailable, and the sandbox blocked a local preview server. Desktop/mobile browser layout and actual Spotify playback remain unverified. The interaction tests use a small simulated DOM, not a browser.
 
 ## Remaining external steps
 
-- GitHub CLI is now installed at `/usr/local/bin/gh`, and the owner reports completing login as `alvarodgzz`. This session's `gh api user` fails to connect to `api.github.com`, so authentication could not be verified from this restricted terminal. The `gh auth status` token-invalid message is inconclusive while the API is unreachable; do not ask the owner to repeat login solely on that evidence.
-- The owner's normal terminal created the local Git repository, initial commit `9910443`, and the public repository `alvarodgzz/insurgentesWeb`; `origin` and branch `main` are configured. The first push failed with `RPC failed; HTTP 400` while uploading a 33.22 MiB pack. Remote branch contents and Pages deployment remain unverified. Do not recreate the repository or add `origin` again.
-- After GitHub login in an unrestricted terminal, `bash scripts/publish-github.sh` validates the project, creates/reuses `alvarodgzz/insurgentesWeb`, pushes, enables Pages and triggers deployment. Do not claim a live URL until GitHub confirms the deployment.
-- The site passed 24 tests, site checks and Pages packaging before the first publication attempt. The owner needs to run the publication script from their normal terminal because this session cannot reach the GitHub API or write Git metadata. The script now retries an observed HTTP 400 upload once using command-scoped HTTP/1.1 and a 64 MiB buffer, then verifies the remote main SHA before enabling Pages. Four isolated publishing-flow tests pass; the retry still needs execution against GitHub.
-- Google Drive is the chosen shared workspace. The created folder is [Los Insurgentes — Sitio web](https://drive.google.com/drive/folders/1mtafaa-JIJ9N9zaEBIQihOqGPx8qOzt1); it uses numbered site sections and stable photo filenames. The owner account remains owner, and the band account supplied in chat has verified editor access. See `docs/GOOGLE_DRIVE.md` for band instructions. No cloud-to-GitHub synchronization or direct editor-to-Drive save is connected. A designated person still reviews, imports, saves and publishes through GitHub.
-- Custom-domain DNS has not changed. The intended domain in previous notes is `losinsurgentes.mx`; initial deployment can use the GitHub Pages URL.
-- Browser QA and a confirmed first deployment remain required before calling the launch complete.
+- October 23 publication attempt: all 36 tests, content/site checks and protected packaging passed. The publisher stopped at the GitHub account check because this environment could not connect to `api.github.com`, before Git changes, secret synchronization or deployment. Public-domain checks were also unavailable; no current TLS or deployment status was verified.
+- The owner completed GitHub CLI login as `alvarodgzz`. This session cannot reach `api.github.com` or write Git metadata. A token-invalid message while the API is unreachable is inconclusive; do not request another login on that evidence alone.
+- The owner's terminal created the public repository, configured `origin` and `main`, and ultimately pushed successfully after an initial HTTP 400. Local tracking recorded `3c68a92` on both `main` and `origin/main`; screenshots confirm an earlier Pages deployment. Do not recreate the repository or add the remote again.
+- Run `bash scripts/publish-github.sh` from the owner's normal terminal to publish the protected preview. The script validates, synchronizes the local password file to the repository Actions secret when present, pushes, verifies the remote SHA, preserves existing domain settings and requests deployment. This update is not yet published; wait for the new Actions run and verify the gate, rejected wrong password and correct access on the real domain.
+- The owner configured `losinsurgentes.mx` in GitHub Pages. Their terminal confirmed all four GitHub Pages A records and `www` CNAME to `alvarodgzz.github.io`, with no apex AAAA record. The latest screenshot showed successful DNS checks and TLS provisioning, not a completed certificate. Once issuance finishes, enable Enforce HTTPS and verify both apex and www. Do not restore Squarespace Defaults.
+- Google Drive is the chosen shared workspace. The created folder is [Los Insurgentes — Sitio web](https://drive.google.com/drive/folders/1mtafaa-JIJ9N9zaEBIQihOqGPx8qOzt1); it uses numbered site sections and stable photo filenames. The owner account remains owner, and the band account supplied in chat has verified editor access. See `docs/GOOGLE_DRIVE.md`. No automatic cloud-to-GitHub synchronization or direct editor-to-Drive save is connected. A designated person reviews, imports, saves and publishes.
+- Browser QA and live verification of the password gate remain required. Do not describe a future public launch as complete.
 
 ## Additional content
 

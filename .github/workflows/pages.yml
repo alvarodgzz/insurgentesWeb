@@ -45,8 +45,11 @@ jobs:
       - name: Check generated website
         run: node scripts/check.mjs
 
-      - name: Prepare public files
+      - name: Prepare password-protected preview
         run: node scripts/prepare-pages.mjs
+        env:
+          PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
+          SITE_URL: ${{ steps.pages.outputs.base_url || 'https://alvarodgzz.github.io/insurgentesWeb/' }}
 
       - name: Upload website
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'

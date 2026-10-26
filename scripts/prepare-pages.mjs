@@ -1,6 +1,7 @@
-import { copyFile, lstat, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
+import { copyFile, lstat, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { preparePrivatePages } from './private-preview.mjs';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -43,8 +44,14 @@ export async function preparePages(sourceRoot = projectRoot) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const output = await preparePages();
-    console.log(`GitHub Pages files prepared in ${output}`);
+    let password = process.env.PREVIEW_PASSWORD;
+    if (!password && !process.env.CI) {
+      try { password = (await readFile(join(projectRoot, '.env.preview-password'), 'utf8')).replace(/\r?\n$/, ''); }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
+    const launch = process.argv.includes('--public');
+    const output = launch ? await preparePages() : await preparePrivatePages(projectRoot, { password, siteUrl: process.env.SITE_URL });
+    console.log(`${launch ? 'Public website' : password ? 'Password-protected preview' : 'Holding page (no preview password configured)'} prepared in ${output}`);
   } catch (error) {
     console.error(`Could not prepare GitHub Pages: ${error.message}`);
     process.exitCode = 1;
