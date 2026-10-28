@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="theme-color" content="#000000">
+  <meta name="referrer" content="no-referrer">
   <base href="{{BASE}}">
   <title>Los Insurgentes — Próximamente</title>
   <meta name="description" content="El nuevo sitio de Los Insurgentes. Próximamente.">
@@ -17,7 +18,7 @@
   <div class="access-shell">
     <header class="access-header">
       <span>Rock desde Monterrey, N. L.</span>
-      <a class="access-header-mark" href="./">Volver a Maratón ↗</a>
+      <a class="access-header-mark" href="{{BACK_URL}}">{{BACK_LABEL}}</a>
     </header>
 
     <main class="access-main">
@@ -27,8 +28,8 @@
         <h1 id="access-title">Próximamente.</h1>
         <p class="access-intro">Estamos preparando nuestra próxima etapa.<br>Nos vemos de este lado del ruido.</p>
 
-        <form class="access-form" id="access-form" method="post" aria-labelledby="access-form-title">
-          <h2 id="access-form-title">Acceso de la banda</h2>
+        <form class="access-form" id="access-form" method="post" aria-labelledby="access-form-title" data-preview-src="{{PREVIEW}}">
+          <h2 id="access-form-title">{{ACCESS_TITLE}}</h2>
           <label for="access-password">Contraseña</label>
           <div class="access-password-wrap">
             <input id="access-password" name="password" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required disabled aria-describedby="access-status">
@@ -37,7 +38,7 @@
           <button class="access-submit" id="access-submit" type="submit" disabled><span id="access-submit-label">Entrar al sitio</span><span aria-hidden="true">↗</span></button>
           <p class="access-status" id="access-status" role="status" aria-live="polite" aria-atomic="true"></p>
         </form>
-        <noscript><p class="access-noscript">El sitio completo estará disponible pronto. Para abrir el acceso de la banda, activa JavaScript en tu navegador.</p></noscript>
+        <noscript><p class="access-noscript">Para abrir esta vista previa protegida, activa JavaScript en tu navegador.</p></noscript>
       </section>
 
       <div class="access-art" aria-hidden="true">

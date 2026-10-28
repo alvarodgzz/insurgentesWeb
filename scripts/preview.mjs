@@ -27,8 +27,8 @@ const server = createServer(async (request,response) => {
     let path = decodeURIComponent(url.pathname).replace(/^\/+/, '');
     if (!path) path = 'index.html';
     if (path.endsWith('/')) path += 'index.html';
-    if (!['index.html', 'preview.json', 'robots.txt'].includes(path) && !allowed.has(path.split('/')[0])) throw new Error('Not found');
-    if (!protectedPreview && ['preview.json', 'robots.txt'].includes(path)) throw new Error('Not found');
+    if (!['index.html', 'preview.json', 'maraton-preview.json', 'robots.txt'].includes(path) && !allowed.has(path.split('/')[0])) throw new Error('Not found');
+    if (!protectedPreview && ['preview.json', 'maraton-preview.json', 'robots.txt'].includes(path)) throw new Error('Not found');
     const target = await realpath(resolve(serveRoot,path));
     const local = relative(serveRoot,target);
     if (local === '..' || local.startsWith(`..${sep}`) || local.split(sep).some(part => part.startsWith('.'))) throw new Error('Not found');

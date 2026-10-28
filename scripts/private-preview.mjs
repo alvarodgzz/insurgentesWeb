@@ -1,8 +1,6 @@
 import { webcrypto } from 'node:crypto';
 import { copyFile, lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, posix, resolve } from 'node:path';
-import { renderAnalytics } from '../js/analytics-render.mjs';
-import { readAnalytics } from './analytics-config.mjs';
 import { renderNewsletter } from '../js/newsletter-render.mjs';
 import { readNewsletter } from './newsletter-config.mjs';
 
@@ -12,8 +10,9 @@ export const GATE_FILES = Object.freeze([
   'assets/fonts/Pragmatica-Light.ttf', 'assets/fonts/VoskaRound.otf',
   'images/favicon-32.png',
   'js/analytics.js', 'css/stats.css', 'admin/estadisticas/index.html',
-  'css/maraton.css', 'js/maraton.js',
 ]);
+// These are bundled inside the encrypted signup preview, never copied publicly.
+export const MARATON_FILES = Object.freeze(['css/maraton.css', 'js/maraton.js']);
 const iterations = 600000;
 const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
 const external = value => /^(?:https:|data:|#)/i.test(value);
@@ -38,7 +37,7 @@ async function replaceAsync(text, pattern, transform) {
 
 // The preview has no plaintext asset URLs: everything needed for the page is
 // inside the authenticated ciphertext, including full-size gallery images.
-export async function makeSelfContained(root) {
+export async function makeSelfContained(root, sourceHtml) {
   const cache = new Map();
   const assetPath = (value, from = 'index.html') => {
     if (/^[a-z][\w+.-]*:|^\/\/|[%\\\0]/i.test(value)) throw new Error('Unsafe preview asset URL');
@@ -57,7 +56,8 @@ export async function makeSelfContained(root) {
     const value = (await dataURL((a ?? b ?? c).trim(), from)).replace(/'/g, '%27').replace(/"/g, '%22');
     return `url('${value}')`;
   });
-  let html = (await safeRead(root, 'index.html')).toString('utf8');
+  let html = sourceHtml === undefined ? (await safeRead(root, 'index.html')).toString('utf8') : sourceHtml;
+  if (typeof html !== 'string') throw new Error('Preview content must be HTML text');
   html = await replaceAsync(html, /<link\b[^>]*>/gi, async tag => {
     const href = /\bhref=["']([^"']+)["']/i.exec(tag)?.[1];
     if (!href || external(href)) return tag;
@@ -105,13 +105,13 @@ export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'htt
   await mkdir(output, { recursive: true });
   const base = new URL(siteUrl).pathname.replace(/\/?$/, '/');
   if (!/^\/[a-zA-Z0-9/_-]*$/.test(base)) throw new Error('Invalid preview base path');
-  const gate = (await safeRead(root, 'templates/access.html')).toString('utf8')
-    .replaceAll('{{BASE}}', base)
-    .replaceAll('{{TELEMETRY}}', '');
-  const landing = (await safeRead(root, 'templates/maraton.html')).toString('utf8')
-    .replaceAll('{{BASE}}', base)
-    .replaceAll('{{TELEMETRY}}', renderAnalytics(await readAnalytics(root), 'site'))
-    .replaceAll('{{NEWSLETTER}}', renderNewsletter(await readNewsletter(root)));
+  const gateTemplate = (await safeRead(root, 'templates/access.html')).toString('utf8');
+  const gate = (payload, title, backUrl, backLabel) => gateTemplate
+    .replaceAll('{{BASE}}', base).replaceAll('{{TELEMETRY}}', '')
+    .replaceAll('{{PREVIEW}}', payload).replaceAll('{{ACCESS_TITLE}}', title)
+    .replaceAll('{{BACK_URL}}', backUrl).replaceAll('{{BACK_LABEL}}', backLabel);
+  const signupGate = gate('maraton-preview.json', 'Acceso a Maratón', 'banda/', 'Acceso de la banda ↗');
+  const bandGate = gate('preview.json', 'Acceso de la banda', './', 'Volver al inicio ↗');
   for (const path of GATE_FILES) {
     // Read first to refuse symlinks and nested traversal before copying.
     await safeRead(root, path);
@@ -120,16 +120,20 @@ export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'htt
     await copyFile(join(root, path), target);
   }
   await mkdir(join(output, 'banda'), { recursive: true });
-  await writeFile(join(output, 'banda/index.html'), gate);
-  await writeFile(join(output, 'index.html'), landing);
-  await writeFile(join(output, '404.html'), landing);
+  await writeFile(join(output, 'banda/index.html'), bandGate);
+  await writeFile(join(output, 'index.html'), signupGate);
+  await writeFile(join(output, '404.html'), signupGate);
   await writeFile(join(output, '.nojekyll'), '');
   await writeFile(join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
   if (password) {
-    const envelope = await encryptPreview(await makeSelfContained(root), password);
-    const payload = JSON.stringify(envelope);
-    if (Buffer.byteLength(payload) > 80 * 1024 * 1024) throw new Error('Encrypted preview exceeds 80 MiB');
-    await writeFile(join(output, 'preview.json'), payload);
+    const landing = (await safeRead(root, 'templates/maraton.html')).toString('utf8')
+      .replaceAll('{{BASE}}', base).replaceAll('{{TELEMETRY}}', '')
+      .replaceAll('{{NEWSLETTER}}', renderNewsletter(await readNewsletter(root)));
+    for (const [name, html] of [['preview.json', await makeSelfContained(root)], ['maraton-preview.json', await makeSelfContained(root, landing)]]) {
+      const payload = JSON.stringify(await encryptPreview(html, password));
+      if (Buffer.byteLength(payload) > 80 * 1024 * 1024) throw new Error('Encrypted preview exceeds 80 MiB');
+      await writeFile(join(output, name), payload);
+    }
   }
   return output;
 }

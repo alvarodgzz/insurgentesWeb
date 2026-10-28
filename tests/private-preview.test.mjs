@@ -6,10 +6,11 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
-import { encryptPreview, makeSelfContained, preparePrivatePages, GATE_FILES } from '../scripts/private-preview.mjs';
+import { encryptPreview, makeSelfContained, preparePrivatePages, GATE_FILES, MARATON_FILES } from '../scripts/private-preview.mjs';
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url));
 const syntheticPassword = 'Synthetic preview password 7!';
+const syntheticFormAction = 'https://band.sibforms.com/serve/private_signup_fixture==';
 const fixtureHtml = `<!doctype html><html lang="es"><head>
 <link rel="stylesheet" href="css/fixture.css"><link rel="icon" href="images/fixture.png">
 </head><body><h1>Contenido privado de prueba</h1>
@@ -21,7 +22,7 @@ const fixtureHtml = `<!doctype html><html lang="es"><head>
 async function fixture(t) {
   const root = await mkdtemp(join(tmpdir(), 'insurgentes-private-preview-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const path of [...GATE_FILES, 'templates/access.html', 'templates/maraton.html']) {
+  for (const path of [...GATE_FILES, ...MARATON_FILES, 'templates/access.html', 'templates/maraton.html']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(join(projectRoot, path), join(root, path));
   }
@@ -34,6 +35,7 @@ async function fixture(t) {
     'images/fixture.png': Buffer.from('fixture icon bytes'),
     'js/fixture.js': 'window.fixtureLoaded = true;',
     'content/site.json': '{"private":"band content"}',
+    'content/newsletter.json': JSON.stringify({ version: 1, enabled: true, provider: 'brevo', formUrl: 'https://band.sibforms.com/v2/serve/hosted_signup_fixture==', submitUrl: syntheticFormAction }),
     'admin/index.html': '<h1>Private editor</h1>',
     'templates/page.html': '<h1>Private page template</h1>',
     '.env.fixture': 'DO_NOT_PUBLISH_THIS_FILE',
@@ -98,44 +100,69 @@ test('private preview bundles photos, fonts, styles, icons and classic scripts w
   assert.doesNotMatch(html, /<script[^>]+src=|<link[^>]+rel=["']stylesheet/);
 });
 
-test('private Pages publishes Maratón and a separate band gate without exposing the encrypted site assets', async (t) => {
+test('private Pages gates Maratón and band content in separate encrypted payloads without publishing either page', async (t) => {
   const root = await fixture(t);
   const expectedHtml = await makeSelfContained(root);
   const destination = await preparePrivatePages(root, { password: syntheticPassword });
   assert.equal(destination, join(root, '_site'));
   const paths = await outputFiles(destination);
-  assert.deepEqual(paths, [...GATE_FILES, 'index.html', 'banda/index.html', '404.html', 'robots.txt', '.nojekyll', 'preview.json'].sort());
+  assert.deepEqual(paths, [...GATE_FILES, 'index.html', 'banda/index.html', '404.html', 'robots.txt', '.nojekyll', 'preview.json', 'maraton-preview.json'].sort());
   const envelope = JSON.parse(await readFile(join(destination, 'preview.json'), 'utf8'));
   assert.equal(await decrypt(envelope, syntheticPassword), expectedHtml);
+  const signupEnvelope = JSON.parse(await readFile(join(destination, 'maraton-preview.json'), 'utf8'));
+  const signup = await decrypt(signupEnvelope, syntheticPassword);
+  assert.match(signup, /data-private-preview="true"/);
+  assert.match(signup, /id="signup-title"/);
+  assert.ok(signup.includes(`action="${syntheticFormAction}"`));
+  assert.match(signup, /name="html_type" value="simple"/);
+  assert.match(signup, /name="locale" value="es"/);
+  assert.match(signup, /response\.ok && result && result\.success === true/);
+  assert.match(signup, /name="referrer" content="no-referrer"/);
+  assert.doesNotMatch(signup, /analytics-config|cloud\.umami\.is|<script[^>]+src=|<link[^>]+rel=["']stylesheet/);
+  assert.notEqual(envelope.salt, signupEnvelope.salt);
+  assert.notEqual(envelope.iv, signupEnvelope.iv);
+  await assert.rejects(decrypt(signupEnvelope, 'Incorrect synthetic signup password'));
   for (const path of paths) {
     const bytes = await readFile(join(destination, path));
     assert.equal(bytes.includes(Buffer.from(syntheticPassword)), false, path);
     assert.equal(bytes.includes(Buffer.from('Contenido privado de prueba')), false, path);
     assert.equal(bytes.includes(Buffer.from('DO_NOT_PUBLISH_THIS_FILE')), false, path);
+    assert.equal(bytes.includes(Buffer.from(syntheticFormAction)), false, path);
+    assert.equal(bytes.includes(Buffer.from('id="EMAIL"')), false, path);
+    assert.equal(bytes.includes(Buffer.from('Entérate primero de Maratón')), false, path);
   }
   const robots = await readFile(join(destination, 'robots.txt'), 'utf8');
   assert.match(robots, /User-agent:\s*\*/);
   assert.match(robots, /Disallow:\s*\//);
   assert.match(await readFile(join(destination, 'index.html'), 'utf8'), /noindex/);
-  const landing = await readFile(join(destination, 'index.html'), 'utf8');
+  const landingGate = await readFile(join(destination, 'index.html'), 'utf8');
   const bandGate = await readFile(join(destination, 'banda/index.html'), 'utf8');
-  assert.match(landing, /Maratón/);
-  assert.match(landing, /href="banda\/"/);
-  assert.doesNotMatch(landing, /id="access-password"/);
+  assert.match(landingGate, /id="access-password"/);
+  assert.match(landingGate, /data-preview-src="maraton-preview\.json"/);
+  assert.match(landingGate, /href="banda\/"/);
+  assert.doesNotMatch(landingGate, /data-newsletter-form|id="analytics-config"|sibforms\.com/);
   assert.match(bandGate, /id="access-password"/);
+  assert.match(bandGate, /data-preview-src="preview\.json"/);
   assert.doesNotMatch(bandGate, /id="analytics-config"/);
   await assert.rejects(readFile(join(destination, 'admin/index.html')));
   await assert.rejects(readFile(join(destination, 'content/site.json')));
   await assert.rejects(readFile(join(destination, 'content/photos/fixture.jpg')));
+  await assert.rejects(readFile(join(destination, 'css/maraton.css')));
+  await assert.rejects(readFile(join(destination, 'js/maraton.js')));
   assert.equal(await readFile(join(destination, '404.html'), 'utf8'), await readFile(join(destination, 'index.html'), 'utf8'));
 });
 
-test('missing preview password preserves Maratón and band access but removes encrypted and raw band content', async (t) => {
+test('missing preview password preserves both access gates and removes both encrypted payloads and raw content', async (t) => {
   const root = await fixture(t);
   await preparePrivatePages(root, { password: syntheticPassword });
   await preparePrivatePages(root, {});
   const paths = await outputFiles(join(root, '_site'));
   assert.deepEqual(paths, [...GATE_FILES, 'index.html', 'banda/index.html', '404.html', 'robots.txt', '.nojekyll'].sort());
+  for (const path of ['index.html', '404.html', 'banda/index.html']) {
+    const html = await readFile(join(root, '_site', path), 'utf8');
+    assert.match(html, /id="access-password"/);
+    assert.doesNotMatch(html, /data-newsletter-form|id="EMAIL"|sibforms\.com/);
+  }
 });
 
 test('Maratón and band access resolve assets and encrypted preview under a GitHub Pages subpath', async t => {
@@ -147,7 +174,10 @@ test('Maratón and band access resolve assets and encrypted preview under a GitH
     const base = /<base\s+href="([^"]+)"/.exec(html)?.[1];
     assert.equal(base, '/insurgentesWeb/', path);
     assert.equal(new URL('preview.json', new URL(base, siteUrl)).href, `${siteUrl}preview.json`);
-    assert.doesNotMatch(html, /\{\{(?:BASE|TELEMETRY|NEWSLETTER)\}\}/);
+    const payload = /data-preview-src="([^"]+)"/.exec(html)?.[1];
+    assert.equal(payload, path === 'banda/index.html' ? 'preview.json' : 'maraton-preview.json');
+    assert.equal(new URL(payload, new URL(base, siteUrl)).href, `${siteUrl}${payload}`);
+    assert.doesNotMatch(html, /\{\{[^}]+\}\}/);
   }
   const landing = await readFile(join(output, 'index.html'), 'utf8');
   assert.equal(new URL(/href="(banda\/)"/.exec(landing)[1], siteUrl).href, `${siteUrl}banda/`);
@@ -175,12 +205,14 @@ test('private Pages output refuses symbolic links among public gate resources', 
   await assert.rejects(preparePrivatePages(root, {}));
 });
 
-test('access screen handles unavailable and incorrect passwords, then decrypts the preview without sending the password', async () => {
+test('each access screen handles unavailable and incorrect passwords and decrypts only its selected payload without sending passwords', async () => {
+  for (const previewSrc of [undefined, 'maraton-preview.json']) {
   const elements = new Map();
   for (const id of ['access-form', 'access-password', 'access-reveal', 'access-submit', 'access-submit-label', 'access-status']) {
     const attributes = new Map();
     elements.set(id, {
       value: '', type: id === 'access-password' ? 'password' : '', disabled: true,
+      dataset: previewSrc ? { previewSrc } : {},
       textContent: '', listeners: new Map(),
       addEventListener(event, listener) { this.listeners.set(event, listener); },
       setAttribute(name, value) { attributes.set(name, value); },
@@ -205,8 +237,9 @@ test('access screen handles unavailable and incorrect passwords, then decrypts t
     URL, TextEncoder, TextDecoder, Uint8Array, atob,
     fetch: async (url, options) => {
       requests += 1;
-      assert.equal(String(url), 'https://preview.example.test/preview.json');
+      assert.equal(String(url), `https://preview.example.test/${previewSrc ?? 'preview.json'}`);
       assert.equal(options.credentials, 'omit');
+      assert.equal(options.referrerPolicy, 'no-referrer');
       assert.equal(options.body, undefined);
       assert.doesNotMatch(String(url), /password/i);
       return available ? new Response(JSON.stringify(envelope)) : new Response('', { status: 404 });
@@ -244,6 +277,33 @@ test('access screen handles unavailable and incorrect passwords, then decrypts t
   await enter(syntheticPassword);
   assert.equal(written, html);
   assert.equal(requests, 2, 'a validated encrypted payload can be reused when correcting the password');
+  }
+});
+
+test('access screen rejects unexpected payload destinations before any network request', async () => {
+  for (const previewSrc of ['https://untrusted.example/preview.json', '/preview.json', '../preview.json', 'preview.json?private=value', 'maraton-preview.json#private']) {
+    const elements = new Map();
+    for (const id of ['access-form', 'access-password', 'access-reveal', 'access-submit', 'access-submit-label', 'access-status']) {
+      elements.set(id, {
+        value: id === 'access-password' ? syntheticPassword : '', dataset: { previewSrc },
+        disabled: true, listeners: new Map(), textContent: '',
+        addEventListener(event, listener) { this.listeners.set(event, listener); },
+        setAttribute() {}, removeAttribute() {}, reportValidity() { return true; }, focus() {},
+      });
+    }
+    await runInNewContext(await readFile(join(projectRoot, 'js/access.js'), 'utf8'), {
+      document: {
+        baseURI: 'https://preview.example.test/', getElementById: id => elements.get(id),
+        open() { assert.fail('Invalid destination must not open a decrypted page'); },
+      },
+      window: { isSecureContext: true, crypto: webcrypto }, crypto: webcrypto,
+      URL, TextEncoder, TextDecoder, Uint8Array, atob,
+      fetch() { assert.fail('Invalid destination must never be fetched'); },
+    });
+    await elements.get('access-form').listeners.get('submit')({ preventDefault() {} });
+    assert.equal(elements.get('access-password').value, '');
+    assert.match(elements.get('access-status').textContent, /No pudimos abrir/);
+  }
 });
 
 test('access screen blocks password entry and fetches when the connection cannot support secure decryption', async () => {

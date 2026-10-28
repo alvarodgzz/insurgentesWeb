@@ -7,6 +7,7 @@
   const submit = document.getElementById('access-submit');
   const submitLabel = document.getElementById('access-submit-label');
   const status = document.getElementById('access-status');
+  const previewPath = form.dataset?.previewSrc || 'preview.json';
   const maxPayloadBytes = 80 * 1024 * 1024;
   let envelope;
   let busy = false;
@@ -36,7 +37,8 @@
 
   async function readPreview() {
     if (envelope) return envelope;
-    const response = await fetch(new URL('preview.json', document.baseURI), { cache: 'no-store', credentials: 'omit' });
+    if (!['preview.json', 'maraton-preview.json'].includes(previewPath)) throw new Error('Invalid preview destination');
+    const response = await fetch(new URL(previewPath, document.baseURI), { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' });
     if (response.status === 404) {
       const error = new Error('Unavailable');
       error.unavailable = true;
