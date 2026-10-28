@@ -60,7 +60,10 @@ test('configured newsletter submits only the expected native fields to Brevo wit
   assert.equal(htmlType.attrs.value, 'simple');
   assert.match(html, /<button\b[^>]*type="submit"[^>]*>[\s\S]*?Quiero enterarme/);
   assert.match(html, /recibir[\s\S]*?Maratón/i);
-  assert.match(html, new RegExp(`<a\\b[^>]*href="${formUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+  assert.match(formTag, /data-newsletter-form/);
+  assert.match(html, /role="status"[^>]*aria-live="polite"[^>]*data-newsletter-status/);
+  assert.match(html, /<noscript>/);
+  assert.doesNotMatch(html, /Abrir el formulario alternativo|data-newsletter-link|newsletter-provider-note|<a\b/);
   assert.doesNotMatch(html, /<iframe|<script|<link|api[_-]?key|password|localStorage|sessionStorage|fetch\(|sendBeacon\(|gracias por registrarte|suscripción confirmada|formnovalidate/i);
 });
 
@@ -72,7 +75,7 @@ test('newsletter accepts Brevo versioned form URLs with base64 padding without c
     const html = renderNewsletter(config);
     const action = attributes(/<form\b[^>]*>/.exec(html)[0]).action;
     assert.equal(action, url.replace('/v2/serve/', '/serve/'));
-    assert.match(html, new RegExp(`<a\\b[^>]*href="${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+    assert.doesNotMatch(html, /data-newsletter-link|<a\b/);
     assert.equal(new URL(action).pathname.split('/').at(-1), path.split('/').at(-1), 'normalization must preserve the padded token');
   }
   for (const path of ['/v3/serve/token', '/v2/serve/token===', '/v2/serve/to=ken', '/v2/serve/token/extra']) {
@@ -89,14 +92,15 @@ test('native form normalization cannot turn a query or impostor host into a trus
   ]) assert.throws(() => renderNewsletter({ ...configured, formUrl: url }));
 });
 
-test('Simple HTML uses its supplied POST token while preserving the original hosted fallback', () => {
+test('Simple HTML uses its supplied POST token and retains the hosted URL only in configuration', () => {
   const hosted = 'https://band.sibforms.com/v2/serve/hosted_fixture==';
   const submitUrl = 'https://band.sibforms.com/serve/simple_fixture==';
   const config = { ...configured, formUrl: hosted, submitUrl };
   assert.deepEqual(validateNewsletter(config), config);
   const html = renderNewsletter(config);
   assert.equal(attributes(/<form\b[^>]*>/.exec(html)[0]).action, submitUrl);
-  assert.ok(html.includes(`href="${hosted}"`));
+  assert.ok(!html.includes(`href="${hosted}"`));
+  assert.doesNotMatch(html, /Abrir el formulario alternativo|<a\b/);
   assert.ok(!html.includes(`action="${hosted}"`));
   assert.match(html, /name="html_type" value="simple"/);
   assert.doesNotMatch(html, /<script|<iframe|fetch\(/);

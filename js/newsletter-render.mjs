@@ -26,13 +26,12 @@ export function renderNewsletter(value = DEFAULT_NEWSLETTER) {
   if (!config.enabled) {
     return `<div class="newsletter-pending"><label class="newsletter-label" for="newsletter-email">Correo electrónico</label><input class="newsletter-email" id="newsletter-email" type="email" placeholder="tu@correo.com" autocomplete="email" disabled aria-describedby="newsletter-status"><button class="newsletter-button" type="button" disabled>Avísenme de Maratón <span aria-hidden="true">↗</span></button><p class="newsletter-status" id="newsletter-status" role="status">El registro abrirá pronto.</p><p class="newsletter-note">Pronto podrás apuntarte para recibir las novedades de Maratón.</p></div>`;
   }
-  const url = escape(config.formUrl);
-  // Simple HTML can have its own POST token. Keep the original hosted link
-  // for fallback, and preserve the supplied submit token when one is present.
+  // Simple HTML can have its own POST token. Retain the hosted URL in the
+  // configuration for maintenance, without exposing a second signup control.
   const destination = new URL(config.submitUrl ?? config.formUrl);
   destination.pathname = destination.pathname.replace(/^\/v2\/serve\//, '/serve/');
   const action = escape(destination.href);
-  return `<form class="newsletter-form" id="sib-form" method="post" action="${action}" accept-charset="UTF-8" aria-labelledby="newsletter-title">
+  return `<form class="newsletter-form" id="sib-form" method="post" action="${action}" accept-charset="UTF-8" aria-labelledby="newsletter-title" data-newsletter-form>
     <h3 id="newsletter-title">Entérate primero de Maratón.</h3>
     <p class="newsletter-intro">Música nueva y noticias de Los Insurgentes, directo a tu correo.</p>
     <label class="newsletter-label" for="EMAIL">Correo electrónico</label>
@@ -42,6 +41,7 @@ export function renderNewsletter(value = DEFAULT_NEWSLETTER) {
     <input type="hidden" name="locale" value="es">
     <input type="hidden" name="html_type" value="simple">
     <button class="newsletter-button" type="submit">Quiero enterarme <span aria-hidden="true">↗</span></button>
-  </form>
-  <p class="newsletter-note newsletter-provider-note">Brevo procesa tu registro. <a href="${url}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer" data-newsletter-link>Abrir el formulario alternativo</a>.</p>`;
+    <p class="newsletter-status" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" data-newsletter-status hidden></p>
+    <noscript><p class="newsletter-note">Al enviar, Brevo abrirá el resultado de tu registro.</p></noscript>
+  </form>`;
 }

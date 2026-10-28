@@ -1,6 +1,6 @@
 # Maratón: diseños de formulario y correo
 
-El formulario de la landing ya está diseñado en el proyecto y cotejado con la exportación Simple HTML que proporcionó el propietario. Usa el action actualizado y html_type=simple, sin iframe ni SDK remoto; falta verificar la respuesta real. Los tres correos están preparados localmente; su instalación y entrega en Brevo no se han verificado. El agente no ha editado la cuenta ni enviado correos. El [plan completo](EMAIL_PLAN.md) reúne investigación, límites y pruebas pendientes.
+El formulario de la landing está diseñado y cotejado con Simple HTML: action actualizado y html_type=simple, sin iframe ni SDK remoto. El propietario mostró una respuesta JSON real de éxito; ahora hay estados locales de progreso y resultado, sin control alternativo de registro. El nuevo flujo en navegador y la entrega de bienvenida siguen sin verificar. Los tres correos son diseños locales cuya instalación no se ha comprobado. El agente no ha editado la cuenta ni enviado correos. El [plan completo](EMAIL_PLAN.md) reúne los límites y pruebas pendientes.
 
 ## Elección actual: confirmación simple
 
@@ -8,7 +8,7 @@ El propietario eligió **Simple confirmation** el 27 de octubre. Abrir **Default
 
 ## Borrador DOI conservado, sin uso actual
 
-Usa el diseño completo de [email-confirmacion-maraton.html](email-confirmacion-maraton.html).
+Solo si el propietario cambia de decisión en el futuro, existe [email-confirmacion-maraton.html](email-confirmacion-maraton.html). No debe seleccionarse en el flujo actual.
 
 - **Nombre interno:** Maratón — Confirmar registro.
 - **Asunto:** Confirma tu registro a Maratón.
@@ -16,7 +16,7 @@ Usa el diseño completo de [email-confirmacion-maraton.html](email-confirmacion-
 - **Nombre del remitente:** Los Insurgentes.
 - **Remitente:** dirección del dominio de la banda por definir y autenticar; el Gmail puede servir para respuestas. Brevo puede sustituir remitentes gratuitos o no autenticados; consulta el plan enlazado.
 
-En **Marketing → Templates**, crea una plantilla e importa o pega el HTML. Conserva `{{ doubleoptin }}`: Brevo lo sustituye por el enlace de confirmación individual. Guarda y selecciona esta plantilla en el formulario, en **Settings → Double confirmation email**. La etiqueta `optin` es opcional; [la guía oficial](https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-custom-double-opt-in-DOI-email-template-for-a-sign-up-form-created-in-Brevo) explica la selección. La [referencia de variables](https://help.brevo.com/hc/en-us/articles/4402386448530--Manual-Personalize-your-messages-with-dynamic-content-Brevo-Template-Language) documenta el enlace.
+Ese borrador conserva `{{ doubleoptin }}` para el enlace individual y pertenece únicamente a Double confirmation, sin uso actual. [Guía oficial DOI](https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-custom-double-opt-in-DOI-email-template-for-a-sign-up-form-created-in-Brevo) y [variables](https://help.brevo.com/hc/en-us/articles/4402386448530--Manual-Personalize-your-messages-with-dynamic-content-Brevo-Template-Language).
 
 El logo depende de los recursos públicos de la web. Falta una prueba de envío y visualización en un cliente de correo.
 
@@ -28,10 +28,10 @@ Para los anuncios queda [email-campana-maraton.html](email-campana-maraton.html)
 
 ## Formulario ya diseñado
 
-La landing muestra el título **Entérate primero de Maratón**, correo obligatorio con ejemplo `tu@correo.com` y el botón **Quiero enterarme**, usando los colores de la banda. El texto visible explica la finalidad y la posibilidad de baja. El formulario envía `EMAIL`, el campo antispam suministrado y el idioma español al destino de Brevo; la respuesta la sirve el proveedor, sin un éxito simulado en la landing.
+La landing muestra **Entérate primero de Maratón**, correo obligatorio y **Quiero enterarme**, con los colores de la banda. Solo hay un envío, sin enlace alternativo. Se envían `EMAIL`, antispam, `locale=es` y `html_type=simple`. Con JavaScript, el resultado aparece en la página y el éxito requiere HTTP correcto y JSON `success === true`; sin JavaScript se abre la respuesta nativa del proveedor. No se almacena el correo ni se manda a estadísticas.
 
 No se agregó una casilla de consentimiento sin correspondencia en el HTML recibido. El texto visible no prueba que Brevo almacene el consentimiento. Ese registro, la lista **Maratón**, remitente, respuestas y la configuración de confirmación simple siguen pendientes de revisar en la cuenta.
 
-Al configurar la confirmación simple en Brevo, selecciona la bienvenida y comprueba una inscripción de prueba. El texto sugerido **Ya estás en la lista. Gracias por sumarte a Maratón.** corresponde a los mensajes del proveedor; su propio aviso indica que los del paso 5 y las páginas de confirmación alojadas que requieren JavaScript no funcionan en Simple HTML. No se promete mostrarlos en nuestra landing ni se simula éxito local.
+El aviso de Brevo excluye sus páginas alojadas y mensajes del paso 5 que necesitan JavaScript en Simple HTML. Nuestra mejora presenta mensajes locales basados en la respuesta: progreso, éxito comprobable, rechazo y resultado incierto por problemas de lectura/conexión. No afirma que llegó la bienvenida ni reenvía automáticamente si la respuesta no puede comprobarse.
 
-El diseño local ya está implementado. Los ajustes de lista y correo pertenecen a Brevo; si añades CAPTCHA u otros campos obligatorios allí, habrá que actualizar la integración con su HTML completo nuevo. La publicación y una inscripción real siguen sin verificar.
+Los ajustes de lista y correo pertenecen a Brevo; si se añaden CAPTCHA u otros campos obligatorios, hay que renovar la integración desde el export. La captura del propietario acredita un éxito del proveedor; publicación exacta, CORS del nuevo envío, lista y bienvenida permanecen pendientes de comprobar.
