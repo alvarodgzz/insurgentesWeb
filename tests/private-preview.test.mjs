@@ -21,7 +21,7 @@ const fixtureHtml = `<!doctype html><html lang="es"><head>
 async function fixture(t) {
   const root = await mkdtemp(join(tmpdir(), 'insurgentes-private-preview-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const path of [...GATE_FILES, 'templates/access.html']) {
+  for (const path of [...GATE_FILES, 'templates/access.html', 'templates/maraton.html']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(join(projectRoot, path), join(root, path));
   }
@@ -98,13 +98,13 @@ test('private preview bundles photos, fonts, styles, icons and classic scripts w
   assert.doesNotMatch(html, /<script[^>]+src=|<link[^>]+rel=["']stylesheet/);
 });
 
-test('private Pages output exposes only the access screen and encrypted preview, removing stale files', async (t) => {
+test('private Pages publishes Maratón and a separate band gate without exposing the encrypted site assets', async (t) => {
   const root = await fixture(t);
   const expectedHtml = await makeSelfContained(root);
   const destination = await preparePrivatePages(root, { password: syntheticPassword });
   assert.equal(destination, join(root, '_site'));
   const paths = await outputFiles(destination);
-  assert.deepEqual(paths, [...GATE_FILES, 'index.html', '404.html', 'robots.txt', '.nojekyll', 'preview.json'].sort());
+  assert.deepEqual(paths, [...GATE_FILES, 'index.html', 'banda/index.html', '404.html', 'robots.txt', '.nojekyll', 'preview.json'].sort());
   const envelope = JSON.parse(await readFile(join(destination, 'preview.json'), 'utf8'));
   assert.equal(await decrypt(envelope, syntheticPassword), expectedHtml);
   for (const path of paths) {
@@ -117,15 +117,40 @@ test('private Pages output exposes only the access screen and encrypted preview,
   assert.match(robots, /User-agent:\s*\*/);
   assert.match(robots, /Disallow:\s*\//);
   assert.match(await readFile(join(destination, 'index.html'), 'utf8'), /noindex/);
+  const landing = await readFile(join(destination, 'index.html'), 'utf8');
+  const bandGate = await readFile(join(destination, 'banda/index.html'), 'utf8');
+  assert.match(landing, /Maratón/);
+  assert.match(landing, /href="banda\/"/);
+  assert.doesNotMatch(landing, /id="access-password"/);
+  assert.match(bandGate, /id="access-password"/);
+  assert.doesNotMatch(bandGate, /id="analytics-config"/);
+  await assert.rejects(readFile(join(destination, 'admin/index.html')));
+  await assert.rejects(readFile(join(destination, 'content/site.json')));
+  await assert.rejects(readFile(join(destination, 'content/photos/fixture.jpg')));
   assert.equal(await readFile(join(destination, '404.html'), 'utf8'), await readFile(join(destination, 'index.html'), 'utf8'));
 });
 
-test('missing preview password publishes a closed holding page without encrypted or raw band content', async (t) => {
+test('missing preview password preserves Maratón and band access but removes encrypted and raw band content', async (t) => {
   const root = await fixture(t);
   await preparePrivatePages(root, { password: syntheticPassword });
   await preparePrivatePages(root, {});
   const paths = await outputFiles(join(root, '_site'));
-  assert.deepEqual(paths, [...GATE_FILES, 'index.html', '404.html', 'robots.txt', '.nojekyll'].sort());
+  assert.deepEqual(paths, [...GATE_FILES, 'index.html', 'banda/index.html', '404.html', 'robots.txt', '.nojekyll'].sort());
+});
+
+test('Maratón and band access resolve assets and encrypted preview under a GitHub Pages subpath', async t => {
+  const root = await fixture(t);
+  const siteUrl = 'https://example.github.io/insurgentesWeb/';
+  const output = await preparePrivatePages(root, { siteUrl });
+  for (const path of ['index.html', 'banda/index.html', '404.html']) {
+    const html = await readFile(join(output, path), 'utf8');
+    const base = /<base\s+href="([^"]+)"/.exec(html)?.[1];
+    assert.equal(base, '/insurgentesWeb/', path);
+    assert.equal(new URL('preview.json', new URL(base, siteUrl)).href, `${siteUrl}preview.json`);
+    assert.doesNotMatch(html, /\{\{(?:BASE|TELEMETRY|NEWSLETTER)\}\}/);
+  }
+  const landing = await readFile(join(output, 'index.html'), 'utf8');
+  assert.equal(new URL(/href="(banda\/)"/.exec(landing)[1], siteUrl).href, `${siteUrl}banda/`);
 });
 
 test('private preview rejects file and directory symlinks and paths outside the source root', async (t) => {

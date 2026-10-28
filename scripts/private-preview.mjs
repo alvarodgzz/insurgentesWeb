@@ -3,6 +3,8 @@ import { copyFile, lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promise
 import { dirname, extname, join, posix, resolve } from 'node:path';
 import { renderAnalytics } from '../js/analytics-render.mjs';
 import { readAnalytics } from './analytics-config.mjs';
+import { renderNewsletter } from '../js/newsletter-render.mjs';
+import { readNewsletter } from './newsletter-config.mjs';
 
 export const GATE_FILES = Object.freeze([
   'css/access.css', 'js/access.js',
@@ -10,6 +12,7 @@ export const GATE_FILES = Object.freeze([
   'assets/fonts/Pragmatica-Light.ttf', 'assets/fonts/VoskaRound.otf',
   'images/favicon-32.png',
   'js/analytics.js', 'css/stats.css', 'admin/estadisticas/index.html',
+  'css/maraton.css', 'js/maraton.js',
 ]);
 const iterations = 600000;
 const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
@@ -104,7 +107,11 @@ export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'htt
   if (!/^\/[a-zA-Z0-9/_-]*$/.test(base)) throw new Error('Invalid preview base path');
   const gate = (await safeRead(root, 'templates/access.html')).toString('utf8')
     .replaceAll('{{BASE}}', base)
-    .replaceAll('{{TELEMETRY}}', renderAnalytics(await readAnalytics(root), 'gate'));
+    .replaceAll('{{TELEMETRY}}', '');
+  const landing = (await safeRead(root, 'templates/maraton.html')).toString('utf8')
+    .replaceAll('{{BASE}}', base)
+    .replaceAll('{{TELEMETRY}}', renderAnalytics(await readAnalytics(root), 'site'))
+    .replaceAll('{{NEWSLETTER}}', renderNewsletter(await readNewsletter(root)));
   for (const path of GATE_FILES) {
     // Read first to refuse symlinks and nested traversal before copying.
     await safeRead(root, path);
@@ -112,8 +119,10 @@ export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'htt
     await mkdir(dirname(target), { recursive: true });
     await copyFile(join(root, path), target);
   }
-  await writeFile(join(output, 'index.html'), gate);
-  await writeFile(join(output, '404.html'), gate);
+  await mkdir(join(output, 'banda'), { recursive: true });
+  await writeFile(join(output, 'banda/index.html'), gate);
+  await writeFile(join(output, 'index.html'), landing);
+  await writeFile(join(output, '404.html'), landing);
   await writeFile(join(output, '.nojekyll'), '');
   await writeFile(join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
   if (password) {

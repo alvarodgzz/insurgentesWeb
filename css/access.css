@@ -13,6 +13,7 @@ button:disabled{cursor:wait}
 .access-header,.access-footer{display:flex;justify-content:space-between;gap:18px;font-size:11px;line-height:1.5;letter-spacing:.16em;text-transform:uppercase}
 .access-header{position:relative;z-index:1;padding-bottom:23px;border-bottom:1px solid var(--access-carbon)}
 .access-header-mark{color:var(--access-orange)}
+.access-header a,.access-footer a{text-decoration:none}.access-header a:hover,.access-footer a:hover{color:var(--access-orange)}
 .access-main{flex:1;display:grid;grid-template-columns:1fr 1.06fr;align-items:center;position:relative;padding:clamp(38px,6vh,80px) 0 30px;isolation:isolate}
 .access-copy{position:relative;z-index:2;padding:0 0 10px}
 .access-logo{display:block;width:min(510px,100%);height:auto;margin:0 0 26px -6px}

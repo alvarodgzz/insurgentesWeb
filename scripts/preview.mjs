@@ -9,7 +9,7 @@ import { preparePrivatePages } from './private-preview.mjs';
 const root = fileURLToPath(new URL('..',import.meta.url));
 const protectedPreview = process.argv.includes('--protected');
 let serveRoot = root;
-const allowed = new Set(['assets','css','js','images','content','admin','templates']);
+const allowed = new Set(['assets','css','js','images','content','admin','templates', ...(protectedPreview ? ['banda'] : [])]);
 const types = { '.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.jpg':'image/jpeg','.jpeg':'image/jpeg','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.otf':'font/otf','.ttf':'font/ttf','.txt':'text/plain; charset=utf-8' };
 await build();
 if (protectedPreview) {
