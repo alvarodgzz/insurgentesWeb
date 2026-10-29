@@ -14,7 +14,7 @@ Solo si el propietario cambia de decisión en el futuro, existe [email-confirmac
 - **Asunto:** Confirma tu registro a Maratón.
 - **Texto de vista previa:** Confirma tu correo para recibir las novedades de Maratón.
 - **Nombre del remitente:** Los Insurgentes.
-- **Remitente:** dirección del dominio de la banda por definir y autenticar; el Gmail puede servir para respuestas. Brevo puede sustituir remitentes gratuitos o no autenticados; consulta el plan enlazado.
+- **Remitente elegido:** `laresistencia@losinsurgentes.mx`, Verified con DKIM/DMARC verdes en la captura del 28 de octubre. El propietario confirmó seleccionarlo en la bienvenida y dejar `insurgentes.mx@gmail.com` para respuestas. Falta una nueva prueba de entrega. No requiere cambio del código web.
 
 Ese borrador conserva `{{ doubleoptin }}` para el enlace individual y pertenece únicamente a Double confirmation, sin uso actual. [Guía oficial DOI](https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-custom-double-opt-in-DOI-email-template-for-a-sign-up-form-created-in-Brevo) y [variables](https://help.brevo.com/hc/en-us/articles/4402386448530--Manual-Personalize-your-messages-with-dynamic-content-Brevo-Template-Language).
 
@@ -30,7 +30,7 @@ Para los anuncios queda [email-campana-maraton.html](email-campana-maraton.html)
 
 La landing muestra **Entérate primero de Maratón**, correo obligatorio y **Quiero enterarme**, con los colores de la banda. Solo hay un envío, sin enlace alternativo. Se envían `EMAIL`, antispam, `locale=es` y `html_type=simple`. Con JavaScript, el resultado aparece en la página y el éxito requiere HTTP correcto y JSON `success === true`; sin JavaScript se abre la respuesta nativa del proveedor. No se almacena el correo ni se manda a estadísticas.
 
-No se agregó una casilla de consentimiento sin correspondencia en el HTML recibido. El texto visible no prueba que Brevo almacene el consentimiento. Ese registro, la lista **Maratón**, remitente, respuestas y la configuración de confirmación simple siguen pendientes de revisar en la cuenta.
+No se agregó una casilla de consentimiento sin correspondencia en el HTML recibido. El texto visible no prueba que Brevo almacene el consentimiento. Ese registro y la lista **Maratón** siguen pendientes de revisar. Simple confirmation fue elegido por el propietario; remitente/Reply-To están configurados según su confirmación, con entrega nueva aún sin comprobar.
 
 El aviso de Brevo excluye sus páginas alojadas y mensajes del paso 5 que necesitan JavaScript en Simple HTML. Nuestra mejora presenta mensajes locales basados en la respuesta: progreso, éxito comprobable, rechazo y resultado incierto por problemas de lectura/conexión. No afirma que llegó la bienvenida ni reenvía automáticamente si la respuesta no puede comprobarse.
 

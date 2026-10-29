@@ -43,9 +43,9 @@ El requisito `{{ doubleoptin }}` pertenece exclusivamente al borrador DOI sin us
 
 ## Remitente: Gmail frente al dominio
 
-La cuenta de Gmail de la banda puede seguir administrando la lista y recibiendo respuestas. Para el remitente visible recomiendo una dirección del dominio `losinsurgentes.mx`, por definir y verificar. Brevo puede sustituir remitentes gratuitos o no autenticados por direcciones de sus dominios; no debemos prometer que el fan verá exactamente el Gmail original. [Política de remitentes de Brevo](https://help.brevo.com/hc/en-us/articles/14925263522578-Comply-with-Gmail-Yahoo-and-Microsoft-s-requirements-for-email-senders).
+Actualización del 28 de octubre: las capturas verifican `losinsurgentes.mx` Authenticated/Branded y el remitente **Los Insurgentes <laresistencia@losinsurgentes.mx>** Verified con DKIM/DMARC verdes. El propietario confirmó seleccionarlo en la bienvenida y dejar `insurgentes.mx@gmail.com` para respuestas. Falta comprobar la nueva entrega. El Gmail queda para administración/respuestas. [Política de remitentes de Brevo](https://help.brevo.com/hc/en-us/articles/14925263522578-Comply-with-Gmail-Yahoo-and-Microsoft-s-requirements-for-email-senders).
 
-Autenticar el dominio requiere los registros que genere la cuenta de Brevo en Squarespace. No se han solicitado ni cambiado; no implica mover el alojamiento de GitHub Pages. La dirección de respuestas puede ser distinta del remitente. [Reply-To en Brevo](https://help.brevo.com/hc/en-us/articles/209429225-FAQs-Where-are-reply-emails-sent-to-Reply-to-email-address).
+El propietario ya agregó los registros de Brevo en Squarespace, conservando GitHub Pages. El remitente y Reply-To se seleccionan en Brevo; el formulario del repo no define esas cabeceras y no necesita cambio ni despliegue por esa selección. [Reply-To en Brevo](https://help.brevo.com/hc/en-us/articles/209429225-FAQs-Where-are-reply-emails-sent-to-Reply-to-email-address).
 
 ## Cómo reducir el trabajo manual
 

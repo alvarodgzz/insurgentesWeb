@@ -74,11 +74,25 @@ export async function makeSelfContained(root, sourceHtml) {
   html = html.replace(/\s+srcset=(?:"[^"]*"|'[^']*')/gi, '');
   html = await replaceAsync(html, /<(?:img|source|video)\b[^>]*>/gi, async tag => replaceAsync(tag, /\b(src|poster)=(["'])(.*?)\2/gi, async (_, attr, quote, value) => `${attr}=${quote}${await dataURL(value)}${quote}`));
   html = await inlineURLs(html, 'index.html');
+  const deferredScripts = [];
   html = await replaceAsync(html, /<script\b([^>]*\bsrc=["']([^"']+)["'][^>]*)>\s*<\/script>/gi, async (_, attrs, src) => {
     if (/\btype=["']module["']/i.test(attrs) || external(src)) throw new Error('Only bundled classic scripts are supported in preview');
+    // Inline scripts do not honor defer. Reserve their position before reading
+    // files concurrently, then run them after the body in original source order.
+    const deferred = /\sdefer(?:\s|=|$)/i.test(attrs);
+    const slot = deferred ? deferredScripts.push('') - 1 : -1;
     const script = (await safeRead(root, assetPath(src))).toString('utf8');
-    return `<script>${script.replace(/<\/script/gi, '<\\/script')}</script>`;
+    const inline = `<script>${script.replace(/<\/script/gi, '<\\/script')}</script>`;
+    if (deferred) {
+      deferredScripts[slot] = inline;
+      return '';
+    }
+    return inline;
   });
+  if (deferredScripts.length) {
+    const scripts = deferredScripts.join('\n');
+    html = /<\/body\s*>/i.test(html) ? html.replace(/<\/body\s*>/i, closing => `${scripts}\n${closing}`) : `${html}\n${scripts}`;
+  }
   html = html.replace(/<html\b/i, '<html data-private-preview="true"')
     .replace(/<meta\b[^>]*\bname=["']robots["'][^>]*>/gi, '')
     .replace('</head>', '<meta name="robots" content="noindex,nofollow,noarchive"></head>')

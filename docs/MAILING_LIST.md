@@ -2,9 +2,11 @@
 
 El propietario pidió proteger temporalmente también la landing y el formulario con la contraseña existente mientras resolvemos los correos en spam. `/` y `404.html` muestran la portada de acceso a `maraton-preview.json` cifrado; `/banda/` conserva su sitio completo cifrado. No se publica el formulario ni sus estilos/scripts por separado. Esta modificación local aún necesita publicación y revisión.
 
-El formulario está activado en `content/newsletter.json` y cotejado con Simple HTML. El propietario mostró JSON `success: true` y después reportó que la bienvenida llegó a spam. Eso acredita esa llegada, pero no la plantilla exacta, la lista de destino o la versión desplegada. Falta autenticar el remitente y probar el nuevo flujo en navegador. El formulario alojado por Brevo sigue existiendo fuera del gate del sitio; no se desactiva en el proveedor.
+El formulario está activado en `content/newsletter.json` y cotejado con Simple HTML. El propietario mostró JSON `success: true` y reportó una bienvenida en spam. El 28 de octubre mostró dominio y remitente autenticados y confirmó el cambio de sender en Brevo. Falta una nueva prueba de entrega, además de revisar lista, diseño y nuevo flujo en navegador. El formulario alojado por Brevo sigue existiendo fuera del gate del sitio.
 
 ## Cómo funciona
+
+En la vista cifrada, el empaquetador conserva la ejecución diferida de los scripts: los inicializa después del HTML del formulario y en su orden original. La corrección del 28 de octubre evita que el script se ejecute prematuramente en el head y deje activo solo el POST nativo que abre JSON. La regresión se verifica con el template empaquetado y simulación de lectura progresiva del documento; falta probar esta nueva versión en navegador publicado.
 
 El formulario hace un POST directo al destino `/serve/` de Simple HTML. Su token es distinto al enlace alojado anterior: `submitUrl` guarda el destino exacto y `formUrl` se conserva solo para mantenimiento y compatibilidad. Ambos se validan por separado. Envía exactamente `EMAIL`, antispam vacío `email_address_check`, `locale=es` y `html_type=simple`. A petición del propietario no se muestra enlace de proveedor ni botón de formulario alternativo.
 
@@ -16,7 +18,7 @@ El texto visible explica que el registro es para novedades de Maratón y Los Ins
 
 ## Qué falta en Brevo
 
-La cuenta pertenece al propietario; el agente no la editó. Se eligió **Simple confirmation email**: registro directo y una bienvenida. El propietario confirma llegada a spam; falta revisar lista **Maratón**, consentimiento registrado, identidad del diseño, remitente y respuestas. El Gmail mostrado tiene aviso de remitente no autenticado y sustitución de dominio por Brevo. Configurar un remitente propio y autenticar su dominio sigue pendiente. La cuenta de la banda no es una dirección pública de booking.
+La cuenta pertenece al propietario; el agente no la editó. Se eligió **Simple confirmation email**: registro directo y una bienvenida. El 28 de octubre Brevo mostró `losinsurgentes.mx` Authenticated/Branded y **Los Insurgentes <laresistencia@losinsurgentes.mx>** Verified con DKIM y DMARC verdes. El propietario confirmó seleccionar ese remitente y `insurgentes.mx@gmail.com` para respuestas en la plantilla. Es configuración del proveedor: **no requiere modificar el formulario del repo ni publicar el sitio**. Falta probar de nuevo la entrega y revisar lista **Maratón**, consentimiento e identidad del diseño. Ninguna dirección se designó como booking público.
 
 Para bienvenida y campañas están preparados [los textos e importación](BREVO_TEXTOS.md) y [el plan de correo](EMAIL_PLAN.md); no se ha identificado qué diseño llegó en la prueba. El borrador DOI queda sin uso. No hace falta compartir contraseñas o claves API ni contratar un plan para diseñarlos.
 
