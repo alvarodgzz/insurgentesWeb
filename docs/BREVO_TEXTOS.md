@@ -4,7 +4,9 @@ El formulario de la landing está diseñado y cotejado con Simple HTML: action a
 
 ## Elección actual: confirmación simple
 
-El propietario eligió **Simple confirmation** el 27 de octubre. Abrir **Default Template Simple confirmation**, aplicar [email-bienvenida-maraton.html](email-bienvenida-maraton.html), usar asunto **Gracias por sumarte a Maratón** y seleccionarla en **Forms → Settings → Simple confirmation email**. El fan queda registrado sin clic adicional y recibe una sola bienvenida. No usar Double opt-in ni Final Confirmation Email para este flujo. La configuración real permanece pendiente de verificar.
+El propietario eligió **Simple confirmation** el 27 de octubre. Abrir **Default Template Simple confirmation**, aplicar [email-bienvenida-maraton.html](email-bienvenida-maraton.html), usar asunto **Tu señal llegó — Los Insurgentes** y seleccionarla en **Forms → Settings → Simple confirmation email**. El fan queda registrado sin clic adicional y recibe una sola bienvenida. No usar Double opt-in ni Final Confirmation Email para este flujo. La configuración real permanece pendiente de verificar.
+
+Revisión del 7 de noviembre: voz de comunicado desde la resistencia, según la descripción de Spotify aportada por el propietario; sustituye el borrador coloquial descartado. **Vista previa:** Maratón es el siguiente movimiento. Mantengamos abierta la comunicación. El cierre elegido es **Esa calavera que ya viene por ti…** y las tres plantillas incluyen logo oficial y calavera de hasta 144 px. El propietario confirmó haber actualizado la bienvenida en Brevo. Su visualización y entrega reales siguen pendientes de verificar. Para volver a importarla, copiar el HTML completo en el editor **HTML custom code** de esa plantilla. No requiere desplegar el sitio.
 
 ## Borrador DOI conservado, sin uso actual
 
@@ -18,11 +20,11 @@ Solo si el propietario cambia de decisión en el futuro, existe [email-confirmac
 
 Ese borrador conserva `{{ doubleoptin }}` para el enlace individual y pertenece únicamente a Double confirmation, sin uso actual. [Guía oficial DOI](https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-custom-double-opt-in-DOI-email-template-for-a-sign-up-form-created-in-Brevo) y [variables](https://help.brevo.com/hc/en-us/articles/4402386448530--Manual-Personalize-your-messages-with-dynamic-content-Brevo-Template-Language).
 
-El logo depende de los recursos públicos de la web. Falta una prueba de envío y visualización en un cliente de correo.
+El logo y la calavera oficiales forman el encabezado de comunicado de los tres correos y dependen de los recursos públicos de la web. Ver [guía de voz](VOZ_DE_LA_BANDA.md). Falta una prueba de envío y visualización en un cliente de correo.
 
 ## Bienvenida y futuras campañas
 
-Usa [email-bienvenida-maraton.html](email-bienvenida-maraton.html) como **Simple confirmation email**, al registrar al fan: asunto **Gracias por sumarte a Maratón**. No actives otra bienvenida que la duplique. Revisa si otros formularios comparten la plantilla antes de editarla.
+Usa [email-bienvenida-maraton.html](email-bienvenida-maraton.html) como **Simple confirmation email**, al registrar al fan: asunto **Tu señal llegó — Los Insurgentes**. No actives otra bienvenida que la duplique. Revisa si otros formularios comparten la plantilla antes de editarla.
 
 Para los anuncios queda [email-campana-maraton.html](email-campana-maraton.html). Es una base reutilizable, con marcadores que se deben completar y un aviso de borrador que hay que retirar. Mantén los enlaces de baja y vista en navegador. Cada noticia se prepara como campaña y se revisan su lista, contenido y destino antes de enviar; guardar una plantilla no envía una campaña.
 

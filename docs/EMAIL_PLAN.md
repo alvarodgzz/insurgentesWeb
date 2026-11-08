@@ -6,7 +6,7 @@ Investigación del 27 de octubre de 2026. Los diseños están preparados en este
 
 | Momento | Correo | Diseño preparado |
 | --- | --- | --- |
-| Envía el formulario y Brevo acepta el registro | «Gracias por sumarte a Maratón», bienvenida y enlace a Spotify | [Bienvenida](email-bienvenida-maraton.html) |
+| Envía el formulario y Brevo acepta el registro | «Tu señal llegó — Los Insurgentes», bienvenida y enlace a Spotify | [Bienvenida](email-bienvenida-maraton.html) |
 | La banda anuncia algo | Una campaña con noticia, arte autorizado y un botón al destino correspondiente | [Base de campaña](email-campana-maraton.html) |
 
 El propietario eligió **Simple confirmation** el 27 de octubre, sustituyendo la recomendación anterior de doble confirmación. El registro es directo y se envía una sola bienvenida, sin clic de validación ni correo final adicional. No añadir otro flujo de bienvenida que duplique el correo. Los anuncios se preparan como campañas independientes. La [guía de formularios de Brevo](https://help.brevo.com/hc/en-us/articles/208771869-Create-a-sign-up-form-in-Brevo) documenta esta opción. El [borrador DOI](email-confirmacion-maraton.html) queda como alternativa sin uso.
@@ -25,7 +25,9 @@ Si se añaden campos obligatorios o CAPTCHA en el portal, se debe actualizar la 
 
 Puedo crear el diseño completo, textos, asunto, vista previa, imágenes y enlaces. Brevo recibe ese HTML y lo utiliza para enviar el mensaje; el fan lo abre en Gmail u otro cliente sin visitar la web para leerlo.
 
-Los tres borradores comparten el logo oficial, negro, naranja y beige. Usan tablas de hasta 600 px, CSS en línea y Arial/Helvetica como sustitutos compatibles. Las fuentes locales de la web no son una garantía en Gmail. No contienen JavaScript, iframes ni formularios: el botón lleva al destino correspondiente. Esto sigue las [recomendaciones de HTML para correo de Brevo](https://help.brevo.com/hc/en-us/articles/6632412983186-Limitations-when-using-HTML-for-your-email-campaigns).
+Los tres borradores comparten el logo y la calavera oficiales en un encabezado de comunicado, negro, naranja y beige. La voz sigue la [guía de la banda](VOZ_DE_LA_BANDA.md), aprobada el 7 de noviembre. Usan tablas de hasta 600 px, CSS en línea y Arial/Helvetica como sustitutos compatibles. Las fuentes locales de la web no son una garantía en Gmail. No contienen JavaScript, iframes ni formularios: el botón lleva al destino correspondiente. Esto sigue las [recomendaciones de HTML para correo de Brevo](https://help.brevo.com/hc/en-us/articles/6632412983186-Limitations-when-using-HTML-for-your-email-campaigns).
+
+El 7 de noviembre el propietario confirmó haber actualizado la bienvenida en Brevo con la revisión de comunicado, el cierre **Esa calavera que ya viene por ti…** y la calavera ampliada. Esta instalación es reportada por el propietario; el agente no ha enviado un correo de prueba ni comprobado su visualización o entrega.
 
 Para importarlos: crear o abrir la plantilla → **Start designing / Add content → Start from scratch → HTML custom code**, pegar el archivo completo y guardar. Es el editor del correo completo, no un bloque HTML dentro de otra plantilla. Luego se reutiliza en las campañas. [Importación oficial](https://help.brevo.com/hc/en-us/articles/4672127581074-Upload-an-HTML-file-to-design-your-emails-HTML-custom-code-editor).
 
@@ -34,7 +36,7 @@ La confirmación conserva `{{ doubleoptin }}`. Bienvenida y campaña incluyen `{
 ## Ajustes de Brevo, una vez
 
 1. Revisar lista de destino Maratón y qué evidencia de consentimiento guarda el formulario.
-2. En **Marketing → Templates → Email**, abrir **Default Template Simple confirmation** y aplicar el HTML de bienvenida, con asunto **Gracias por sumarte a Maratón**. Revisar antes si otros formularios comparten la plantilla.
+2. En **Marketing → Templates → Email**, abrir **Default Template Simple confirmation** y aplicar el HTML de bienvenida, con asunto **Tu señal llegó — Los Insurgentes**. Revisar antes si otros formularios comparten la plantilla.
 3. En **Marketing → Forms**, abrir el formulario, seleccionar **Simple confirmation email** y elegir la plantilla de bienvenida. No usar Double opt-in ni Final Confirmation Email en este flujo.
 4. Configurar nombre de remitente Los Insurgentes, dirección de envío y dirección de respuestas.
 5. Guardar y validar una suscripción completa antes de publicar el registro como verificado.
