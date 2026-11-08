@@ -75,7 +75,7 @@ El script valida el sitio y, si encuentra ese archivo, configura el secreto de A
 
 **El repositorio actual es público y ya contiene código, textos y fotos en su historial.** El cifrado protege la vista completa de la banda en Pages, pero no vuelve privados esos archivos de GitHub ni retira copias anteriores. No crea autenticación en un servidor. La apertura del contenido cifrado necesita JavaScript y HTTPS; `localhost` también permite probarla. La landing pública y el envío nativo del formulario conservan su uso sin JavaScript.
 
-Los registros DNS suministrados por el propietario apuntan a GitHub Pages. En la última captura, GitHub todavía emitía el certificado TLS; el estado actual no se ha comprobado. Cuando esté disponible, activa **Enforce HTTPS** en **Settings → Pages**. No restaures **Squarespace Defaults**, porque volvería a apuntar al alojamiento anterior.
+Los registros DNS suministrados por el propietario apuntan a GitHub Pages. El 7 de noviembre se verificó que HTTPS responde correctamente en `losinsurgentes.mx` y `www.losinsurgentes.mx`, con la landing pública. No se modificó ni comprobó desde aquí el ajuste **Enforce HTTPS** en **Settings → Pages**. No restaures **Squarespace Defaults**, porque volvería a apuntar al alojamiento anterior.
 
 ## Estadísticas
 

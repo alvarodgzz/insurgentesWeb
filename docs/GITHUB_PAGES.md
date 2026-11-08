@@ -68,7 +68,7 @@ El propietario configuró `losinsurgentes.mx` en **Settings → Pages** y confir
 | A | `@` | `185.199.111.153` |
 | CNAME | `www` | `alvarodgzz.github.io` |
 
-La captura más reciente de GitHub muestra **DNS check successful** y el certificado TLS todavía en emisión. Cuando esté disponible, activa **Enforce HTTPS** y comprueba tanto `https://losinsurgentes.mx` como `https://www.losinsurgentes.mx`. No omitas una advertencia de certificado del navegador. El aviso de Squarespace que pide restaurar **Squarespace Defaults** corresponde a su alojamiento anterior; restaurarlo cambiaría estos destinos.
+La captura de octubre mostraba **DNS check successful** y el certificado TLS en emisión. El 7 de noviembre se verificó HTTPS correcto en `https://losinsurgentes.mx` y `https://www.losinsurgentes.mx`, con el registro público desplegado por el commit `456f7b2` (Actions `42446937743`, terminado correctamente). Se comprobó también el gate de `/banda/`, el descifrado local del paquete publicado con la contraseña existente y el rechazo de una contraseña incorrecta. No se envió ningún registro. El ajuste **Enforce HTTPS** de la interfaz de GitHub no se modificó ni comprobó; no omitas una advertencia de certificado del navegador. El aviso de Squarespace que pide restaurar **Squarespace Defaults** corresponde a su alojamiento anterior; restaurarlo cambiaría estos destinos.
 
 ## Lanzamiento futuro del sitio completo
 

@@ -9,7 +9,9 @@
 
 ## Publication and package
 
-The last confirmed push before this landing revision is `841b7bd`, containing the three email HTML templates and their guides. GitHub Actions run `42446398167` completed successfully for that SHA. The previous `af0b928` corrected the drummer's display name to **Viko IV GUERRA**.
+The public-landing implementation is committed and pushed in **`456f7b2`**, with successful Pages run **`42446937743`**. Live HTTPS checks confirmed public signup on apex/www, `/banda/` password gate, published assets, private-file 404s and local decryption of the deployed band payload with the existing password; an incorrect password was rejected. No registration or email was sent.
+
+The preceding `841b7bd` contains the three email HTML templates and their guides. GitHub Actions run `42446398167` completed successfully for that SHA. The previous `af0b928` corrected the drummer's display name to **Viko IV GUERRA**.
 
 The default `node scripts/prepare-pages.mjs` now uses `prepareLandingPages`:
 
@@ -25,7 +27,7 @@ Missing compilation password keeps signup public and omits `preview.json`; the b
 
 Encryption remains PBKDF2-SHA-256 (600 000 iterations), AES-GCM-256 and fresh salt/IV. The repository is public and already contains historical content. The Pages gate does not make GitHub private or provide server authentication. Decryption requires JavaScript and HTTPS or localhost.
 
-A push to `main` automatically starts the Pages workflow. `bash scripts/publish-github.sh` additionally validates, synchronizes the ignored local password to Actions when present, pushes and dispatches a run. No manual deploy command is needed after a successful automatic run. Confirm the new SHA's build/deploy result in Actions and inspect the domain; a commit alone is not evidence of publication. This status checkpoint was written before pushing the public-landing revision.
+A push to `main` automatically starts the Pages workflow. `bash scripts/publish-github.sh` additionally validates, synchronizes the ignored local password to Actions when present, pushes and dispatches a run. No manual deploy command is needed after a successful automatic run. Confirm the new SHA's build/deploy result in Actions and inspect the domain; a commit alone is not evidence of publication. The implementation deployment and the read-only domain/password checks above were verified after its push. Later documentation-only commits do not change that implementation.
 
 ## Implemented site
 
@@ -69,7 +71,7 @@ Google Drive remains the chosen private band workspace: [Los Insurgentes — Sit
 
 All **69 tests**, static build, site checks, default Pages packaging and publisher Bash syntax validation passed for the public-landing revision. Tests cover the default CLI versus `--gated`, public native form fields, return links and subpaths, wrong password, missing password/configuration, stale artifact removal, output allowlist/symlink rejection and analytics exclusion from all protected/error content. Email HTML is balanced and preserves original destinations and Brevo variables. The tests use VM/provider simulations, not live browser/CORS or mail delivery.
 
-The in-app browser backend was unavailable for desktop/mobile visual review. Published routing/content and HTTPS can be checked independently after the deployment; actual browser signup, list inclusion, email appearance/delivery and Spotify playback remain pending.
+The in-app browser backend was unavailable for desktop/mobile visual review. Published routing/content, HTTPS and decryption of the live payload were verified after deployment as recorded above. Actual browser signup, list inclusion, email appearance/delivery and Spotify playback remain pending.
 
 October 28 bundling regression: immediate inlining of a head-deferred script initialized Maratón before its form existed and left native POST navigation active. Bundling now reserves deferred-script slots before concurrent reads and executes them after body markup in source order. Parser-order and actual-bundled-form VM tests cover the correction.
 
