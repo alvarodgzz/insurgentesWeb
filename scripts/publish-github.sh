@@ -146,4 +146,5 @@ gh workflow run pages.yml --repo "$repository" --ref main
 
 printf '\nChanges pushed and deployment requested. Check the GitHub Actions result:\n'
 printf 'https://github.com/%s/actions\n' "$repository"
-printf 'Expected protected preview after a successful deployment: https://losinsurgentes.mx/\n'
+printf 'Expected public signup after a successful deployment: https://losinsurgentes.mx/\n'
+printf 'Password-protected band site: https://losinsurgentes.mx/banda/\n'

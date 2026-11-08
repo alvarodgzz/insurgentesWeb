@@ -32,7 +32,7 @@ export function renderNewsletter(value = DEFAULT_NEWSLETTER) {
   destination.pathname = destination.pathname.replace(/^\/v2\/serve\//, '/serve/');
   const action = escape(destination.href);
   return `<form class="newsletter-form" id="sib-form" method="post" action="${action}" accept-charset="UTF-8" aria-labelledby="newsletter-title" data-newsletter-form>
-    <h3 id="newsletter-title">Entérate primero de Maratón.</h3>
+    <h3 id="newsletter-title">Los próximos movimientos de Maratón.</h3>
     <p class="newsletter-intro">Música nueva y noticias de Los Insurgentes, directo a tu correo.</p>
     <label class="newsletter-label" for="EMAIL">Correo electrónico</label>
     <input class="newsletter-email" type="email" id="EMAIL" name="EMAIL" autocomplete="email" inputmode="email" placeholder="tu@correo.com" required aria-describedby="newsletter-consent">

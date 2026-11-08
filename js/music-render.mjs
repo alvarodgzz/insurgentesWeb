@@ -49,8 +49,8 @@ export function renderMusic(releases = []) {
         <img src="assets/logos/skull-stamp-orange.png" alt="" class="label-stamp" aria-hidden="true" loading="lazy" width="1600" height="1600">
       </div>
       <div class="music-heading">
-        <h2 class="section-title reveal" id="musicTitle">Sube el volumen.</h2>
-        <p class="section-intro">De La Marcha a los nuevos sencillos. Encuentra tu canción.</p>
+        <h2 class="section-title reveal" id="musicTitle">Disconformidad<br>en estéreo.</h2>
+        <p class="section-intro">De La Marcha a los nuevos sencillos: el recorrido sonoro de Los Insurgentes.</p>
       </div>
 
       <div class="music-player" id="musicPlayer" tabindex="-1" aria-label="Reproductor de Spotify">

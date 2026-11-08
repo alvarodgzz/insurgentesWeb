@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { webcrypto } from 'node:crypto';
-import { readFile, writeFile, mkdir, mkdtemp, rm, cp, readdir, symlink } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, mkdtemp, rm, cp, readdir, symlink, realpath } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
-import { encryptPreview, makeSelfContained, preparePrivatePages, GATE_FILES, MARATON_FILES } from '../scripts/private-preview.mjs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { encryptPreview, makeSelfContained, prepareLandingPages, preparePrivatePages, GATE_FILES, MARATON_FILES } from '../scripts/private-preview.mjs';
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url));
 const syntheticPassword = 'Synthetic preview password 7!';
@@ -22,7 +24,7 @@ const fixtureHtml = `<!doctype html><html lang="es"><head>
 async function fixture(t) {
   const root = await mkdtemp(join(tmpdir(), 'insurgentes-private-preview-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const path of [...GATE_FILES, ...MARATON_FILES, 'templates/access.html', 'templates/maraton.html']) {
+  for (const path of [...GATE_FILES, ...MARATON_FILES, 'templates/access.html', 'templates/maraton.html', 'templates/404.html']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(join(projectRoot, path), join(root, path));
   }
@@ -162,6 +164,101 @@ test('missing preview password preserves both access gates and removes both encr
     const html = await readFile(join(root, '_site', path), 'utf8');
     assert.match(html, /id="access-password"/);
     assert.doesNotMatch(html, /data-newsletter-form|id="EMAIL"|sibforms\.com/);
+  }
+});
+
+test('public Maratón signup replaces its old gate while the band site remains encrypted with no raw content', async t => {
+  const root = await fixture(t);
+  await preparePrivatePages(root, { password: syntheticPassword });
+  const output = await prepareLandingPages(root, { password: syntheticPassword });
+  assert.deepEqual(await outputFiles(output), [...GATE_FILES, ...MARATON_FILES, 'index.html', 'banda/index.html', '404.html', 'robots.txt', '.nojekyll', 'preview.json'].sort());
+  const landing = await readFile(join(output, 'index.html'), 'utf8');
+  assert.match(landing, /data-newsletter-form/);
+  assert.ok(landing.includes(`action="${syntheticFormAction}"`));
+  assert.match(landing, /method="post"/);
+  assert.match(landing, /name="EMAIL"[^>]*required/);
+  assert.match(landing, /name="email_address_check" value=""/);
+  assert.match(landing, /name="locale" value="es"/);
+  assert.match(landing, /name="html_type" value="simple"/);
+  assert.match(landing, /name="referrer" content="no-referrer"/);
+  assert.match(landing, /href="banda\/">Acceso de la banda/);
+  assert.match(landing, /src="js\/maraton.js" defer/);
+  assert.doesNotMatch(landing, /access-password|maraton-preview|data-private-preview|noindex|hosted_signup_fixture/);
+  assert.match(landing, /rel="canonical" href="https:\/\/losinsurgentes.mx\/"/);
+  const gate = await readFile(join(output, 'banda/index.html'), 'utf8');
+  assert.match(gate, /id="access-password"/);
+  assert.match(gate, /data-preview-src="preview.json"/);
+  assert.match(gate, /href="\.\/">Volver al registro/);
+  assert.doesNotMatch(gate, /data-newsletter-form|Contenido privado|analytics-config/);
+  const envelope = JSON.parse(await readFile(join(output, 'preview.json'), 'utf8'));
+  assert.equal(await decrypt(envelope, syntheticPassword), await makeSelfContained(root));
+  await assert.rejects(decrypt(envelope, 'Incorrect synthetic password'));
+  const notFound = await readFile(join(output, '404.html'), 'utf8');
+  assert.match(notFound, /Página no encontrada/);
+  assert.match(notFound, /href="\.\/">Volver al registro/);
+  assert.doesNotMatch(notFound, /data-newsletter-form|sibforms.com|analytics-config|access-password/);
+  for (const path of await outputFiles(output)) {
+    const bytes = await readFile(join(output, path));
+    assert.equal(bytes.includes(Buffer.from(syntheticPassword)), false, path);
+    assert.equal(bytes.includes(Buffer.from('Contenido privado de prueba')), false, path);
+    assert.equal(bytes.includes(Buffer.from('DO_NOT_PUBLISH_THIS_FILE')), false, path);
+  }
+});
+
+test('missing band password keeps public signup working and removes old encrypted payloads; missing newsletter stays pending', async t => {
+  const root = await fixture(t);
+  await preparePrivatePages(root, { password: syntheticPassword });
+  const output = await prepareLandingPages(root);
+  assert.deepEqual(await outputFiles(output), [...GATE_FILES, ...MARATON_FILES, 'index.html', 'banda/index.html', '404.html', 'robots.txt', '.nojekyll'].sort());
+  assert.match(await readFile(join(output, 'index.html'), 'utf8'), /data-newsletter-form/);
+  assert.match(await readFile(join(output, 'banda/index.html'), 'utf8'), /access-password/);
+  await rm(join(root, 'content/newsletter.json'));
+  await prepareLandingPages(root);
+  const pending = await readFile(join(output, 'index.html'), 'utf8');
+  assert.match(pending, /El registro abrirá pronto/);
+  assert.doesNotMatch(pending, /data-newsletter-form|sibforms.com/);
+});
+
+test('public signup and band access resolve all assets, return links and payloads under a Pages subpath', async t => {
+  const root = await fixture(t);
+  const siteUrl = 'https://example.github.io/insurgentesWeb/';
+  const output = await prepareLandingPages(root, { siteUrl });
+  for (const path of ['index.html', '404.html', 'banda/index.html']) {
+    const html = await readFile(join(output, path), 'utf8');
+    const base = /<base\s+href="([^"]+)"/.exec(html)?.[1];
+    assert.equal(base, '/insurgentesWeb/', path);
+    assert.equal(new URL('preview.json', new URL(base, siteUrl)).href, `${siteUrl}preview.json`);
+    assert.equal(new URL('banda/', new URL(base, siteUrl)).href, `${siteUrl}banda/`);
+    assert.equal(new URL('./', new URL(base, siteUrl)).href, siteUrl);
+    assert.doesNotMatch(html, /\{\{[^}]+\}\}/);
+  }
+  assert.equal(await readFile(join(output, 'robots.txt'), 'utf8'), 'User-agent: *\nDisallow: /insurgentesWeb/banda/\nDisallow: /insurgentesWeb/admin/\nDisallow: /insurgentesWeb/preview.json\n');
+});
+
+test('default Pages CLI publishes signup; only an explicit --gated restores both password gates', async t => {
+  const root = await fixture(t);
+  for (const path of ['scripts/prepare-pages.mjs', 'scripts/private-preview.mjs', 'scripts/analytics-config.mjs', 'scripts/newsletter-config.mjs', 'js/newsletter-render.mjs', 'js/analytics-render.mjs']) {
+    await mkdir(dirname(join(root, path)), { recursive: true });
+    await cp(join(projectRoot, path), join(root, path));
+  }
+  const run = promisify(execFile);
+  const cli = await realpath(join(root, 'scripts/prepare-pages.mjs'));
+  const options = { env: { ...process.env, CI: 'true', PREVIEW_PASSWORD: syntheticPassword, SITE_URL: 'https://losinsurgentes.mx/' } };
+  await run(process.execPath, [cli], options);
+  assert.match(await readFile(join(root, '_site/index.html'), 'utf8'), /data-newsletter-form/);
+  assert.match(await readFile(join(root, '_site/banda/index.html'), 'utf8'), /access-password/);
+  await assert.rejects(readFile(join(root, '_site/maraton-preview.json')));
+  await run(process.execPath, [cli, '--gated'], options);
+  assert.match(await readFile(join(root, '_site/index.html'), 'utf8'), /data-preview-src="maraton-preview.json"/);
+  assert.ok(await readFile(join(root, '_site/maraton-preview.json')));
+});
+
+test('public signup refuses symlinks in its script and 404 template instead of copying unapproved files', async t => {
+  for (const path of ['js/maraton.js', 'templates/404.html']) {
+    const root = await fixture(t);
+    await rm(join(root, path));
+    await symlink(join(root, 'content/photos/fixture.jpg'), join(root, path));
+    await assert.rejects(prepareLandingPages(root));
   }
 });
 

@@ -30,7 +30,7 @@ Para los anuncios queda [email-campana-maraton.html](email-campana-maraton.html)
 
 ## Formulario ya diseñado
 
-La landing muestra **Entérate primero de Maratón**, correo obligatorio y **Quiero enterarme**, con los colores de la banda. Solo hay un envío, sin enlace alternativo. Se envían `EMAIL`, antispam, `locale=es` y `html_type=simple`. Con JavaScript, el resultado aparece en la página y el éxito requiere HTTP correcto y JSON `success === true`; sin JavaScript se abre la respuesta nativa del proveedor. No se almacena el correo ni se manda a estadísticas.
+La landing muestra **Los próximos movimientos de Maratón**, correo obligatorio y **Quiero enterarme**, con los colores de la banda. Solo hay un envío, sin enlace alternativo. Se envían `EMAIL`, antispam, `locale=es` y `html_type=simple`. Con JavaScript, el resultado aparece en la página y el éxito requiere HTTP correcto y JSON `success === true`; sin JavaScript se abre la respuesta nativa del proveedor. No se almacena el correo ni se manda a estadísticas.
 
 No se agregó una casilla de consentimiento sin correspondencia en el HTML recibido. El texto visible no prueba que Brevo almacene el consentimiento. Ese registro y la lista **Maratón** siguen pendientes de revisar. Simple confirmation fue elegido por el propietario; remitente/Reply-To están configurados según su confirmación, con entrega nueva aún sin comprobar.
 

@@ -52,7 +52,7 @@ export function renderLyrics(lyrics) {
         <img src="assets/logos/skull-stamp-orange.png" alt="" class="label-stamp" aria-hidden="true" loading="lazy" width="1600" height="1600">
       </div>
       <h2 class="section-title reveal">Letras</h2>
-      <p class="section-intro">${entries.length ? 'Las palabras detrás de nuestras canciones.' : 'Las letras de nuestras canciones estarán disponibles próximamente.'}</p>${entries.length ? `
+      <p class="section-intro">${entries.length ? 'La disconformidad también se escribe.' : 'Las letras de nuestras canciones estarán disponibles próximamente.'}</p>${entries.length ? `
       <div class="lyrics-list">
 ${entries.join('\n')}
       </div>` : ''}

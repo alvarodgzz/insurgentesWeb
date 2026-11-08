@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { configureAnalytics } from '../scripts/configure-analytics.mjs';
 import { readAnalytics } from '../scripts/analytics-config.mjs';
 import { DEFAULT_ANALYTICS, renderAnalytics } from '../js/analytics-render.mjs';
-import { GATE_FILES, MARATON_FILES, preparePrivatePages } from '../scripts/private-preview.mjs';
+import { GATE_FILES, MARATON_FILES, prepareLandingPages, preparePrivatePages } from '../scripts/private-preview.mjs';
 
 const websiteId = 'e09631f9-3445-4c9e-b00b-3ef9afc3e172';
 
@@ -64,4 +64,37 @@ test('gated Maratón and band pages never publish or run analytics, even when co
   assert.doesNotMatch(await readFile(join(output, 'index.html'), 'utf8'), /analytics-config|src="js\/analytics.js"/);
   await assert.rejects(readFile(join(output, 'preview.json')));
   await assert.rejects(readFile(join(output, 'maraton-preview.json')));
+});
+
+test('public signup includes opted-in analytics only at the root, never in band content, gate or 404', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'insurgentes-public-analytics-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  for (const path of [...GATE_FILES, ...MARATON_FILES, 'templates/access.html', 'templates/maraton.html', 'templates/404.html']) {
+    await mkdir(dirname(join(root, path)), { recursive: true });
+    await cp(new URL(`../${path}`, import.meta.url), join(root, path));
+  }
+  await mkdir(join(root, 'content'));
+  await configureAnalytics(websiteId, root);
+  const config = await readAnalytics(root);
+  await writeFile(join(root, 'index.html'), `<!doctype html><html lang="es"><head>${renderAnalytics(config)}</head><body>Sitio reservado</body></html>`);
+  const password = 'Synthetic public-landing test password';
+  const output = await prepareLandingPages(root, { password });
+  const landing = await readFile(join(output, 'index.html'), 'utf8');
+  assert.equal((landing.match(/id="analytics-config"/g) || []).length, 1);
+  assert.match(landing, /src="js\/analytics.js" defer/);
+  assert.match(landing, /"phase":"site"/);
+  assert.doesNotMatch(landing, /Sitio reservado|access-password/);
+  for (const path of ['404.html', 'banda/index.html', 'admin/estadisticas/index.html']) {
+    assert.doesNotMatch(await readFile(join(output, path), 'utf8'), /analytics-config|src="js\/analytics.js"|cloud\.umami\.is\/script.js/);
+  }
+  const envelope = JSON.parse(await readFile(join(output, 'preview.json'), 'utf8'));
+  const material = await webcrypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key = await webcrypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: Buffer.from(envelope.salt, 'base64'), iterations: envelope.iterations }, material, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  const bytes = await webcrypto.subtle.decrypt({ name: 'AES-GCM', iv: Buffer.from(envelope.iv, 'base64') }, key, Buffer.from(envelope.ciphertext, 'base64'));
+  const band = new TextDecoder().decode(bytes);
+  assert.match(band, /Sitio reservado/);
+  assert.doesNotMatch(band, /analytics-config|cloud\.umami\.is\/script.js|function track/);
+  await configureAnalytics('--disable', root);
+  await prepareLandingPages(root);
+  assert.doesNotMatch(await readFile(join(output, 'index.html'), 'utf8'), /analytics-config|src="js\/analytics.js"/);
 });

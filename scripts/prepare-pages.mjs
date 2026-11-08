@@ -1,7 +1,7 @@
 import { copyFile, lstat, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { preparePrivatePages } from './private-preview.mjs';
+import { prepareLandingPages, preparePrivatePages } from './private-preview.mjs';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -50,8 +50,11 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       catch (error) { if (error.code !== 'ENOENT') throw error; }
     }
     const launch = process.argv.includes('--public');
-    const output = launch ? await preparePages() : await preparePrivatePages(projectRoot, { password, siteUrl: process.env.SITE_URL });
-    console.log(`${launch ? 'Public website' : password ? 'Password-protected preview' : 'Holding page (no preview password configured)'} prepared in ${output}`);
+    const gated = process.argv.includes('--gated');
+    if (launch && gated) throw new Error('Choose either --public or --gated, not both');
+    const prepare = launch ? preparePages : gated ? preparePrivatePages : prepareLandingPages;
+    const output = await prepare(projectRoot, { password, siteUrl: process.env.SITE_URL });
+    console.log(`${launch ? 'Full public website' : gated ? 'Password-protected previews' : 'Public Maratón signup and password-protected band access'} prepared in ${output}`);
   } catch (error) {
     console.error(`Could not prepare GitHub Pages: ${error.message}`);
     process.exitCode = 1;

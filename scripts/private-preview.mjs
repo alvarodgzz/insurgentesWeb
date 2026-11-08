@@ -3,6 +3,8 @@ import { copyFile, lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promise
 import { dirname, extname, join, posix, resolve } from 'node:path';
 import { renderNewsletter } from '../js/newsletter-render.mjs';
 import { readNewsletter } from './newsletter-config.mjs';
+import { renderAnalytics } from '../js/analytics-render.mjs';
+import { readAnalytics } from './analytics-config.mjs';
 
 export const GATE_FILES = Object.freeze([
   'css/access.css', 'js/access.js',
@@ -11,7 +13,7 @@ export const GATE_FILES = Object.freeze([
   'images/favicon-32.png',
   'js/analytics.js', 'css/stats.css', 'admin/estadisticas/index.html',
 ]);
-// These are bundled inside the encrypted signup preview, never copied publicly.
+// Public signup assets; bundled instead when explicitly preparing both gates.
 export const MARATON_FILES = Object.freeze(['css/maraton.css', 'js/maraton.js']);
 const iterations = 600000;
 const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
@@ -58,6 +60,10 @@ export async function makeSelfContained(root, sourceHtml) {
   });
   let html = sourceHtml === undefined ? (await safeRead(root, 'index.html')).toString('utf8') : sourceHtml;
   if (typeof html !== 'string') throw new Error('Preview content must be HTML text');
+  // Protected documents never include a tracker, even when the public landing
+  // has opted into analytics. Remove the bootstrap before bundling its script.
+  html = html.replace(/<script\b([^>]*)>[\s\S]*?<\/script>/gi, (tag, attrs) =>
+    /\bid=["']analytics-config["']/i.test(attrs) || /\bsrc=["'](?:\.\/)?js\/analytics\.js["']/i.test(attrs) ? '' : tag);
   html = await replaceAsync(html, /<link\b[^>]*>/gi, async tag => {
     const href = /\bhref=["']([^"']+)["']/i.exec(tag)?.[1];
     if (!href || external(href)) return tag;
@@ -111,13 +117,17 @@ export async function encryptPreview(html, password) {
   return { version: 1, iterations, salt: base64(salt), iv: base64(iv), ciphertext: base64(ciphertext) };
 }
 
-export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'https://losinsurgentes.mx/' } = {}) {
+async function preparePreviewPages(sourceRoot, { password, siteUrl = 'https://losinsurgentes.mx/', publicLanding = false } = {}) {
   const root = resolve(sourceRoot);
   const output = join(root, '_site');
   // Clear all former public assets, including obsolete photos and admin files.
   await rm(output, { recursive: true, force: true });
   await mkdir(output, { recursive: true });
-  const base = new URL(siteUrl).pathname.replace(/\/?$/, '/');
+  const canonical = new URL(siteUrl);
+  if (canonical.protocol !== 'https:' || canonical.username || canonical.password || canonical.port) throw new Error('Invalid public site URL');
+  canonical.search = ''; canonical.hash = '';
+  const base = canonical.pathname.replace(/\/?$/, '/');
+  canonical.pathname = base;
   if (!/^\/[a-zA-Z0-9/_-]*$/.test(base)) throw new Error('Invalid preview base path');
   const gateTemplate = (await safeRead(root, 'templates/access.html')).toString('utf8');
   const gate = (payload, title, backUrl, backLabel) => gateTemplate
@@ -125,8 +135,8 @@ export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'htt
     .replaceAll('{{PREVIEW}}', payload).replaceAll('{{ACCESS_TITLE}}', title)
     .replaceAll('{{BACK_URL}}', backUrl).replaceAll('{{BACK_LABEL}}', backLabel);
   const signupGate = gate('maraton-preview.json', 'Acceso a Maratón', 'banda/', 'Acceso de la banda ↗');
-  const bandGate = gate('preview.json', 'Acceso de la banda', './', 'Volver al inicio ↗');
-  for (const path of GATE_FILES) {
+  const bandGate = gate('preview.json', 'Acceso de la banda', './', 'Volver al registro ↗');
+  for (const path of [...GATE_FILES, ...(publicLanding ? MARATON_FILES : [])]) {
     // Read first to refuse symlinks and nested traversal before copying.
     await safeRead(root, path);
     const target = join(output, path);
@@ -135,19 +145,44 @@ export async function preparePrivatePages(sourceRoot, { password, siteUrl = 'htt
   }
   await mkdir(join(output, 'banda'), { recursive: true });
   await writeFile(join(output, 'banda/index.html'), bandGate);
-  await writeFile(join(output, 'index.html'), signupGate);
-  await writeFile(join(output, '404.html'), signupGate);
   await writeFile(join(output, '.nojekyll'), '');
-  await writeFile(join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
-  if (password) {
-    const landing = (await safeRead(root, 'templates/maraton.html')).toString('utf8')
-      .replaceAll('{{BASE}}', base).replaceAll('{{TELEMETRY}}', '')
+  let landing;
+  if (publicLanding || password) {
+    landing = (await safeRead(root, 'templates/maraton.html')).toString('utf8')
+      .replaceAll('{{BASE}}', base)
+      .replaceAll('{{TELEMETRY}}', publicLanding ? renderAnalytics(await readAnalytics(root)) : '')
       .replaceAll('{{NEWSLETTER}}', renderNewsletter(await readNewsletter(root)));
-    for (const [name, html] of [['preview.json', await makeSelfContained(root)], ['maraton-preview.json', await makeSelfContained(root, landing)]]) {
+  }
+  if (publicLanding) {
+    const publicHtml = landing.replace(/<meta\b[^>]*\bname=["']robots["'][^>]*>/gi, '')
+      .replace('</head>', `<link rel="canonical" href="${canonical.href}">\n</head>`);
+    const notFound = (await safeRead(root, 'templates/404.html')).toString('utf8').replaceAll('{{BASE}}', base);
+    await writeFile(join(output, 'index.html'), publicHtml);
+    await writeFile(join(output, '404.html'), notFound);
+    await writeFile(join(output, 'robots.txt'), `User-agent: *\nDisallow: ${base}banda/\nDisallow: ${base}admin/\nDisallow: ${base}preview.json\n`);
+  } else {
+    await writeFile(join(output, 'index.html'), signupGate);
+    await writeFile(join(output, '404.html'), signupGate);
+    await writeFile(join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  }
+  if (password) {
+    const documents = [['preview.json', await makeSelfContained(root)]];
+    if (!publicLanding) documents.push(['maraton-preview.json', await makeSelfContained(root, landing)]);
+    for (const [name, html] of documents) {
       const payload = JSON.stringify(await encryptPreview(html, password));
       if (Buffer.byteLength(payload) > 80 * 1024 * 1024) throw new Error('Encrypted preview exceeds 80 MiB');
       await writeFile(join(output, name), payload);
     }
   }
   return output;
+}
+
+// Explicit rollback: both Maratón and the complete band site require a password.
+export function preparePrivatePages(sourceRoot, options = {}) {
+  return preparePreviewPages(sourceRoot, { ...options, publicLanding: false });
+}
+
+// Default publication: signup is public; only the complete band site is gated.
+export function prepareLandingPages(sourceRoot, options = {}) {
+  return preparePreviewPages(sourceRoot, { ...options, publicLanding: true });
 }

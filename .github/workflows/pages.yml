@@ -45,7 +45,7 @@ jobs:
       - name: Check generated website
         run: node scripts/check.mjs
 
-      - name: Prepare password-protected preview
+      - name: Prepare public signup and password-protected band site
         run: node scripts/prepare-pages.mjs
         env:
           PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
