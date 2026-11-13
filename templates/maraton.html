@@ -19,22 +19,28 @@
   <div class="maraton-shell">
     <header class="maraton-header">
       <a class="maraton-brand" href="./" aria-label="Los Insurgentes — inicio"><img src="assets/logos/logo-full-white.png" width="1600" height="561" alt="Los Insurgentes"></a>
-      <a class="maraton-band-access" href="banda/">Acceso de la banda <span aria-hidden="true">↗</span></a>
+      <div class="maraton-header-links">
+        <a class="maraton-register-link" href="#registro">Registro <span aria-hidden="true">↓</span></a>
+        <a class="maraton-band-access" href="banda/">Acceso de la banda <span aria-hidden="true">↗</span></a>
+      </div>
     </header>
 
     <main class="maraton-main" id="contenido">
-      <section class="maraton-banner" aria-labelledby="maraton-title">
+      <section class="maraton-banner maraton-poster" aria-labelledby="maraton-title">
+        <div class="maraton-poster-head">
+          <div class="maraton-poster-meta">
+            <p class="maraton-eyebrow">El nuevo álbum de Los Insurgentes</p>
+            <div class="maraton-release"><span class="maraton-status-dot" aria-hidden="true"></span><p>Próximamente</p></div>
+          </div>
+          <h1 class="maraton-poster-title" id="maraton-title"><img src="assets/maraton/maraton-full-rust.png" width="2400" height="657" alt="Maratón" fetchpriority="high"></h1>
+        </div>
         <div class="maraton-banner-copy">
-          <p class="maraton-eyebrow"><span aria-hidden="true"></span> El nuevo álbum de Los Insurgentes</p>
-          <h1 id="maraton-title">Maratón<span class="maraton-title-dot" aria-hidden="true">.</span></h1>
-          <div class="maraton-release"><span class="maraton-status-dot" aria-hidden="true"></span><p>Próximamente</p></div>
           <p class="maraton-intro">Es esa calavera que ya viene por ti...</p>
           <a class="maraton-jump" href="#registro" data-signup-start>Quiero enterarme <span aria-hidden="true">↓</span></a>
+          <img class="maraton-poster-seal" src="assets/maraton/insurgentes-oval-ink.png" width="720" height="331" alt="" aria-hidden="true">
         </div>
         <div class="maraton-art" aria-hidden="true">
-          <span class="maraton-orbit maraton-orbit-one"></span>
-          <span class="maraton-orbit maraton-orbit-two"></span>
-          <img class="maraton-skull" src="assets/logos/skull-icon-orange.png" width="1600" height="1400" alt="" fetchpriority="high">
+          <img class="maraton-skull" src="assets/logos/skull-icon-orange.png" width="1600" height="1400" alt="">
           <span class="maraton-art-note">Desde la resistencia.</span>
         </div>
         <div class="maraton-banner-edge" aria-hidden="true"><span>LOS INSURGENTES</span><span>MONTERREY, N. L.</span><span>MARATÓN</span></div>
@@ -45,8 +51,10 @@
           <p class="maraton-eyebrow">Directo desde la banda</p>
           <h2 id="signup-title">Que la señal<br>no se pierda.</h2>
           <p>Maratón es el siguiente movimiento. Deja tu correo para recibir los lanzamientos y noticias de Los Insurgentes.</p>
+          <img class="maraton-signup-stamp" src="assets/maraton/maraton-stamp-rust.png" width="960" height="263" alt="" aria-hidden="true" loading="lazy">
         </div>
         <div class="maraton-signup-panel">
+          <p class="maraton-panel-kicker"><span>Registro</span><span>Maratón / Los Insurgentes</span></p>
           {{NEWSLETTER}}
         </div>
       </section>

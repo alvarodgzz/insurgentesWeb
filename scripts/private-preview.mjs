@@ -14,7 +14,13 @@ export const GATE_FILES = Object.freeze([
   'js/analytics.js', 'css/stats.css', 'admin/estadisticas/index.html',
 ]);
 // Public signup assets; bundled instead when explicitly preparing both gates.
-export const MARATON_FILES = Object.freeze(['css/maraton.css', 'js/maraton.js']);
+export const MARATON_FILES = Object.freeze([
+  'css/maraton.css', 'js/maraton.js',
+  'assets/maraton/maraton-full-rust.png',
+  'assets/maraton/maraton-wordmark-paper.png',
+  'assets/maraton/insurgentes-oval-ink.png',
+  'assets/maraton/maraton-stamp-rust.png',
+]);
 const iterations = 600000;
 const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
 const external = value => /^(?:https:|data:|#)/i.test(value);

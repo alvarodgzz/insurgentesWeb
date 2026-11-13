@@ -24,6 +24,8 @@ El logo y la calavera oficiales forman el encabezado de comunicado de los tres c
 
 ## Bienvenida y futuras campañas
 
+Revisión visual del 12 de noviembre: las tres plantillas conservan el encabezado original con logo y calavera, y añaden una franja de papel con el sello oficial de Maratón. Consulta [la aplicación del branding](MARATON_BRANDING.md). Estos HTML están preparados para copiar; esta revisión visual no está instalada automáticamente en Brevo ni se ha probado su entrega.
+
 Usa [email-bienvenida-maraton.html](email-bienvenida-maraton.html) como **Simple confirmation email**, al registrar al fan: asunto **Tu señal llegó — Los Insurgentes**. No actives otra bienvenida que la duplique. Revisa si otros formularios comparten la plantilla antes de editarla.
 
 Para los anuncios queda [email-campana-maraton.html](email-campana-maraton.html). Es una base reutilizable, con marcadores que se deben completar y un aviso de borrador que hay que retirar. Mantén los enlaces de baja y vista en navegador. Cada noticia se prepara como campaña y se revisan su lista, contenido y destino antes de enviar; guardar una plantilla no envía una campaña.

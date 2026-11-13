@@ -1,4 +1,12 @@
-# Project status — November 7, 2026
+# Project status — November 12, 2026
+
+## November 12 branding revision
+
+The owner supplied the registered Maratón branding and authorized a creative blend with the original band identity, exclusively for this project. Original folder/ZIP remain local and ignored. Four proportional web exports preserve the supplied artwork; their provenance and usage restrictions are in `docs/MARATON_BRANDING.md`.
+
+The landing now uses an album-poster composition: official Maratón lettering, paper/rust campaign palette, oval stamp and the original orange skull/white band logo. Signup keeps the same native form, fields, script, privacy behavior and public route. The protected site uses the official album wordmark, and all three email HTML templates add an album-stamp strip while retaining their original masthead. No Brevo template was installed or email sent by the agent.
+
+The existing 69 tests passed for this revision. Desktop, tablet and mobile local Chrome checks confirmed asset loading and no horizontal page overflow at 1440, 768, 390 and 320 px. These are local layout checks, not a provider submission/CORS or email-client delivery test. Publication of this revision must be verified from its Actions run after pushing; the earlier confirmed public launch remains recorded below.
 
 ## Current direction
 

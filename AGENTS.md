@@ -22,7 +22,9 @@ Official Spanish-language website for Los Insurgentes, a rock band from Monterre
 
 ## Brand requirements
 
+- Owner restriction, November 12, 2026: the supplied Maratón branding is registered material authorized only for this Los Insurgentes website project. Do not reuse it in other projects/sessions, training materials, datasets, generic templates or shared asset libraries; do not send it to image-generation services. Keep original source folder/ZIP local; publish only selected assets needed by this site. Do not claim to control the platform's retention/training settings.
 - Preserve the official artwork. Always render the Los Insurgentes wordmark from the supplied logo images; never recreate it with text or CSS.
+- Maratón campaign integration, November 12: use the official supplied lettering/stamps in `assets/maraton/`, with paper #EBE4DC and rust #B54C05 as campaign accents. Retain the band's original logo, orange skull, black and fonts as the identity anchors. See `docs/MARATON_BRANDING.md`; do not redraw/recolor logos or publish the entire source package.
 - Brand colors: black `#000000`, carbon `#2A2A2C`, orange `#F86927`, beige `#DCD9D0`.
 - Display type: Voska Round. Body: Pragmatica Light. Oswald is the existing temporary substitute for JAF Bernina Sans Compressed; do not purchase fonts without instruction.
 - Use the band's real photos. Session photography is not album artwork.

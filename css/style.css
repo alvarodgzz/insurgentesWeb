@@ -350,6 +350,14 @@ section { padding: var(--section-space) 0; position: relative; }
   text-shadow: 0 4px 24px rgba(0,0,0,0.5);
 }
 
+.hero-title-mark {
+  display: block;
+  width: 100%;
+  max-width: 780px;
+  height: auto;
+  margin: 0 auto;
+}
+
 .hero-tagline {
   font-family: var(--font-label);
   color: var(--beige);

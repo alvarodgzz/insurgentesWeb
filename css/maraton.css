@@ -1,7 +1,7 @@
 @font-face{font-family:Pragmatica;src:url('../assets/fonts/Pragmatica-Light.ttf') format('truetype');font-weight:300;font-style:normal;font-display:swap}
 @font-face{font-family:Voska;src:url('../assets/fonts/VoskaRound.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
 
-:root{color-scheme:dark;--maraton-orange:#f86927;--maraton-beige:#dcd9d0;--maraton-muted:#b5b1a8;--maraton-carbon:#2a2a2c}
+:root{color-scheme:dark;--maraton-orange:#f86927;--maraton-beige:#dcd9d0;--maraton-paper:#ebe4dc;--maraton-rust:#b54c05;--maraton-ink:#171714;--maraton-muted:#b5b1a8;--maraton-carbon:#2a2a2c}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:28px}
 body{margin:0;background:#000;color:var(--maraton-beige);font-family:Pragmatica,Arial,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}
@@ -11,67 +11,76 @@ a{color:inherit}
 :focus-visible{outline:2px solid var(--maraton-orange);outline-offset:5px}
 .maraton-skip{position:fixed;top:14px;left:18px;z-index:10;padding:12px 17px;transform:translateY(-180%);background:var(--maraton-orange);color:#000}
 .maraton-skip:focus{transform:none}
-.maraton-shell{width:min(1600px,100%);margin:auto;padding:26px clamp(24px,5.5vw,88px) 24px;overflow:hidden}
-.maraton-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-bottom:24px;border-bottom:1px solid var(--maraton-carbon)}
-.maraton-brand{display:block;width:224px;max-width:49%}
+.maraton-shell{width:min(1520px,100%);margin:auto;padding:26px clamp(20px,4.5vw,68px) 24px}
+.maraton-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-bottom:25px}
+.maraton-brand{display:block;width:210px;max-width:40%;flex-shrink:0}
 .maraton-brand img{display:block;width:100%;height:auto}
-.maraton-band-access{display:inline-flex;align-items:center;gap:13px;min-height:42px;padding:10px 14px;border:1px solid #46413b;font-size:11px;line-height:1.4;letter-spacing:.04em;text-decoration:none;transition:border-color .16s,color .16s}
+.maraton-header-links{display:flex;align-items:center;gap:30px}
+.maraton-register-link{display:inline-flex;align-items:center;gap:20px;min-height:44px;font-size:12px;text-decoration:none}
+.maraton-register-link:hover{color:var(--maraton-orange)}
+.maraton-band-access{display:inline-flex;align-items:center;gap:13px;min-height:44px;padding:11px 15px;border:1px solid #49483f;font-size:11px;line-height:1.4;letter-spacing:.04em;text-decoration:none;transition:border-color .16s,color .16s}
 .maraton-band-access:hover{border-color:var(--maraton-orange);color:var(--maraton-orange)}
-.maraton-band-access span{font-family:Arial,sans-serif;font-size:18px}
-.maraton-banner{position:relative;display:grid;grid-template-columns:1.1fr 1fr;min-height:clamp(490px,60vw,690px);isolation:isolate;border-bottom:1px solid var(--maraton-carbon)}
-.maraton-banner-copy{position:relative;z-index:2;align-self:center;padding:58px 0 88px}
+.maraton-band-access span,.maraton-register-link span{font-family:Arial,sans-serif;font-size:18px}
+
+/* The new album supplies the poster; the original orange skull keeps the band in it. */
+.maraton-banner{position:relative;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);isolation:isolate;background:var(--maraton-paper);color:var(--maraton-ink);overflow:hidden}
+.maraton-poster-head{grid-column:1/-1;padding:32px 36px 6px}
+.maraton-poster-meta{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:22px;padding-bottom:17px;border-bottom:1px solid #b8afa1}
 .maraton-eyebrow{display:flex;align-items:center;gap:12px;margin:0 0 22px;color:var(--maraton-orange);font-size:10px;line-height:1.7;letter-spacing:.16em;text-transform:uppercase}
-.maraton-eyebrow>span{width:29px;height:1px;background:currentColor;flex:none}
+.maraton-poster-meta .maraton-eyebrow{margin:0;color:var(--maraton-ink)}
 h1,h2{font-family:Voska,Impact,sans-serif;font-weight:400;letter-spacing:-.025em}
-h1{position:relative;margin:0 0 22px;font-size:clamp(78px,10.8vw,170px);line-height:.96;white-space:nowrap}
-.maraton-title-dot{color:var(--maraton-orange)}
-.maraton-release{display:flex;align-items:center;gap:10px;margin:0 0 24px}
-.maraton-release p{margin:0;font-size:11px;line-height:1.5;letter-spacing:.2em;text-transform:uppercase}
-.maraton-status-dot{display:block;width:6px;height:6px;border-radius:50%;background:var(--maraton-orange)}
-.maraton-intro{margin:0;font-size:17px;line-height:1.7;color:var(--maraton-muted)}
-.maraton-jump{display:inline-flex;align-items:center;gap:27px;min-height:46px;margin-top:27px;border-bottom:1px solid var(--maraton-orange);font-size:12px;text-decoration:none}
-.maraton-jump:hover{color:var(--maraton-orange)}
+h1{margin:0 0 22px;font-size:clamp(78px,10.8vw,170px);line-height:.96}
+.maraton-poster-title{width:100%;margin:0;font-size:inherit;line-height:0}
+.maraton-poster-title img{display:block;width:100%;height:auto}
+.maraton-title-dot{color:var(--maraton-rust)}
+.maraton-release{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.maraton-release p{margin:0;font-size:10px;line-height:1.5;letter-spacing:.16em;text-transform:uppercase}
+.maraton-status-dot{display:block;width:6px;height:6px;flex:none;border-radius:50%;background:var(--maraton-rust)}
+.maraton-banner-copy{position:relative;z-index:2;align-self:center;min-width:0;padding:28px 36px 32px}
+.maraton-intro{max-width:17ch;margin:0;font-family:Voska,Impact,sans-serif;font-size:clamp(30px,3.5vw,51px);line-height:1.08;letter-spacing:-.02em;text-wrap:balance}
+.maraton-jump{display:inline-flex;align-items:center;justify-content:space-between;gap:34px;min-height:49px;margin-top:25px;padding:14px 19px;background:var(--maraton-ink);color:var(--maraton-paper);border:1px solid var(--maraton-ink);font-size:12px;line-height:1.5;text-decoration:none;transition:background .16s,color .16s}
+.maraton-jump:hover{background:var(--maraton-rust);border-color:var(--maraton-rust);color:#fff}
 .maraton-jump span{font-family:Arial,sans-serif;font-size:19px}
-.maraton-art{position:relative;display:grid;place-items:center;min-width:0;z-index:0;pointer-events:none}
-.maraton-skull{position:relative;z-index:1;display:block;width:154%;height:auto;max-width:none;margin:0 -30% 0 -14%;transform:rotate(-9deg)}
-.maraton-orbit{position:absolute;top:48%;left:52%;aspect-ratio:1;transform:translate(-50%,-50%);border:1px solid #32271f;border-radius:50%}
-.maraton-orbit-one{width:91%}
-.maraton-orbit-two{width:115%}
-.maraton-art-note{position:absolute;right:0;bottom:17%;color:var(--maraton-orange);writing-mode:vertical-rl;font-size:9px;line-height:1.5;letter-spacing:.22em;text-transform:uppercase}
-.maraton-banner-edge{position:absolute;right:0;bottom:23px;left:0;z-index:2;display:flex;justify-content:space-between;gap:24px;color:#aaa69d;font-size:9px;line-height:1.5;letter-spacing:.18em}
-.maraton-banner-edge span:nth-child(2){color:var(--maraton-orange)}
-.maraton-signup{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(32px,7vw,100px);padding:65px 0 72px;scroll-margin-top:24px}
-.maraton-signup-copy .maraton-eyebrow{margin-bottom:15px}
-.maraton-signup h2{margin:0 0 19px;font-size:clamp(34px,4.1vw,57px);line-height:1.1}
-.maraton-signup-copy>p:last-child{max-width:390px;margin:0;color:var(--maraton-muted);font-size:15px;line-height:1.7}
-.maraton-signup-panel{width:100%;padding:29px;border:1px solid #49423a;border-top:3px solid var(--maraton-orange);background:#101010}
-.maraton-signup-panel h3{margin:0 0 13px;font-size:17px;font-weight:300;line-height:1.5}
-.maraton-signup-panel p{margin:0 0 18px;color:var(--maraton-muted);font-size:13px;line-height:1.7}
+.maraton-poster-seal{display:block;width:clamp(148px,16vw,210px);max-width:80%;height:auto;margin:29px 0 0 6px;transform:rotate(-8deg)}
+.maraton-art{position:relative;display:grid;place-items:center;align-self:stretch;min-width:0;min-height:260px;margin:22px 36px 28px 0;background:var(--maraton-ink);overflow:hidden;pointer-events:none}
+.maraton-skull{position:relative;display:block;width:106%;height:auto;max-width:none;transform:rotate(-9deg);margin:-13% -8% -15% 0}
+.maraton-art-note{position:absolute;right:15px;bottom:20px;color:var(--maraton-paper);writing-mode:vertical-rl;font-size:9px;line-height:1.5;letter-spacing:.18em;text-transform:uppercase}
+.maraton-banner-edge{grid-column:1/-1;display:flex;justify-content:space-between;gap:24px;margin:0 36px;padding:17px 0 19px;border-top:1px solid #b8afa1;color:#57544d;font-size:9px;line-height:1.5;letter-spacing:.16em}
+.maraton-banner-edge span:nth-child(2){color:var(--maraton-rust)}
+
+.maraton-signup{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(32px,7vw,100px);padding:78px 6px 84px;scroll-margin-top:24px}
+.maraton-signup-copy .maraton-eyebrow{margin-bottom:18px}
+.maraton-signup h2{margin:0 0 20px;font-size:clamp(37px,4.3vw,62px);line-height:1.05}
+.maraton-signup-copy>p{max-width:390px;margin:0;color:var(--maraton-muted);font-size:15px;line-height:1.8}
+.maraton-signup-copy>.maraton-eyebrow{color:var(--maraton-orange);font-size:10px;line-height:1.7}
+.maraton-signup-stamp{display:block;width:clamp(200px,23vw,310px);max-width:85%;height:auto;margin:36px 0 0;transform:rotate(-4deg)}
+.maraton-signup-panel{width:100%;padding:30px;border:1px solid var(--maraton-paper);border-top:4px solid var(--maraton-orange);background:var(--maraton-paper);color:var(--maraton-ink);box-shadow:7px 7px 0 var(--maraton-rust);color-scheme:light}
+.maraton-signup-panel .maraton-panel-kicker{display:flex;justify-content:space-between;gap:12px;margin:0 0 24px;padding-bottom:14px;border-bottom:1px solid #c1b7a9;color:#585248;font-size:9px;line-height:1.6;letter-spacing:.1em;text-transform:uppercase}
+.maraton-signup-panel h3{margin:0 0 13px;font-size:18px;font-weight:300;line-height:1.5}
+.maraton-signup-panel p{margin:0 0 18px;color:#585248;font-size:13px;line-height:1.7}
 .maraton-signup-panel p:last-child{margin-bottom:0}
-.newsletter-label,.newsletter-form>label:not(.newsletter-consent){display:block;margin-bottom:8px;font-size:12px;color:var(--maraton-muted)}
+.newsletter-label,.newsletter-form>label:not(.newsletter-consent){display:block;margin-bottom:8px;font-size:12px;color:var(--maraton-ink)}
 .newsletter-form{margin:0}
 .newsletter-trap{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;pointer-events:none}
 .maraton-signup-panel .newsletter-intro{margin-bottom:23px}
 .maraton-signup-panel .newsletter-consent-text{margin-top:13px}
-.newsletter-email,.newsletter-form input[type=email]{display:block;width:100%;min-height:52px;padding:14px;border:1px solid #5f5b54;border-radius:0;background:#080808;color:var(--maraton-beige);font-size:16px;line-height:1.4}
-.newsletter-email:focus,.newsletter-form input[type=email]:focus{outline:2px solid var(--maraton-orange);outline-offset:2px}
+.newsletter-email,.newsletter-form input[type=email]{display:block;width:100%;min-height:52px;padding:14px;border:1px solid #827b6f;border-radius:0;background:#f8f3eb;color:var(--maraton-ink);font-size:16px;line-height:1.4}
+.newsletter-email::placeholder{color:#71695e;opacity:1}
+.newsletter-email:focus,.newsletter-form input[type=email]:focus{outline:2px solid var(--maraton-rust);outline-offset:2px}
 .newsletter-email:disabled,.newsletter-form input:disabled{opacity:.6;cursor:not-allowed}
-.newsletter-consent{display:flex;align-items:flex-start;gap:10px;margin:15px 0;color:var(--maraton-muted);font-size:12px;line-height:1.6}
-.newsletter-consent input{flex:none;width:16px;height:16px;margin:2px 0 0;accent-color:var(--maraton-orange)}
 .newsletter-button{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:53px;margin:16px 0;padding:14px 17px;border:1px solid var(--maraton-orange);border-radius:0;background:var(--maraton-orange);color:#000;font-family:Arial,sans-serif;font-size:13px;line-height:1.5;text-align:left;text-decoration:none;cursor:pointer;transition:background .16s,border-color .16s}
 .newsletter-button:hover{background:#ff8a51;border-color:#ff8a51}
 .newsletter-button:disabled{opacity:.55;cursor:not-allowed}
 .maraton-signup-panel .newsletter-note,.maraton-signup-panel .newsletter-status{font-size:11px;line-height:1.7}
-.maraton-signup-panel .newsletter-status{color:var(--maraton-orange)}
 .newsletter-status[hidden]{display:none}
-.maraton-signup-panel .newsletter-status:not([hidden]){margin:18px 0 0;padding:14px 16px;border:1px solid #49423a;font-size:14px;line-height:1.6}
-.maraton-signup-panel .newsletter-status[data-state=success]{border-color:var(--maraton-orange);background:#20150e;color:var(--maraton-beige)}
-.maraton-signup-panel .newsletter-status[data-state=error]{border-left:3px solid var(--maraton-orange);color:var(--maraton-beige)}
+.maraton-signup-panel .newsletter-status:not([hidden]){margin:18px 0 0;padding:14px 16px;border:1px solid #b4a999;font-size:14px;line-height:1.6}
+.maraton-signup-panel .newsletter-status[data-state=success]{border-color:#696c4f;background:#e0e2d4;color:var(--maraton-ink)}
+.maraton-signup-panel .newsletter-status[data-state=error]{border-left:3px solid var(--maraton-rust);color:var(--maraton-ink)}
 .newsletter-form[aria-busy=true] .newsletter-button{cursor:wait}
-.maraton-footer{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--maraton-carbon);padding-top:21px;color:#aaa69d;font-size:10px;line-height:1.5;letter-spacing:.08em}
+.maraton-footer{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #393831;padding-top:21px;color:#aaa69d;font-size:10px;line-height:1.5;letter-spacing:.08em}
 
-@media(min-width:1600px){.maraton-banner{min-height:690px}}
-@media(max-width:1000px){.maraton-banner{grid-template-columns:1.3fr 1fr;min-height:520px}.maraton-skull{width:185%;margin-left:-24%;opacity:.82}.maraton-art-note{right:-8px}.maraton-eyebrow{font-size:9px;letter-spacing:.12em}.maraton-signup{gap:35px}.maraton-signup-panel{padding:24px}}
-@media(max-width:680px){html{scroll-padding-top:18px}.maraton-shell{padding:19px 24px 21px}.maraton-header{gap:14px;padding-bottom:20px}.maraton-brand{width:180px;max-width:52%}.maraton-band-access{gap:8px;padding:8px 10px;min-height:40px;font-size:10px}.maraton-banner{display:block;min-height:0}.maraton-banner-copy{padding:57px 0 92px}.maraton-banner .maraton-eyebrow{max-width:245px;margin-bottom:23px}.maraton-banner h1{font-size:clamp(73px,17vw,116px);margin-bottom:23px}.maraton-release{margin-bottom:23px}.maraton-intro{font-size:16px}.maraton-jump{margin-top:22px}.maraton-art{position:absolute;top:27px;right:-193px;bottom:31px;width:420px;opacity:.23;z-index:-1}.maraton-skull{width:145%;margin:0;opacity:1;transform:rotate(-14deg)}.maraton-orbit{display:none}.maraton-art-note{display:none}.maraton-banner-edge{bottom:20px;gap:12px;font-size:8px;letter-spacing:.09em}.maraton-banner-edge span:nth-child(2){display:none}.maraton-signup{grid-template-columns:1fr;gap:29px;padding:40px 0 43px}.maraton-signup h2{font-size:43px}.maraton-signup-copy>p:last-child{max-width:370px;font-size:14px}.maraton-signup-panel{padding:23px}.maraton-footer{font-size:8px;letter-spacing:.04em;gap:15px}.maraton-footer span:last-child{text-align:right}}
-@media(max-width:360px){.maraton-shell{padding-inline:19px}.maraton-banner h1{font-size:70px}.maraton-band-access{font-size:9px;gap:6px}.maraton-brand{max-width:48%}.maraton-signup-panel{padding:19px}}
+@media(min-width:1500px){.maraton-banner-copy{padding-bottom:42px}.maraton-art{max-height:370px}.maraton-skull{width:96%}}
+@media(max-width:1000px){.maraton-header-links{gap:20px}.maraton-poster-head{padding:26px 27px 4px}.maraton-banner-copy{padding:22px 27px 30px}.maraton-art{margin:16px 27px 24px 0;min-height:230px}.maraton-skull{width:125%;margin-left:-8%}.maraton-banner-edge{margin-inline:27px}.maraton-eyebrow{font-size:9px;letter-spacing:.1em}.maraton-signup{gap:35px}.maraton-signup-panel{padding:24px}}
+@media(max-width:680px){html{scroll-padding-top:18px}.maraton-shell{padding:18px 19px 21px}.maraton-header{gap:12px;padding-bottom:20px}.maraton-brand{width:165px;max-width:44%}.maraton-header-links{gap:0}.maraton-register-link{display:none}.maraton-band-access{gap:8px;padding:8px 9px;min-height:44px;font-size:10px}.maraton-banner{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}.maraton-poster-head{padding:22px 20px 5px}.maraton-poster-meta{align-items:flex-start;gap:15px;margin-bottom:18px;padding-bottom:14px}.maraton-poster-meta .maraton-eyebrow{max-width:155px;font-size:8px;letter-spacing:.08em}.maraton-release{gap:6px;padding-top:2px}.maraton-release p{font-size:8px;letter-spacing:.06em}.maraton-status-dot{width:5px;height:5px}.maraton-banner-copy{padding:20px 12px 26px 20px;align-self:start}.maraton-intro{font-size:clamp(25px,6.6vw,36px);line-height:1.08;max-width:11ch}.maraton-jump{gap:12px;min-height:46px;margin-top:20px;padding:10px 12px;font-size:11px}.maraton-poster-seal{width:140px;max-width:100%;margin:26px 0 0;transform:rotate(-7deg)}.maraton-art{margin:17px 0 25px 0;min-height:220px}.maraton-skull{width:210%;margin-left:-23%;transform:rotate(-9deg)}.maraton-art-note{right:9px;bottom:12px;font-size:7px;letter-spacing:.1em}.maraton-banner-edge{margin-inline:20px;padding:14px 0;gap:12px;font-size:7px;letter-spacing:.08em}.maraton-banner-edge span:nth-child(2){display:none}.maraton-signup{grid-template-columns:1fr;gap:31px;padding:45px 3px 50px}.maraton-signup h2{font-size:46px}.maraton-signup-copy>p{max-width:370px;font-size:14px}.maraton-signup-stamp{width:210px;margin-top:26px}.maraton-signup-panel{padding:23px;box-shadow:5px 5px 0 var(--maraton-rust)}.maraton-panel-kicker span:last-child{letter-spacing:0}.maraton-footer{font-size:8px;letter-spacing:.04em;gap:15px}.maraton-footer span:last-child{text-align:right}}
+@media(max-width:360px){.maraton-shell{padding-inline:15px}.maraton-brand{max-width:42%}.maraton-band-access{font-size:9px;gap:6px}.maraton-poster-head{padding-inline:17px}.maraton-poster-meta .maraton-eyebrow{font-size:7px;max-width:125px}.maraton-banner-copy{padding-left:17px}.maraton-intro{font-size:24px}.maraton-jump{gap:9px;padding-inline:10px;font-size:10px}.maraton-poster-seal{margin-top:22px}.maraton-signup-panel{padding:20px}.maraton-signup-panel .maraton-panel-kicker{font-size:8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}

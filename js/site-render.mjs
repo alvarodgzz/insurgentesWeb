@@ -92,10 +92,13 @@ const external = (url, label, cls = '') => `<a href="${e(url)}" target="_blank" 
 const photoImage = (path, alt, cls = '', width = 1400, height = 933) => `<img src="${e(photoPath(path))}" alt="${e(alt)}"${cls ? ` class="${cls}"` : ''} width="${Number(width) || 1400}" height="${Number(height) || 933}" loading="lazy" decoding="async">`;
 
 function renderHero(site) {
+  const title = site.hero.title === 'Maratón'
+    ? '<img class="hero-title-mark" src="assets/maraton/maraton-wordmark-paper.png" alt="Maratón" width="2000" height="403" fetchpriority="high">'
+    : e(site.hero.title);
   return `<section class="hero" id="top" style="--hero-photo:url('${e(site.hero.image)}');background-position:${e(site.hero.position || 'center 35%')}">
     <div class="hero-inner">
       <img src="assets/logos/logo-full-white.png" alt="Los Insurgentes" class="hero-mark" width="1600" height="561" fetchpriority="high">
-      <h1>${e(site.hero.title)}</h1>
+      <h1>${title}</h1>
       <p class="hero-tagline">${e(site.hero.tagline)}</p>
       ${site.hero.announcement ? `<p class="hero-announcement">${e(site.hero.announcement)}</p>` : ''}
       <div class="hero-ctas"><a href="#sencillos" class="btn btn-solid">Escuchar sencillos <span aria-hidden="true">↗</span></a><a href="#shows" class="btn btn-outline">Ver fechas</a></div>
