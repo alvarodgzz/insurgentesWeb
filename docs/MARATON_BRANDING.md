@@ -8,13 +8,13 @@ El propietario identifica estos materiales como registrados y autoriza su uso ex
 
 La carpeta original `MARATON BRANDING/` y su ZIP permanecen locales, sin cambios y excluidos de Git. Solo las cuatro exportaciones seleccionadas en `assets/maraton/` forman parte del sitio. Esta restricción del proyecto no modifica los ajustes de uso de datos de la plataforma.
 
-## La mezcla
+## La mezcla aprobada tras la corrección
 
-Maratón encabeza la portada con su lettering oficial, volumen negro, tinta quemada y papel claro. El logotipo original de Los Insurgentes, la calavera naranja, el negro, Voska y Pragmatica mantienen la continuidad de la banda.
+El propietario pidió conservar el look and feel y la experiencia originales del registro. La landing vuelve al fondo negro, composición, calavera, tipografías, formulario oscuro y espaciado anteriores. El cambio visual se limita al wordmark oficial de Maratón en su encabezado. No volver a convertir el registro en un cartel de papel ni añadir sellos y bloques decorativos.
 
-El cartel reúne el logo del álbum, la frase elegida por el propietario, la calavera original sobre negro y el sello ovalado. El registro toma la forma de una hoja de comunicado sobre el fondo negro. Los sellos conservan su desgaste original; no se simula ni se redibuja el lettering con CSS.
+La composición de campaña a pantalla completa se reserva a una pantalla independiente, después de la contraseña de la banda. Usa el logo oficial con volumen, papel `#EBE4DC`, tinta `#B54C05`, una frase y un enlace claro **Entrar al sitio**. Al entrar se muestra el sitio existente, cuyo encabezado centrado de Maratón ya fue aprobado. No se modifica su diseño ni se convierte la fotografía de la sesión en portada del álbum.
 
-Colores del material de campaña: papel `#EBE4DC` y tinta quemada `#B54C05`, tomada de la variante oficial nombrada ROJO. El naranja original `#F86927` sigue en la calavera y el botón de registro. No reemplazar la paleta original de la banda por todas las variantes del paquete a la vez.
+La secuencia actual es **registro público → Acceso de la banda → contraseña → banner de Maratón → sitio completo**. El banner forma parte del mismo `preview.json` cifrado. Sus HTML, CSS y JavaScript no se copian como rutas públicas ni incorporan analytics, almacenamiento, descarga de un segundo paquete ni envío de contraseña al entrar.
 
 ## Exportaciones para web
 
@@ -29,8 +29,8 @@ Se prepararon copias con `sips`: reducción proporcional de tamaño y, en los se
 
 ## Aplicación y publicación
 
-- La landing pública usa el logo con volumen, el sello ovalado y el sello de Maratón, junto con la identidad original.
-- El encabezado del sitio completo usa el wordmark oficial de Maratón cuando ese es el título del anuncio. Los demás títulos editables conservan su representación de texto normal.
+- La landing pública mantiene el diseño negro original y solo actualiza el título con el wordmark oficial de Maratón.
+- Tras la contraseña aparece primero el banner a pantalla completa, con un enlace para abrir el sitio. El encabezado del sitio completo usa el wordmark oficial de Maratón cuando ese es el título del anuncio. Los demás títulos editables conservan su representación de texto normal.
 - Las tres plantillas HTML de correo conservan logo blanco y calavera naranja, y añaden una franja clara con el sello del álbum. La bienvenida activa sigue siendo Simple confirmation; el DOI sigue sin uso y la campaña conserva sus marcadores de borrador.
 - El empaquetado publica solo las exportaciones elegidas. El sitio completo continúa cifrado en `/banda/`; el editor, fotos y contenido de la banda no se publican como rutas separadas.
 

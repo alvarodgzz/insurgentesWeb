@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { encryptPreview, makeSelfContained, prepareLandingPages, preparePrivatePages, GATE_FILES, MARATON_FILES } from '../scripts/private-preview.mjs';
+import { encryptPreview, makeSelfContained, makeBandPreview, prepareLandingPages, preparePrivatePages, GATE_FILES, MARATON_FILES, BAND_PREVIEW_FILES } from '../scripts/private-preview.mjs';
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url));
 const syntheticPassword = 'Synthetic preview password 7!';
@@ -24,7 +24,7 @@ const fixtureHtml = `<!doctype html><html lang="es"><head>
 async function fixture(t) {
   const root = await mkdtemp(join(tmpdir(), 'insurgentes-private-preview-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const path of [...GATE_FILES, ...MARATON_FILES, 'templates/access.html', 'templates/maraton.html', 'templates/404.html']) {
+  for (const path of [...GATE_FILES, ...MARATON_FILES, ...BAND_PREVIEW_FILES, 'templates/access.html', 'templates/maraton.html', 'templates/404.html']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(join(projectRoot, path), join(root, path));
   }
@@ -104,7 +104,7 @@ test('private preview bundles photos, fonts, styles, icons and classic scripts w
 
 test('private Pages gates Maratón and band content in separate encrypted payloads without publishing either page', async (t) => {
   const root = await fixture(t);
-  const expectedHtml = await makeSelfContained(root);
+  const expectedHtml = await makeBandPreview(root);
   const destination = await preparePrivatePages(root, { password: syntheticPassword });
   assert.equal(destination, join(root, '_site'));
   const paths = await outputFiles(destination);
@@ -191,7 +191,12 @@ test('public Maratón signup replaces its old gate while the band site remains e
   assert.match(gate, /href="\.\/">Volver al registro/);
   assert.doesNotMatch(gate, /data-newsletter-form|Contenido privado|analytics-config/);
   const envelope = JSON.parse(await readFile(join(output, 'preview.json'), 'utf8'));
-  assert.equal(await decrypt(envelope, syntheticPassword), await makeSelfContained(root));
+  const band = await decrypt(envelope, syntheticPassword);
+  assert.equal(band, await makeBandPreview(root));
+  assert.match(band, /id="band-intro"/);
+  assert.match(band, /id="band-site" hidden inert/);
+  assert.match(band, /id="band-intro-enter"/);
+  assert.doesNotMatch(landing, /band-intro|maraton-poster|maraton-panel-kicker/);
   await assert.rejects(decrypt(envelope, 'Incorrect synthetic password'));
   const notFound = await readFile(join(output, '404.html'), 'utf8');
   assert.match(notFound, /Página no encontrada/);

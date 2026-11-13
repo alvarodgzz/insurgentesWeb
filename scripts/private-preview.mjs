@@ -21,6 +21,10 @@ export const MARATON_FILES = Object.freeze([
   'assets/maraton/insurgentes-oval-ink.png',
   'assets/maraton/maraton-stamp-rust.png',
 ]);
+// These files are bundled only inside the protected band document.
+export const BAND_PREVIEW_FILES = Object.freeze([
+  'templates/band-intro.html', 'css/band-intro.css', 'js/band-intro.js',
+]);
 const iterations = 600000;
 const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
 const external = value => /^(?:https:|data:|#)/i.test(value);
@@ -123,6 +127,18 @@ export async function encryptPreview(html, password) {
   return { version: 1, iterations, salt: base64(salt), iv: base64(iv), ciphertext: base64(ciphertext) };
 }
 
+export async function makeBandPreview(root, { base = '/' } = {}) {
+  if (!/^\/[a-zA-Z0-9/_-]*$/.test(base)) throw new Error('Invalid band preview base path');
+  const source = (await safeRead(root, 'index.html')).toString('utf8');
+  const intro = (await safeRead(root, 'templates/band-intro.html')).toString('utf8')
+    .replaceAll('{{REGISTRATION_URL}}', base);
+  const document = source
+    .replace('</head>', '<link rel="stylesheet" href="css/band-intro.css">\n</head>')
+    .replace(/<body\b[^>]*>/i, opening => `${opening}\n${intro}\n<div id="band-site" hidden inert>`)
+    .replace('</body>', '</div>\n<script src="js/band-intro.js" defer></script>\n</body>');
+  return makeSelfContained(root, document);
+}
+
 async function preparePreviewPages(sourceRoot, { password, siteUrl = 'https://losinsurgentes.mx/', publicLanding = false } = {}) {
   const root = resolve(sourceRoot);
   const output = join(root, '_site');
@@ -172,7 +188,7 @@ async function preparePreviewPages(sourceRoot, { password, siteUrl = 'https://lo
     await writeFile(join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
   }
   if (password) {
-    const documents = [['preview.json', await makeSelfContained(root)]];
+    const documents = [['preview.json', await makeBandPreview(root, { base })]];
     if (!publicLanding) documents.push(['maraton-preview.json', await makeSelfContained(root, landing)]);
     for (const [name, html] of documents) {
       const payload = JSON.stringify(await encryptPreview(html, password));

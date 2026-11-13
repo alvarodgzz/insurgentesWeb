@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { configureAnalytics } from '../scripts/configure-analytics.mjs';
 import { readAnalytics } from '../scripts/analytics-config.mjs';
 import { DEFAULT_ANALYTICS, renderAnalytics } from '../js/analytics-render.mjs';
-import { GATE_FILES, MARATON_FILES, prepareLandingPages, preparePrivatePages } from '../scripts/private-preview.mjs';
+import { GATE_FILES, MARATON_FILES, BAND_PREVIEW_FILES, prepareLandingPages, preparePrivatePages } from '../scripts/private-preview.mjs';
 
 const websiteId = 'e09631f9-3445-4c9e-b00b-3ef9afc3e172';
 
@@ -27,7 +27,7 @@ test('analytics setup enables only a valid public identifier and can disable col
 test('gated Maratón and band pages never publish or run analytics, even when configuration is enabled', async t => {
   const root = await mkdtemp(join(tmpdir(), 'insurgentes-analytics-pages-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const path of [...GATE_FILES, ...MARATON_FILES, 'templates/access.html', 'templates/maraton.html']) {
+  for (const path of [...GATE_FILES, ...MARATON_FILES, ...BAND_PREVIEW_FILES, 'templates/access.html', 'templates/maraton.html']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(new URL(`../${path}`, import.meta.url), join(root, path));
   }
@@ -69,7 +69,7 @@ test('gated Maratón and band pages never publish or run analytics, even when co
 test('public signup includes opted-in analytics only at the root, never in band content, gate or 404', async t => {
   const root = await mkdtemp(join(tmpdir(), 'insurgentes-public-analytics-'));
   t.after(() => rm(root, { recursive: true, force: true }));
-  for (const path of [...GATE_FILES, ...MARATON_FILES, 'templates/access.html', 'templates/maraton.html', 'templates/404.html']) {
+  for (const path of [...GATE_FILES, ...MARATON_FILES, ...BAND_PREVIEW_FILES, 'templates/access.html', 'templates/maraton.html', 'templates/404.html']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(new URL(`../${path}`, import.meta.url), join(root, path));
   }

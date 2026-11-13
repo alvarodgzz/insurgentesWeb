@@ -22,6 +22,8 @@ Si un envío falla con `RPC failed; HTTP 400`, el script reintenta una vez con H
 
 ## Qué protege la portada
 
+El registro conserva su diseño negro original con el wordmark oficial de Maratón. La secuencia protegida es **Acceso de la banda → contraseña → banner de Maratón a pantalla completa → Entrar al sitio**. Banner y sitio completo se incluyen en el mismo `preview.json`; entrar desde el banner no vuelve a pedir la contraseña ni a descargar el paquete cifrado. El banner no tiene rutas públicas de HTML/CSS/JS ni medición.
+
 El modo predeterminado de `scripts/prepare-pages.mjs` usa `prepareLandingPages`: publica Maratón en `/` y una portada con contraseña en `/banda/`, que abre `preview.json` con el sitio completo. `404.html` es una página de marca con enlace de regreso a `/`, sin formulario ni medición. El paquete predeterminado no genera `maraton-preview.json`.
 
 `scripts/private-preview.mjs` reúne el sitio completo con sus recursos, deriva claves con PBKDF2-SHA-256 y 600 000 iteraciones y lo cifra con AES-GCM de 256 bits, salt e IV propios. Usa la contraseña existente, que no se incluye en los archivos publicados. `access.js` continúa aceptando solo `preview.json` y `maraton-preview.json` para mantener el modo de reversión.

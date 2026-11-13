@@ -54,6 +54,8 @@ Las letras pueden ser texto proporcionado por la banda o enlaces verificados a G
 
 ## Landing de Maratón y acceso de la banda
 
+El registro conserva su diseño negro original con el wordmark oficial de Maratón. La secuencia protegida es **Acceso de la banda → contraseña → banner de Maratón a pantalla completa → Entrar al sitio**. Banner y sitio completo se incluyen en el mismo `preview.json`; entrar desde el banner no vuelve a pedir la contraseña ni a descargar el paquete cifrado. El banner no tiene rutas públicas de HTML/CSS/JS ni medición.
+
 El 7 de noviembre de 2026 el propietario autorizó publicar la landing y el registro de Maratón. El sitio completo conserva la contraseña de la banda. El paquete predeterminado de GitHub Pages prepara:
 
 - `/`: landing pública de Maratón con formulario de registro y enlace **Acceso de la banda**.
