@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out website
         uses: actions/checkout@v6
@@ -50,6 +50,9 @@ jobs:
         env:
           PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
           SITE_URL: ${{ steps.pages.outputs.base_url || 'https://alvarodgzz.github.io/insurgentesWeb/' }}
+
+      - name: Check responsive layouts and private navigation in browsers
+        run: node scripts/qa-browser.mjs --install
 
       - name: Upload website
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'

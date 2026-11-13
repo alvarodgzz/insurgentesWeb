@@ -1,5 +1,11 @@
 # Project status — November 12, 2026
 
+## November 12 responsive checks
+
+The owner reported a giant clipped initial on mobile and requested browser tests before visual changes are pushed. Fresh published Chromium checks at 320/390/430/768 px showed the complete wordmark; the report was not reproduced in that clean load. The heading now also constrains oversized images and older markup, and its CSS URL is versioned to request the current styles.
+
+`scripts/qa-browser.mjs` provides isolated Playwright layout/navigation/form checks and a local `_qa/index.html` storyboard. It catches a deliberate giant-image regression even when document overflow is hidden. Chromium passed locally across 320, 360, 390, 430, 768 and 1440 px, including private password/banner/site and simulated signup. Local WebKit hung at startup on this macOS and is not claimed as passed; Linux CI requires both Chromium and WebKit before upload/deployment. External traffic is blocked and no real signup/email is sent. Runtime configs and production ciphertext are fingerprinted to ensure QA does not replace them with synthetic fixtures. The source package, private screenshots and reports are never published. See `docs/BROWSER_QA.md`.
+
 ## November 12 branding revision
 
 The owner supplied the registered Maratón branding and authorized a creative blend with the original band identity, exclusively for this project. Original folder/ZIP remain local and ignored. Four proportional web exports preserve the supplied artwork; their provenance and usage restrictions are in `docs/MARATON_BRANDING.md`.

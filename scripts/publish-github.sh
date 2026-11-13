@@ -22,6 +22,7 @@ node --test tests/*.test.mjs
 SITE_URL='https://losinsurgentes.mx/' node scripts/build.mjs
 node scripts/check.mjs
 node scripts/prepare-pages.mjs
+node scripts/qa-browser.mjs
 
 command -v git >/dev/null || fail 'Install Git, then run this script again.'
 command -v gh >/dev/null || fail 'Install the GitHub CLI and run gh auth login --hostname github.com.'

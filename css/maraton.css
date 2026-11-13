@@ -26,6 +26,10 @@ h1,h2{font-family:Voska,Impact,sans-serif;font-weight:400;letter-spacing:-.025em
 h1{position:relative;margin:0 0 22px;font-size:clamp(78px,10.8vw,170px);line-height:.96;white-space:nowrap}
 .maraton-title-dot{color:var(--maraton-orange)}
 .maraton-title-logo{display:block;width:clamp(270px,42vw,640px);max-width:100%;height:auto}
+/* Keep album artwork inside its heading, including older cached markup. */
+.maraton-banner-copy{min-width:0}
+.maraton-banner h1{max-width:100%;min-width:0}
+.maraton-banner h1 img{display:block;max-width:100%;height:auto}
 .maraton-release{display:flex;align-items:center;gap:10px;margin:0 0 24px}
 .maraton-release p{margin:0;font-size:11px;line-height:1.5;letter-spacing:.2em;text-transform:uppercase}
 .maraton-status-dot{display:block;width:6px;height:6px;border-radius:50%;background:var(--maraton-orange)}

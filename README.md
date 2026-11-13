@@ -87,6 +87,8 @@ La página `/admin/estadisticas/` sigue enlazando al panel de Umami y requiere s
 
 ## Desarrollo
 
+Antes de pushear cambios visuales o de navegación, ejecuta `node scripts/qa-browser.mjs` y revisa el storyboard en `_qa/index.html`. La primera ejecución usa `node scripts/qa-browser.mjs --install`. Estas pruebas Playwright también bloquean el despliegue si fallan en Actions; consulta [la guía](docs/BROWSER_QA.md).
+
 ```bash
 node --test tests/*.test.mjs
 node scripts/build.mjs
