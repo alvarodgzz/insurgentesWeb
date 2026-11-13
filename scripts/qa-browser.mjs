@@ -153,12 +153,18 @@ try {
         await page.locator('#access-submit').click();
         await page.locator('#band-intro').waitFor({ state: 'visible', timeout: 30000 });
         assert.equal(await page.locator('#band-site').isVisible(), false);
-        for (const width of [320, 390, 768, 1440]) {
-          await page.setViewportSize({ width, height: width < 700 ? 844 : 1000 });
-          await layout(page, '#band-intro-title img', `${engine}/${width}/banner`);
+        for (const [width, height] of [[320, 844], [320, 568], [390, 844], [768, 1000], [1440, 900]]) {
+          await page.setViewportSize({ width, height });
+          await layout(page, '#band-intro-title img', `${engine}/${width}x${height}/banner`);
+          await layout(page, '.band-intro-brand', `${engine}/${width}x${height}/band logo`);
+          for (const id of ['enter', 'music', 'gallery', 'shows']) {
+            await layout(page, `#band-intro-${id} img`, `${engine}/${width}x${height}/${id} object`);
+            const label = await page.locator(`#band-intro-${id} .band-intro-door-label`).boundingBox();
+            assert.ok(label && label.height >= 40 && label.x >= 0 && label.x + label.width <= width + 1, 'Object labels must fit and have usable touch targets');
+          }
           const box = await page.locator('#band-intro-enter').boundingBox();
           assert.ok(box && box.y >= 0 && box.y + box.height <= page.viewportSize().height + 1, 'Banner enter button must fit the screen');
-          await screenshot(page, `${engine}-${width}-banner`);
+          await screenshot(page, `${engine}-${width}x${height}-banner`);
         }
         await page.locator('#band-intro-enter').click();
         await page.locator('#band-site').waitFor({ state: 'visible' });
@@ -169,7 +175,26 @@ try {
           await layout(page, '.hero-title-mark', `${engine}/${width}/site`);
           await screenshot(page, `${engine}-${width}-site`, false);
         }
+        for (const section of ['music', 'gallery', 'shows']) {
+          // Restore the already decrypted banner to exercise each destination.
+          // No password or private document is requested again.
+          await page.evaluate(() => {
+            document.getElementById('band-intro').hidden = false;
+            const site = document.getElementById('band-site');
+            site.hidden = true; site.setAttribute('inert', '');
+            window.scrollTo(0, 0);
+          });
+          await page.locator(`#band-intro-${section}`).focus();
+          await page.keyboard.press('Enter');
+          assert.equal(await page.locator('#band-intro').isVisible(), false);
+          assert.equal(await page.locator('#band-site').isVisible(), true);
+          assert.equal(await page.locator(`#${section}`).evaluate(target => {
+            const bounds = target.getBoundingClientRect();
+            return document.activeElement === target && bounds.bottom > 0 && bounds.top < innerHeight;
+          }), true, `${section} must receive focus and scroll into view`);
+        }
         console.log(`PASS ${engine}: password → responsive banner → existing site, keyboard focus preserved`);
+        console.log(`PASS ${engine}: all three skull shortcuts open their sections with keyboard navigation`);
       } finally { await context.close(); }
 
       const signupContext = await contextFor(browser, engine, { width: 390, height: 844 });

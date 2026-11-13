@@ -24,6 +24,8 @@ export const MARATON_FILES = Object.freeze([
 // These files are bundled only inside the protected band document.
 export const BAND_PREVIEW_FILES = Object.freeze([
   'templates/band-intro.html', 'css/band-intro.css', 'js/band-intro.js',
+  'assets/maraton/door-skull-orange.png', 'assets/maraton/door-skull-white.png',
+  'assets/maraton/door-stamp-orange.png', 'assets/maraton/door-stamp-paper.png',
 ]);
 const iterations = 600000;
 const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };

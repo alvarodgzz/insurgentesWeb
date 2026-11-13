@@ -1,18 +1,34 @@
-.band-intro{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;padding:0;background:#ebe4dc;color:#171714;font-family:Pragmatica,Arial,sans-serif;font-weight:300}
+.band-intro{position:relative;isolation:isolate;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;padding:0;overflow:hidden;background:#070707;color:#dcd9d0;font-family:Pragmatica,Arial,sans-serif;font-weight:300}
 .band-intro[hidden],#band-site[hidden]{display:none!important}
 #band-intro:not([hidden])~#previewLock{display:none}
-.band-intro-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:23px clamp(24px,5vw,80px);background:#000;color:#dcd9d0}
-.band-intro-brand{display:block;width:190px;max-width:44%;height:auto}
-.band-intro-header a{display:inline-flex;align-items:center;gap:17px;min-height:44px;font-size:12px;line-height:1.5;text-decoration:none}
+.band-intro::before{content:"";position:absolute;z-index:-1;inset:4% -26% -30% 38%;background:url('../assets/logos/skull-icon-orange.png') center/contain no-repeat;opacity:.045;transform:rotate(-13deg);pointer-events:none}
+.band-intro-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px clamp(22px,5vw,72px);color:#a7a49c}
+.band-intro-header p{margin:0;font-size:10px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase}
+.band-intro-header a{display:inline-flex;align-items:center;gap:16px;min-height:44px;font-size:11px;line-height:1.5;text-decoration:none}
 .band-intro-header a:hover{color:#f86927}
-.band-intro-stage{display:flex;flex:1;flex-direction:column;justify-content:space-between;width:100%;padding:30px clamp(24px,4vw,66px) 35px;gap:38px}
-.band-intro-meta{display:flex;justify-content:space-between;gap:24px;padding-bottom:18px;border-bottom:1px solid #b8afa1;font-size:10px;line-height:1.6;letter-spacing:.14em;text-transform:uppercase}
-.band-intro h1{margin:0;font-size:inherit;line-height:0}
-.band-intro h1 img{display:block;width:100%;height:auto;max-height:58vh;object-fit:contain}
-.band-intro-bottom{display:flex;align-items:center;justify-content:space-between;gap:28px;padding-top:24px;border-top:1px solid #b8afa1}
-.band-intro-bottom p{margin:0;font-size:16px;line-height:1.6}
-.band-intro-enter{display:inline-flex;align-items:center;justify-content:space-between;gap:54px;min-height:54px;padding:16px 23px;border:1px solid #171714;background:#171714;color:#ebe4dc;font-size:13px;line-height:1.5;text-decoration:none}
-.band-intro-enter:hover{background:#b54c05;border-color:#b54c05;color:#fff}
+.band-intro-stage{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:12px clamp(22px,5vw,72px) 24px;gap:28px}
+.band-intro-identity{display:flex;flex-direction:column;align-items:center;width:100%;gap:16px;text-align:center}
+.band-intro-brand{display:block;width:min(90vw,1050px);max-width:100%;height:auto;max-height:32svh;object-fit:contain}
+.band-intro-identity .band-intro-eyebrow{display:flex;align-items:center;gap:13px;margin:0;color:#9e9b94;font-size:10px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
+.band-intro-eyebrow span{color:#f86927}
+.band-intro h1{width:min(38vw,420px);max-width:100%;margin:0;font-size:inherit;line-height:0}
+.band-intro h1 img{display:block;width:100%;max-width:100%;height:auto}
+.band-intro-doors{display:grid;grid-template-columns:1.15fr 1fr 1fr 1fr;align-items:end;gap:clamp(20px,4vw,62px);width:min(100%,910px);margin-top:8px}
+.band-intro-door{display:flex;min-width:0;flex-direction:column;align-items:center;gap:16px;padding:8px 6px 15px;text-align:center;text-decoration:none;color:#c6c2b9;outline-offset:5px}
+.band-intro-object{display:flex;width:100%;height:clamp(96px,15vh,154px);align-items:center;justify-content:center}
+.band-intro-object img{display:block;width:auto;max-width:100%;height:100%;object-fit:contain;transform:rotate(-7deg);transition:transform .2s ease,opacity .2s ease}
+.band-intro-door:nth-child(2) .band-intro-object img{height:84%;transform:rotate(9deg)}
+.band-intro-door:nth-child(3) .band-intro-object img{height:80%;transform:rotate(-11deg)}
+.band-intro-door:nth-child(4) .band-intro-object img{height:84%;transform:rotate(8deg)}
+.band-intro-door-label{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:44px;font-size:13px;line-height:1.4;letter-spacing:.025em;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.band-intro-door-label>span{font-family:Arial,sans-serif;font-size:19px;line-height:1}
+.band-intro-enter .band-intro-door-label{min-width:100%;padding:10px 14px;background:#f86927;color:#000;font-size:16px;font-weight:700}
+.band-intro-door:hover .band-intro-object img,.band-intro-door:focus-visible .band-intro-object img{transform:translateY(-7px) rotate(0deg)}
+.band-intro-door:hover .band-intro-door-label{color:#f86927;border-bottom-color:currentColor}
+.band-intro-enter:hover .band-intro-door-label{background:#ff8a51;color:#000;border-bottom-color:transparent}
 .band-intro a:focus-visible{outline:2px solid #f86927;outline-offset:5px}
-@media(max-width:680px){.band-intro-header{gap:18px;padding:17px 22px}.band-intro-brand{width:155px}.band-intro-header a{gap:10px;font-size:10px}.band-intro-stage{padding:25px 22px 28px;gap:35px}.band-intro-meta{gap:20px;font-size:8px;letter-spacing:.08em}.band-intro-meta span:first-child{max-width:175px}.band-intro h1 img{max-height:none}.band-intro-bottom{align-items:flex-start;flex-direction:column;gap:24px}.band-intro-bottom p{font-size:14px;max-width:25ch}.band-intro-enter{width:100%;min-height:54px}}
-@media(prefers-reduced-motion:reduce){.band-intro{scroll-behavior:auto}}
+.band-intro-stage .band-intro-caption{margin:0;color:#85827b;font-size:11px;line-height:1.7;letter-spacing:.03em;text-align:center}
+@media(max-width:680px){.band-intro-header{padding:10px 21px;gap:15px}.band-intro-header p{font-size:8px;max-width:120px}.band-intro-header a{font-size:10px;gap:9px}.band-intro-stage{padding:12px 21px 20px;gap:21px}.band-intro-identity{gap:15px}.band-intro-brand{width:min(100%,420px);max-height:22svh}.band-intro-identity .band-intro-eyebrow{font-size:8px;letter-spacing:.1em;gap:10px}.band-intro h1{width:min(72%,290px)}.band-intro-doors{grid-template-columns:1fr 1fr;gap:10px 28px;max-width:380px;margin-top:4px}.band-intro-door{gap:6px;padding:5px 3px}.band-intro-object{height:100px}.band-intro-door-label{min-height:40px;gap:13px;font-size:12px}.band-intro-enter .band-intro-door-label{font-size:14px;min-height:44px;padding:9px 10px}.band-intro-stage .band-intro-caption{font-size:10px;max-width:28ch}.band-intro::before{inset:5% -85% -10% 10%;opacity:.035}}
+@media(max-width:360px){.band-intro-stage{padding-inline:18px;gap:18px}.band-intro-doors{gap:8px 20px}.band-intro-object{height:86px}.band-intro-enter .band-intro-door-label{font-size:12px;gap:6px;padding:9px 7px;letter-spacing:0;white-space:nowrap}.band-intro-door-label>span{font-size:17px}}
+@media(min-width:681px) and (max-height:700px){.band-intro-header{padding-block:9px}.band-intro-stage{gap:17px;padding-top:0}.band-intro-identity{gap:11px}.band-intro-brand{max-height:22svh}.band-intro h1{max-width:300px}.band-intro-doors{margin-top:0}.band-intro-object{height:100px}.band-intro-door{gap:8px}.band-intro-stage .band-intro-caption{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.band-intro-object img,.band-intro-door-label{transition:none}.band-intro-door:hover .band-intro-object img,.band-intro-door:focus-visible .band-intro-object img{transform:none}}

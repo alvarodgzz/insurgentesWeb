@@ -23,7 +23,7 @@ El instalador prepara Playwright 1.65.0, Chromium y WebKit en una carpeta tempor
 - Registro a 320, 360, 390, 430, 768 y 1440 px, en Chromium y WebKit, con emulación móvil en los tamaños pequeños.
 - Logo completo dentro de la pantalla y de los ancestros que puedan recortarlo. Comprobar solo el ancho del documento no detecta una imagen gigante oculta con overflow.
 - Campo de correo, botón y acceso de la banda visibles, con límites y tamaños utilizables.
-- Contraseña incorrecta, reintento correcto, banner privado y entrada al sitio existente. Banner y logo del sitio se revisan a 320, 390, 768 y 1440 px, con foco de teclado en el contenido al entrar.
+- Contraseña incorrecta, reintento correcto, banner privado y entrada al sitio existente. Banner y logo del sitio se revisan a 320, 390, 768 y 1440 px; el banner incluye además 320 × 568 y escritorio de 900 px de alto. Logos y objetos completos, etiquetas utilizables y botón principal dentro de la pantalla. Cada acceso de Música, Galería y En vivo se activa con teclado y debe abrir, desplazar y enfocar su sección.
 - Registro nativo sin JavaScript y estados de envío pendiente/éxito con una respuesta simulada, sin navegar a JSON ni duplicar peticiones.
 - Una prueba deliberadamente agranda el logo y exige que el detector falle. Después verifica que un logo con atributos antiguos también cabe en el contenedor.
 

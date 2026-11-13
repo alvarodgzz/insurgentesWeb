@@ -1,5 +1,11 @@
 # Project status — November 12, 2026
 
+## November 12 private banner revision
+
+Registration is approved and remains unchanged. The owner rejected the private banner's paper background, oversized Maratón and small entry control, supplying a Geese screenshot as a composition reference. The private banner now uses black, the prominent original white band logo, a smaller album wordmark and four official skull/stamp objects. The orange **Entrar al sitio** control opens the existing site; Música, Galería and En vivo open and focus their corresponding sections. Mobile uses two columns. The four cropped/downscaled object exports preserve the original artwork and are bundled only inside the encrypted document, never exposed as raw Pages files. No source artwork was sent to image-generation services.
+
+All 73 Node tests pass locally. Local Chromium checks cover whole logos/objects, touch labels and main entry visibility at 320 × 568, 320 × 844, 390 × 844, 768 × 1000 and 1440 × 900; all three shortcuts pass keyboard/focus/scroll checks. Desktop/mobile captures were visually reviewed. Public signup retains its existing six-width, simulated submission and no-JavaScript checks. WebKit remains required in Linux CI before deployment; local macOS WebKit is not claimed as verified. No real registration or email was sent.
+
 ## November 12 responsive checks
 
 The owner reported a giant clipped initial on mobile and requested browser tests before visual changes are pushed. Fresh published Chromium checks at 320/390/430/768 px showed the complete wordmark; the report was not reproduced in that clean load. The heading now also constrains oversized images and older markup, and its CSS URL is versioned to request the current styles.
