@@ -1,4 +1,12 @@
-# Project status — November 12, 2026
+# Project status — November 23, 2026
+
+## November 23 Drive photo import
+
+The owner replaced four photographs in the existing private Drive section folders: Inicio, La banda, and gallery slots 11 and 12. Those uploads did not update GitHub or Pages because automatic Drive sync is not configured. The four verified JPEGs were downloaded through the Drive connector and prepared as proportional JPEG web copies with a 2000 px maximum edge, leaving the Drive originals unchanged. Uppercase `.JPG` source filenames were mapped to the existing lowercase canonical paths; unrelated content and photographs were retained. Dimensions and accessible descriptions now match the new photographs. No layout, registration, banner, sharing or provider settings were changed.
+
+All 73 Node tests, build, checks and default Pages preparation passed locally. Local Chromium passed the existing isolated responsive/gate/signup suite; additional photo checks verified La banda and the two replacement gallery images/lightboxes at 320, 390, 768 and 1440 px, including dimensions, captions and Escape. Desktop/mobile captures were visually reviewed and remain in the ignored local storyboard. Publication must be confirmed from the corresponding Actions run and the deployed encrypted payload. Future updates still require import/review/push; rerunning a deploy alone cannot pick up Drive changes. See `docs/GOOGLE_DRIVE.md`.
+
+The preceding private banner revision `645c677` was published by successful Pages run `43371519761`, with live encrypted-banner and unchanged-registration checks recorded in the conversation.
 
 ## November 12 private banner revision
 

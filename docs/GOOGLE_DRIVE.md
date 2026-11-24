@@ -42,6 +42,8 @@ Conviene que una sola persona suba cambios de textos a la vez. Avísense antes d
 
 **Subir a Drive no cambia la página pública.** Drive es la carpeta compartida de trabajo. Una persona designada descarga el contenido actualizado, lo importa en el editor y revisa la vista previa. Después usa **Guardar en carpeta** sobre el proyecto, o combina el ZIP de **Descargar para GitHub** con el proyecto. Finalmente sube los cambios a GitHub para que GitHub Pages genere y publique el sitio.
 
-La conexión automática de Drive a GitHub no está configurada. La primera publicación en GitHub Pages también está pendiente de confirmación. Consulta [la guía de GitHub Pages](GITHUB_PAGES.md) para ese paso.
+La conexión automática de Drive a GitHub no está configurada. GitHub Pages ya está publicado: después de importar y revisar los cambios, un push a `main` ejecuta las pruebas y el deploy automáticamente. Repetir un deploy sin importar primero las fotos de Drive vuelve a publicar las imágenes anteriores. Consulta [la guía de GitHub Pages](GITHUB_PAGES.md).
+
+Las fotos de Inicio, La banda y Galería pertenecen al sitio completo, actualmente detrás de **Acceso de la banda**. No aparecen en el registro público ni en el banner de Maratón. Si el sitio ya estaba abierto durante una publicación, recarga y vuelve a entrar para descargar la versión actualizada.
 
 No guardes contraseñas ni documentos personales en esta carpeta. El correo invitado se usa como cuenta de colaboración; no se agrega como correo público de contacto sin confirmación del dueño.
