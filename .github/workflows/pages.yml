@@ -51,7 +51,12 @@ jobs:
           PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
           SITE_URL: ${{ steps.pages.outputs.base_url || 'https://alvarodgzz.github.io/insurgentesWeb/' }}
 
+      - name: Use Ubuntu HTTPS archive for browser dependencies
+        run: |
+          printf '%s\n' 'https://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt > /dev/null
+
       - name: Check responsive layouts and private navigation in browsers
+        timeout-minutes: 10
         run: node scripts/qa-browser.mjs --install
 
       - name: Upload website

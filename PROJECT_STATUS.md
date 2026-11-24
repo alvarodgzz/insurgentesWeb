@@ -8,6 +8,8 @@ All 73 Node tests, build, checks and default Pages preparation passed locally. L
 
 The preceding private banner revision `645c677` was published by successful Pages run `43371519761`, with live encrypted-banner and unchanged-registration checks recorded in the conversation.
 
+Photo import commit `f9324a3` reached GitHub. The first two attempts of run `45315875793` were manually stopped during slow regional Ubuntu dependency downloads, before either browser test began or any artifact was uploaded. The workflow now uses the official Ubuntu HTTPS archive in its temporary runner mirror list and bounds browser installation/QA to ten minutes; all existing checks and both browsers remain required. See `docs/BROWSER_QA.md`. This is a CI download correction, not a website hosting change.
+
 ## November 12 private banner revision
 
 Registration is approved and remains unchanged. The owner rejected the private banner's paper background, oversized Maratón and small entry control, supplying a Geese screenshot as a composition reference. The private banner now uses black, the prominent original white band logo, a smaller album wordmark and four official skull/stamp objects. The orange **Entrar al sitio** control opens the existing site; Música, Galería and En vivo open and focus their corresponding sections. Mobile uses two columns. The four cropped/downscaled object exports preserve the original artwork and are bundled only inside the encrypted document, never exposed as raw Pages files. No source artwork was sent to image-generation services.
