@@ -240,7 +240,7 @@ test('public signup and band access resolve all assets, return links and payload
   assert.equal(await readFile(join(output, 'robots.txt'), 'utf8'), 'User-agent: *\nDisallow: /insurgentesWeb/banda/\nDisallow: /insurgentesWeb/admin/\nDisallow: /insurgentesWeb/preview.json\n');
 });
 
-test('default Pages CLI publishes signup; only an explicit --gated restores both password gates', async t => {
+test('explicit --signup-only rollback publishes signup and --gated restores both password gates', async t => {
   const root = await fixture(t);
   for (const path of ['scripts/prepare-pages.mjs', 'scripts/private-preview.mjs', 'scripts/analytics-config.mjs', 'scripts/newsletter-config.mjs', 'js/newsletter-render.mjs', 'js/analytics-render.mjs']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
@@ -249,7 +249,7 @@ test('default Pages CLI publishes signup; only an explicit --gated restores both
   const run = promisify(execFile);
   const cli = await realpath(join(root, 'scripts/prepare-pages.mjs'));
   const options = { env: { ...process.env, CI: 'true', PREVIEW_PASSWORD: syntheticPassword, SITE_URL: 'https://losinsurgentes.mx/' } };
-  await run(process.execPath, [cli], options);
+  await run(process.execPath, [cli, '--signup-only'], options);
   assert.match(await readFile(join(root, '_site/index.html'), 'utf8'), /data-newsletter-form/);
   assert.match(await readFile(join(root, '_site/banda/index.html'), 'utf8'), /access-password/);
   await assert.rejects(readFile(join(root, '_site/maraton-preview.json')));

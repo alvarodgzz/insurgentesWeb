@@ -3,7 +3,7 @@ if (year) year.textContent = new Date().getFullYear();
 
 const navToggle = document.querySelector('.nav-toggle');
 const navLinks = document.getElementById('navLinks');
-const mobileNav = window.matchMedia('(max-width: 780px)');
+const mobileNav = window.matchMedia('(max-width: 1000px)');
 
 function setMenuOpen(isOpen, returnFocus = false) {
   navLinks.classList.toggle('open', isOpen);
@@ -95,13 +95,16 @@ if (navToggle && navLinks) {
   const triggers = Array.from(gallerySection.querySelectorAll('.gallery-trigger'));
   if (!triggers.length) return;
 
+  // The encrypted preview wraps the site. Keep the modal outside that wrapper
+  // so making its background inert never disables the photo viewer itself.
+  if (lightbox.parentElement !== document.body) document.body.appendChild(lightbox);
+
   const backdrop = document.getElementById('lightboxBackdrop');
   const closeBtn = document.getElementById('lightboxClose');
   const prevBtn = document.getElementById('lightboxPrev');
   const nextBtn = document.getElementById('lightboxNext');
   const stage = lightbox.querySelector('.lightbox-stage');
   const imgEl = document.getElementById('lightboxImg');
-  const captionEl = document.getElementById('lightboxCaption');
   const counterEl = document.getElementById('lightboxCounter');
   const filmstripEl = document.getElementById('lightboxFilmstrip');
 
@@ -157,9 +160,7 @@ if (navToggle && navLinks) {
   let pendingIndex = null;
   let slideTimer = null;
   let lastFocused = null;
-  const backgroundElements = Array.from(document.body.children).filter(
-    (element) => element !== lightbox && element.tagName !== 'SCRIPT'
-  );
+  let backgroundElements = [];
   let previousInertStates = [];
 
   function updateContent(index) {
@@ -168,7 +169,6 @@ if (navToggle && navLinks) {
     imgEl.srcset = slide.srcset;
     imgEl.sizes = '90vw';
     imgEl.alt = slide.alt;
-    captionEl.textContent = slide.alt;
     counterEl.textContent = (index + 1) + ' / ' + slides.length;
     currentIndex = index;
     thumbButtons.forEach((btn, i) => {
@@ -240,6 +240,11 @@ if (navToggle && navLinks) {
     lightbox.classList.add('is-open');
     lightbox.setAttribute('aria-hidden', 'false');
     document.body.classList.add('lightbox-open');
+    // Collect current siblings on every open, including controls inserted after
+    // this deferred script (such as the preview's lock button).
+    backgroundElements = Array.from(document.body.children).filter(
+      (element) => element !== lightbox && element.tagName !== 'SCRIPT'
+    );
     previousInertStates = backgroundElements.map((element) => element.inert);
     backgroundElements.forEach((element) => { element.inert = true; });
 

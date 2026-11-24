@@ -52,36 +52,40 @@ La página incluye un reproductor oficial de Spotify y 14 lanzamientos verificad
 
 Las letras pueden ser texto proporcionado por la banda o enlaces verificados a Genius, Musixmatch o videos oficiales. **Flores** ya enlaza al lyric video del canal de la banda. Los títulos sin texto/enlace quedan fuera de la página pública. Consulta [las opciones de letras](docs/LYRICS.md).
 
-## Landing de Maratón y acceso de la banda
+## Banner de Maratón, sitio y registro opcional
 
-El registro conserva su diseño negro original con el wordmark oficial de Maratón. La secuencia protegida es **Acceso de la banda → contraseña → banner de Maratón a pantalla completa → Entrar al sitio**. Banner y sitio completo se incluyen en el mismo `preview.json`; entrar desde el banner no vuelve a pedir la contraseña ni a descargar el paquete cifrado. El banner no tiene rutas públicas de HTML/CSS/JS ni medición.
+El 23 de noviembre de 2026 el propietario autorizó abrir el sitio completo al público y eligió **banner → sitio, con registro opcional desde ambos**. La implementación de este recorrido debe comprobarse en Actions y en el dominio antes de anunciarla como publicada.
 
-El 7 de noviembre de 2026 el propietario autorizó publicar la landing y el registro de Maratón. El sitio completo conserva la contraseña de la banda. El paquete predeterminado de GitHub Pages prepara:
+- `/`: banner de Maratón con una sola calavera naranja para **Entrar al sitio** y el enlace **Recibir comunicados**.
+- `/sitio/`: página completa pública, sin contraseña ni registro obligatorio.
+- `/registro/`: formulario de Maratón con el diseño negro original; se puede volver al sitio sin enviar un correo.
+- `/banda/`: enlace compatible que redirige a `/sitio/`.
+- `404.html`: página de marca sin formulario ni estadísticas.
+- `/admin/estadisticas/`: entrada pública al panel externo de Umami; los datos requieren la cuenta autorizada.
 
-- `/`: landing pública de Maratón con formulario de registro y enlace **Acceso de la banda**.
-- `/banda/`: portada con contraseña para abrir el sitio completo desde `preview.json` cifrado.
-- `404.html`: página de la banda con enlace de regreso a `/`, sin formulario ni estadísticas.
-- `/admin/estadisticas/`: acceso público al panel externo de Umami; los datos requieren la cuenta autorizada.
+El slogan es **Esa calavera que ya viene por ti...**. El logo del menú se amplía para ser legible en móvil y escritorio. La galería conserva las fotos y controles, sin descripciones visibles; las imágenes mantienen su texto alternativo para accesibilidad.
 
-La landing publica `css/maraton.css`, `js/maraton.js` y una selección de logotipos y fuentes. El sitio completo incluye sus recursos dentro del cifrado; sus fotos, contenido y editor no se publican como rutas separadas. El paquete predeterminado no genera `maraton-preview.json`. **Después de cada push, revisa el resultado de Actions y comprueba la landing y el acceso de la banda en el dominio.** El `index.html` de la raíz del proyecto sigue siendo la página completa para edición local.
+El paquete publica las páginas, fotografías y recursos que usa el sitio. Excluye el editor, las plantillas, los JSON de contenido/configuración, los originales de branding, archivos `.env` y paquetes de vista previa cifrada. El `index.html` del proyecto sigue siendo la página completa para edición local; las rutas públicas se generan en `_site/`.
 
-El registro de Brevo está activado en la configuración local. El propietario eligió **Simple confirmation** y reportó actualizar la bienvenida en Brevo el 7 de noviembre. El dominio y remitente ya se mostraban autenticados en las capturas del 28 de octubre; la entrega de esa nueva bienvenida, la lista de destino y el flujo real en navegador siguen pendientes de verificar. No hay enlace alternativo. El resultado dentro de la landing exige HTTP correcto y `success: true`; los errores conservan el correo y no hay reenvío automático. Consulta [la guía](docs/MAILING_LIST.md) y [el diseño de bienvenida](docs/BREVO_TEXTOS.md).
-
-La contraseña local de la banda está en `.env.preview-password`, ignorado por Git. Para publicar los cambios revisados:
+Para publicar los cambios revisados:
 
 ```bash
 bash scripts/publish-github.sh
 ```
 
-El script valida el sitio y, si encuentra ese archivo, configura el secreto de Actions `PREVIEW_PASSWORD`. Después sube los cambios. Cada push a `main` activa automáticamente el flujo de publicación de Pages. Sin contraseña de compilación, la landing y el formulario siguen públicos y `/banda/` muestra únicamente su portada, sin `preview.json`. Para revisar el mismo paquete: `node scripts/preview.mjs --protected --open`; `/` muestra Maratón y `/banda/` pide contraseña. `--gated` conserva el modo anterior con ambas vistas protegidas para una reversión deliberada. Consulta [los pasos y límites de la protección](docs/GITHUB_PAGES.md).
+Cada push a `main` activa automáticamente las pruebas y el deploy de Pages. No hace falta otro comando de deploy después de un push correcto. Revisa los trabajos `build` y `deploy` y comprueba las rutas reales; un commit o un build local no demuestran publicación. El último despliegue confirmado antes de este lanzamiento es `fe2a446`, Actions `45317446487`, con las cuatro fotos importadas desde Drive y el modo protegido anterior.
 
-**El repositorio actual es público y ya contiene código, textos y fotos en su historial.** El cifrado protege la vista completa de la banda en Pages, pero no vuelve privados esos archivos de GitHub ni retira copias anteriores. No crea autenticación en un servidor. La apertura del contenido cifrado necesita JavaScript y HTTPS; `localhost` también permite probarla. La landing pública y el envío nativo del formulario conservan su uso sin JavaScript.
+Para revisar el recorrido público localmente: `node scripts/preview.mjs --public --open`. La publicación predeterminada con `node scripts/prepare-pages.mjs` y su alias `--public` no necesita contraseña. `--signup-only` conserva deliberadamente el registro en raíz y la banda protegida; `--gated` conserva ambas vistas protegidas. La contraseña ignorada `.env.preview-password` y el secreto existente `PREVIEW_PASSWORD` son para esos modos de reversión. Consulta [publicación y reversión](docs/GITHUB_PAGES.md).
 
-Los registros DNS suministrados por el propietario apuntan a GitHub Pages. El 7 de noviembre se verificó que HTTPS responde correctamente en `losinsurgentes.mx` y `www.losinsurgentes.mx`, con la landing pública. No se modificó ni comprobó desde aquí el ajuste **Enforce HTTPS** en **Settings → Pages**. No restaures **Squarespace Defaults**, porque volvería a apuntar al alojamiento anterior.
+El registro de Brevo está activado en la configuración local. El propietario eligió **Simple confirmation** y reportó actualizar la bienvenida en Brevo el 7 de noviembre. El dominio y remitente ya se mostraban autenticados en las capturas del 28 de octubre; la entrega de esa nueva bienvenida, la lista de destino y el flujo real en navegador siguen pendientes de verificar. No hay enlace alternativo. El resultado dentro del registro exige HTTP correcto y `success: true`; los errores conservan el correo y no hay reenvío automático. Consulta [la guía](docs/MAILING_LIST.md) y [el diseño de bienvenida](docs/BREVO_TEXTOS.md).
+
+La navegación pública y el formulario nativo son utilizables sin JavaScript. Solo los modos de reversión cifrados requieren JavaScript y HTTPS o `localhost` para abrir su contenido. El repositorio actual es público; el cifrado histórico no vuelve privados sus archivos ni crea autenticación de servidor.
+
+Los registros DNS suministrados por el propietario apuntan a GitHub Pages. El 7 de noviembre se verificó HTTPS en `losinsurgentes.mx` y `www.losinsurgentes.mx`. No se modificó ni comprobó desde aquí **Enforce HTTPS** en **Settings → Pages**. No restaures **Squarespace Defaults**, porque volvería a apuntar al alojamiento anterior.
 
 ## Estadísticas
 
-El propietario eligió Umami Cloud Hobby y proporcionó el **Website ID**. La configuración optativa de `content/analytics.json` se aplica únicamente a la landing pública en la raíz HTTPS del dominio. Se mantienen las exclusiones de datos de formulario, consultas, fragmentos y visitas con DNT/GPC. No se inyecta medición en la portada de la banda, `404.html` ni el sitio descifrado. La llegada de datos después de publicar aún debe verificarse.
+El propietario eligió Umami Cloud Hobby y proporcionó el **Website ID**. La configuración optativa de `content/analytics.json` se aplica únicamente al banner en la raíz HTTPS del dominio. Se mantienen las exclusiones de datos de formulario, consultas, fragmentos y visitas con DNT/GPC. No se inyecta medición en `/sitio/`, `/registro/`, el redirect de `/banda/`, `404.html` ni los modos protegidos de reversión. La llegada de datos después de publicar aún debe verificarse.
 
 La página `/admin/estadisticas/` sigue enlazando al panel de Umami y requiere su cuenta autorizada. Consulta [la configuración y los límites](docs/ANALYTICS.md).
 
@@ -98,13 +102,13 @@ node scripts/prepare-pages.mjs
 
 - `content/`: contenido que mantiene la banda, fotos numeradas y configuración `analytics.json` / `newsletter.json`.
 - `admin/`: editor visual sin dependencias ni servidor de escritura; `admin/estadisticas/` enlaza al panel externo.
-- `templates/page.html`: estructura del sitio completo; `templates/maraton.html`: landing pública de Maratón.
+- `templates/page.html`: estructura del sitio completo; `templates/maraton.html`: registro opcional de Maratón.
 - `js/site-render.mjs`, `music-render.mjs`, `lyrics-render.mjs`: contenido estático, también usado en la vista previa.
 - `index.html`: página generada; no editar directamente.
 - `css/`, `js/main.js`, `js/spotify.js`: diseño e interacciones.
 - `assets/`: identidad original y archivo fotográfico. Nunca imitar el logotipo con texto/CSS.
-- `_site/`: landing pública, recursos permitidos, portada de la banda y paquete cifrado del sitio completo; se genera y se excluye de Git.
-- `scripts/private-preview.mjs`: empaquetado de la vista previa protegida.
+- `_site/`: banner, sitio, registro opcional, redirect compatible y recursos permitidos; se genera y se excluye de Git.
+- `scripts/prepare-pages.mjs`: publicación pública; `scripts/private-preview.mjs`: modos de reversión protegidos.
 - `.env.preview-password`: contraseña local ignorada por Git; nunca se publica.
 
-`index.html` sigue siendo la página completa para edición local; `prepare-pages` genera la landing pública y la vista protegida de la banda en `_site/`. `--gated` conserva la configuración del 28 de octubre, con dos portadas y sus documentos cifrados. La opción `--public` es exclusiva de un lanzamiento futuro autorizado del sitio completo; la apertura de Maratón no autoriza ese modo. No incluyas claves API, configuraciones de Claude/Codex ni archivos privados al publicar.
+`index.html` sigue siendo la página completa para edición local; `prepare-pages` genera el recorrido público autorizado en `_site/`. Los modos protegidos quedan disponibles para una reversión deliberada y no son el deploy predeterminado. No incluyas claves API, configuraciones de Claude/Codex ni archivos privados al publicar.

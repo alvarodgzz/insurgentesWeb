@@ -7,7 +7,7 @@ const source = await readFile(new URL('../js/main.js', import.meta.url), 'utf8')
 
 // A small DOM double for interaction regressions. This does not simulate layout,
 // native event bubbling, image loading or assistive technology in a real browser.
-function environment(reduced = false) {
+function environment(reduced = false, wrapped = false) {
   let document;
   class Element {
     constructor(tagName = 'DIV') {
@@ -34,13 +34,17 @@ function environment(reduced = false) {
     }
     focus() { document.activeElement = this; }
     contains(element) { return element === this || this.children.some(child => child.contains(element)); }
-    appendChild(element) { this.children.push(element); }
+    appendChild(element) {
+      if (element.parentElement) element.parentElement.children = element.parentElement.children.filter(child => child !== element);
+      element.parentElement = this;
+      this.children.push(element);
+    }
     querySelector(selector) { return this.selectors?.[selector] || null; }
     querySelectorAll(selector) { return this.lists?.[selector] || []; }
     closest() { return nav; }
     scrollIntoView() {}
   }
-  const ids = Object.fromEntries(['year', 'navLinks', 'gallery', 'lightbox', 'lightboxBackdrop', 'lightboxClose', 'lightboxPrev', 'lightboxNext', 'lightboxImg', 'lightboxCaption', 'lightboxCounter', 'lightboxFilmstrip'].map(id => [id, new Element()]));
+  const ids = Object.fromEntries(['year', 'navLinks', 'gallery', 'lightbox', 'lightboxBackdrop', 'lightboxClose', 'lightboxPrev', 'lightboxNext', 'lightboxImg', 'lightboxCounter', 'lightboxFilmstrip'].map(id => [id, new Element()]));
   const toggle = new Element('BUTTON'), nav = new Element('NAV'), header = new Element('HEADER'), main = new Element('MAIN'), footer = new Element('FOOTER');
   const links = [new Element('A'), new Element('A')];
   ids.navLinks.children = links;
@@ -67,7 +71,11 @@ function environment(reduced = false) {
   document = new Element();
   document.body = new Element('BODY');
   document.documentElement = new Element('HTML');
-  document.body.children = [header, main, footer, ids.lightbox, new Element('SCRIPT')];
+  const wrapper = wrapped ? new Element() : null;
+  const siteParent = wrapper || document.body;
+  [header, main, footer, ids.lightbox].forEach(element => siteParent.appendChild(element));
+  if (wrapper) document.body.appendChild(wrapper);
+  document.body.appendChild(new Element('SCRIPT'));
   document.getElementById = id => ids[id];
   document.querySelector = selector => selector === '.nav-toggle' ? toggle : null;
   document.createElement = tag => new Element(tag.toUpperCase());
@@ -83,7 +91,7 @@ function environment(reduced = false) {
   };
   runInNewContext(source, { document, window, Date, Map, Array });
   return {
-    ids, toggle, links, document, media, header, main, footer, triggers, timers, stage,
+    ids, toggle, links, document, media, header, main, footer, triggers, timers, stage, wrapper,
     flush() { const pending = [...timers.values()]; timers.clear(); pending.forEach(callback => callback()); }
   };
 }
@@ -192,4 +200,25 @@ test('reduced-motion gallery advances immediately without animation timers', () 
   e.ids.lightboxNext.fire('click');
   assert.equal(e.ids.lightboxCounter.textContent, '2 / 3');
   assert.equal(e.timers.size, 0);
+});
+
+test('wrapped preview gallery stays outside the inert site and includes late background controls', () => {
+  const e = environment(true, true);
+  const lock = e.document.createElement('button');
+  e.document.body.appendChild(lock);
+  assert.equal(e.ids.lightbox.parentElement, e.document.body);
+  assert.equal(e.wrapper.contains(e.ids.lightbox), false);
+  e.triggers[0].fire('click');
+  assert.equal(e.wrapper.inert, true);
+  assert.equal(lock.inert, true);
+  assert.equal(e.ids.lightbox.inert, false);
+  assert.equal(e.document.activeElement, e.ids.lightboxClose);
+  e.ids.lightboxClose.fire('click');
+  assert.equal(e.wrapper.inert, false);
+  assert.equal(lock.inert, false);
+  assert.equal(e.document.activeElement, e.triggers[0]);
+  lock.inert = true;
+  e.triggers[1].fire('click');
+  e.ids.lightboxClose.fire('click');
+  assert.equal(lock.inert, true, 'a pre-existing disabled control must stay disabled');
 });

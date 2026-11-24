@@ -1,5 +1,23 @@
 # Project status — November 23, 2026
 
+## November 23 full public launch authorized — verification pending
+
+The owner explicitly authorized removing the band password and opening the complete site to the public. They selected **banner → site, with optional registration from both**, and confirmed the exact slogan **Esa calavera que ya viene por ti...**. The public package being prepared uses `/` for the one-skull Maratón banner, `/sitio/` for the full band website, `/registro/` for the existing optional native signup form, and `/banda/` as a compatibility redirect to `/sitio/`. Registration is never a required step. The approved black signup design, official marks and real photography remain.
+
+Default `prepare-pages` and its `--public` alias now target this authorized public flow. Only used resources/photos and the public statistics entry belong in the artifact; editor, templates, content/config JSON, original branding folders/ZIPs, `.env` and encrypted preview packages remain excluded. Existing opt-in analytics stays restricted to the HTTPS root banner, with no measurement on the site, registration, redirect or 404. `--signup-only` retains the former signup-at-root/protected-band package and `--gated` retains the two-gate rollback.
+
+All 78 Node tests, build, checks, public packaging and local Chromium QA passed for the expanded launch. Public entry without registration/password, optional signup, no-JavaScript navigation, Pages subpath handling and public/rollback gallery controls were verified; desktop/mobile captures were visually reviewed. Chromium and WebKit must still pass the deployment run, followed by live-route checks, before claiming the public launch is deployed. The last confirmed deployed state is still the four-photo update `fe2a446`, Pages run `45317446487`, in the former protected mode. No real signup/email was sent as part of these automated checks.
+
+## November 23 banner, navigation and gallery corrections prepared before public launch
+
+The owner requested one orange entry skull in the private banner, a legible header logo and a working gallery close control with no visible photo descriptions. The banner now has one centered entry; other destinations are deferred. The supplied navigation wordmark is enlarged to 58 px image height on desktop and 52 px on mobile. Gallery image alt text and navigation controls remain; visible captions are removed.
+
+The closing bug was reproduced in the actual generated protected document at desktop/mobile sizes: `#band-site` contained the lightbox and became inert when opening it, blocking click/tap on the X while document-level arrow keys still worked. The dialog is now moved to body before initialization. Each open captures current background siblings, including the preview lock button injected after deferred scripts, and restores their previous inert states on close. The private lock button is also hidden while the gallery is open.
+
+All 71 Node tests, build, checks, default packaging and local Chromium QA passed. The revised browser suite tests the decrypted gallery at 320/390/768/820/1024/1440 px with actual tap/click on X, backdrop, Escape, focus trapping/return and background/scroll restoration. Desktop/mobile captures were reviewed. Removed three obsolete shortcut tests and added a wrapped-modal regression; Linux CI still requires Chromium and WebKit before deployment. Registration is unchanged; no real registration/email was sent. Publication of this correction must be confirmed from its Actions run.
+
+The preceding four-photo update and HTTPS archive fix were deployed as `fe2a446` by successful Pages run `45317446487`. Live checks verified all four current image bytes inside the encrypted document, raw photo URLs returning 404 and unchanged public registration.
+
 ## November 23 Drive photo import
 
 The owner replaced four photographs in the existing private Drive section folders: Inicio, La banda, and gallery slots 11 and 12. Those uploads did not update GitHub or Pages because automatic Drive sync is not configured. The four verified JPEGs were downloaded through the Drive connector and prepared as proportional JPEG web copies with a 2000 px maximum edge, leaving the Drive originals unchanged. Uppercase `.JPG` source filenames were mapped to the existing lowercase canonical paths; unrelated content and photographs were retained. Dimensions and accessible descriptions now match the new photographs. No layout, registration, banner, sharing or provider settings were changed.
@@ -10,19 +28,19 @@ The preceding private banner revision `645c677` was published by successful Page
 
 Photo import commit `f9324a3` reached GitHub. The first two attempts of run `45315875793` were manually stopped during slow regional Ubuntu dependency downloads, before either browser test began or any artifact was uploaded. The workflow now uses the official Ubuntu HTTPS archive in its temporary runner mirror list and bounds browser installation/QA to ten minutes; all existing checks and both browsers remain required. See `docs/BROWSER_QA.md`. This is a CI download correction, not a website hosting change.
 
-## November 12 private banner revision
+## Historical November 12 private banner revision
 
 Registration is approved and remains unchanged. The owner rejected the private banner's paper background, oversized Maratón and small entry control, supplying a Geese screenshot as a composition reference. The private banner now uses black, the prominent original white band logo, a smaller album wordmark and four official skull/stamp objects. The orange **Entrar al sitio** control opens the existing site; Música, Galería and En vivo open and focus their corresponding sections. Mobile uses two columns. The four cropped/downscaled object exports preserve the original artwork and are bundled only inside the encrypted document, never exposed as raw Pages files. No source artwork was sent to image-generation services.
 
 All 73 Node tests pass locally. Local Chromium checks cover whole logos/objects, touch labels and main entry visibility at 320 × 568, 320 × 844, 390 × 844, 768 × 1000 and 1440 × 900; all three shortcuts pass keyboard/focus/scroll checks. Desktop/mobile captures were visually reviewed. Public signup retains its existing six-width, simulated submission and no-JavaScript checks. WebKit remains required in Linux CI before deployment; local macOS WebKit is not claimed as verified. No real registration or email was sent.
 
-## November 12 responsive checks
+## Historical November 12 responsive checks
 
 The owner reported a giant clipped initial on mobile and requested browser tests before visual changes are pushed. Fresh published Chromium checks at 320/390/430/768 px showed the complete wordmark; the report was not reproduced in that clean load. The heading now also constrains oversized images and older markup, and its CSS URL is versioned to request the current styles.
 
 `scripts/qa-browser.mjs` provides isolated Playwright layout/navigation/form checks and a local `_qa/index.html` storyboard. It catches a deliberate giant-image regression even when document overflow is hidden. Chromium passed locally across 320, 360, 390, 430, 768 and 1440 px, including private password/banner/site and simulated signup. Local WebKit hung at startup on this macOS and is not claimed as passed; Linux CI requires both Chromium and WebKit before upload/deployment. External traffic is blocked and no real signup/email is sent. Runtime configs and production ciphertext are fingerprinted to ensure QA does not replace them with synthetic fixtures. The source package, private screenshots and reports are never published. See `docs/BROWSER_QA.md`.
 
-## November 12 branding revision
+## Historical November 12 branding revision
 
 The owner supplied the registered Maratón branding and authorized a creative blend with the original band identity, exclusively for this project. Original folder/ZIP remain local and ignored. Four proportional web exports preserve the supplied artwork; their provenance and usage restrictions are in `docs/MARATON_BRANDING.md`.
 
@@ -32,32 +50,32 @@ All 70 tests passed for this correction. Local Chrome additionally verified the 
 
 ## Current direction
 
-- The owner explicitly authorized the public Maratón signup landing at `/` on November 7. The general public can register without a password. **Acceso de la banda** leads to `/banda/`, where the complete site remains behind the existing password while work continues.
+- The owner explicitly authorized the full public launch on November 23: banner at `/`, complete website at `/sitio/`, optional registration at `/registro/`, and `/banda/` redirecting to the public site. The November 7 signup-only/protected-band authorization is historical; its package remains a deliberate rollback mode.
 - Maratón is upcoming; the next single was confirmed for November 2026 on October 21. No title or release day was provided. Do not invent or advance those facts.
 - Preserve the official artwork, real photography, Spanish language, black/orange/beige identity and existing static HTML/CSS/JS stack. GitHub Pages and `losinsurgentes.mx` remain the chosen hosting/domain.
 - The owner supplied the Spotify description as the editorial reference: a collective, defiant band speaking from a resistance, drawing on La Resistencia. `docs/VOZ_DE_LA_BANDA.md` records the direction for future content. Keep functional and accessible instructions clear.
 
 ## Publication and package
 
-The public-landing implementation is committed and pushed in **`456f7b2`**, with successful Pages run **`42446937743`**. Live HTTPS checks confirmed public signup on apex/www, `/banda/` password gate, published assets, private-file 404s and local decryption of the deployed band payload with the existing password; an incorrect password was rejected. No registration or email was sent.
+Historical November 7 publication: the signup-only implementation was committed and pushed in **`456f7b2`**, with successful Pages run **`42446937743`**. Live HTTPS checks confirmed public signup on apex/www, `/banda/` password gate, published assets, private-file 404s and local decryption of the deployed band payload with the existing password; an incorrect password was rejected. No registration or email was sent.
 
 The preceding `841b7bd` contains the three email HTML templates and their guides. GitHub Actions run `42446398167` completed successfully for that SHA. The previous `af0b928` corrected the drummer's display name to **Viko IV GUERRA**.
 
-The default `node scripts/prepare-pages.mjs` now uses `prepareLandingPages`:
+The authorized default `node scripts/prepare-pages.mjs` now prepares the public banner/site/optional-signup flow. `--public` is an alias:
 
-- `/`: public Maratón landing with the native Brevo registration form, branding, fonts, `css/maraton.css` and deferred `js/maraton.js`.
-- `/banda/`: password entry opening only the encrypted `preview.json`, which includes the complete site and its assets.
-- `404.html`: branded not-found page linking to the registration landing; no form or analytics.
+- `/`: one-skull Maratón banner with entry to the site and optional **Recibir comunicados** link.
+- `/sitio/`: complete public website; no password, forced registration or hidden preview wrapper.
+- `/registro/`: optional native Brevo signup with the existing visual design and clear entry back to the website.
+- `/banda/`: compatibility redirect to `/sitio/`.
+- `404.html`: branded not-found page with no form or analytics.
 - `/admin/estadisticas/`: public entry linking to the authenticated Umami provider dashboard, never reports or credentials.
-- No raw full-site page, editor, content JSON, band photos, templates or environment files. Default output does not contain `maraton-preview.json`.
+- Used website resources and photographs are public; editor, content/config JSON, templates, original branding material, environment files and encrypted preview JSON are omitted.
 
-Missing compilation password keeps signup public and omits `preview.json`; the band entry cannot reveal the site. The ignored `.env.preview-password` supplies local packaging. Actions uses the existing `PREVIEW_PASSWORD` repository secret. Never put the password in tracked files, output or command arguments.
+The public default does not need a compilation password. The ignored `.env.preview-password` and repository secret `PREVIEW_PASSWORD` remain only for deliberate protected rollback modes. Never put their value in tracked files, output or command arguments.
 
-`--gated` retains the October 28 rollback with two gates and two encrypted documents; it is no longer the default. `--public` publishes the full site and is reserved for a later, separate full-site launch authorization. The current authorization does not include that mode.
+`--signup-only` restores the former public-signup root and protected `/banda/` package. Missing password in that mode keeps signup public and omits `preview.json`. `--gated` retains the historical two-gate package and omits both encrypted documents when a password is missing. Encryption remains PBKDF2-SHA-256 (600 000 iterations), AES-GCM-256 and fresh salt/IV; these modes require JavaScript and HTTPS or localhost. The repository is public and its historical content is not made private by encryption.
 
-Encryption remains PBKDF2-SHA-256 (600 000 iterations), AES-GCM-256 and fresh salt/IV. The repository is public and already contains historical content. The Pages gate does not make GitHub private or provide server authentication. Decryption requires JavaScript and HTTPS or localhost.
-
-A push to `main` automatically starts the Pages workflow. `bash scripts/publish-github.sh` additionally validates, synchronizes the ignored local password to Actions when present, pushes and dispatches a run. No manual deploy command is needed after a successful automatic run. Confirm the new SHA's build/deploy result in Actions and inspect the domain; a commit alone is not evidence of publication. The implementation deployment and the read-only domain/password checks above were verified after its push. Later documentation-only commits do not change that implementation.
+A push to `main` automatically starts the Pages workflow. `bash scripts/publish-github.sh` validates, pushes and dispatches a run; no manual deploy command is needed after a successful automatic run. Confirm the new SHA's build/deploy result and the domain routes. Neither a local edit nor a commit proves that the new launch is published.
 
 ## Implemented site
 
@@ -85,7 +103,7 @@ Actual CORS/browser signup, Maratón list inclusion, consent recording and new e
 
 ## Analytics
 
-The owner selected Umami Cloud Hobby, linked GitHub and supplied the real Website ID. The existing opt-in configuration is now incorporated only into the authorized public landing. Missing/disabled configuration remains disabled. No tracker is included in the band gate, 404, decrypted site or `--gated` documents.
+The owner selected Umami Cloud Hobby, linked GitHub and supplied the real Website ID. The existing opt-in configuration applies only to the authorized public HTTPS root banner. Missing/disabled configuration remains disabled. No tracker is included on `/sitio/`, `/registro/`, the compatibility redirect, 404, rollback gates or decrypted rollback documents.
 
 Measurement remains restricted to the public HTTPS root of losinsurgentes.mx/www.losinsurgentes.mx, normalized URL/referrer origin, and DNT/GPC protection. Never send query/hash/form/email/password values or claim exact people/location or historical traffic. Umami's provider-side IP processing is distinct from this repository, which stores no raw IPs. Incoming dashboard activity remains unverified; do not enable public Share URLs or upgrade plans. `/admin/estadisticas/` links to provider login and implements no local account authorization.
 
@@ -94,14 +112,15 @@ Measurement remains restricted to the public HTTPS root of losinsurgentes.mx/www
 Google Drive remains the chosen private band workspace: [Los Insurgentes — Sitio web](https://drive.google.com/drive/folders/1mtafaa-JIJ9N9zaEBIQihOqGPx8qOzt1). Owner ownership and editor sharing with the band account were verified earlier. Download/import/review/save/push remains the flow; no direct editor-to-Drive write or automatic Drive-to-GitHub sync exists. See `docs/GOOGLE_DRIVE.md`.
 
 - `node scripts/preview.mjs --open`: complete local site/editor.
-- `node scripts/preview.mjs --protected --open`: public signup and password-protected band package.
+- `node scripts/preview.mjs --public --open`: public banner, site and optional signup package.
+- `node scripts/preview.mjs --protected --open`: former signup-at-root/protected-band package for deliberate rollback.
 - `node scripts/preview.mjs --gated --open`: deliberate review of the former two-gate mode.
 
 ## Validation and remaining checks
 
-All **69 tests**, static build, site checks, default Pages packaging and publisher Bash syntax validation passed for the public-landing revision. Tests cover the default CLI versus `--gated`, public native form fields, return links and subpaths, wrong password, missing password/configuration, stale artifact removal, output allowlist/symlink rejection and analytics exclusion from all protected/error content. Email HTML is balanced and preserves original destinations and Brevo variables. The tests use VM/provider simulations, not live browser/CORS or mail delivery.
+Historical public-signup revision: all **69 tests**, static build, site checks, its default Pages packaging and publisher Bash syntax validation passed. Tests cover the default CLI versus `--gated`, public native form fields, return links and subpaths, wrong password, missing password/configuration, stale artifact removal, output allowlist/symlink rejection and analytics exclusion from all protected/error content. Email HTML is balanced and preserves original destinations and Brevo variables. The tests use VM/provider simulations, not live browser/CORS or mail delivery.
 
-The in-app browser backend was unavailable for desktop/mobile visual review. Published routing/content, HTTPS and decryption of the live payload were verified after deployment as recorded above. Actual browser signup, list inclusion, email appearance/delivery and Spotify playback remain pending.
+The in-app browser backend was unavailable for desktop/mobile visual review; standalone Chromium was subsequently used for the local checks recorded above. Published routing/content, HTTPS and decryption of the historical protected payload were verified after its deployment. Actual browser signup, list inclusion, email appearance/delivery and Spotify playback remain pending.
 
 October 28 bundling regression: immediate inlining of a head-deferred script initialized Maratón before its form existed and left native POST navigation active. Bundling now reserves deferred-script slots before concurrent reads and executes them after body markup in source order. Parser-order and actual-bundled-form VM tests cover the correction.
 

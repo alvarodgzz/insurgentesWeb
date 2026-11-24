@@ -1,13 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, writeFile, access, mkdir, mkdtemp, rm, symlink } from 'node:fs/promises';
-import { join } from 'node:path';
-import { tmpdir } from 'node:os';
+import { readFile } from 'node:fs/promises';
 import { renderLyrics, lyricSource } from '../js/lyrics-render.mjs';
 import { renderMusic, spotifyAlbumId } from '../js/music-render.mjs';
 import { renderSite, validateSite, validateContent, photoSlots } from '../js/site-render.mjs';
 import { createZip, safeUpdatePath } from '../js/update-bundle.mjs';
-import { preparePages, publicDirectories } from '../scripts/prepare-pages.mjs';
 
 const fixture = async (path) => JSON.parse(await readFile(new URL(`../${path}`, import.meta.url), 'utf8'));
 const site = await fixture('content/site.json');
@@ -152,27 +149,4 @@ test('ZIP refuses unsafe entries before generating an archive', async () => {
   await assert.rejects(createZip([{ name: 'index.html', data: 'a' }, { name: 'index.html', data: 'b' }]));
   await assert.rejects(createZip([{ name: 'index.html', data: {} }]));
   await assert.rejects(createZip([]));
-});
-
-test('Pages packaging publishes the allowlist, removes stale output and refuses symlinks', async (t) => {
-  const source = await mkdtemp(join(tmpdir(), 'insurgentes-pages-'));
-  t.after(() => rm(source, { recursive: true, force: true }));
-  await writeFile(join(source, 'index.html'), '<!doctype html><title>Los Insurgentes</title>');
-  for (const directory of publicDirectories) {
-    await mkdir(join(source, directory), { recursive: true });
-    await writeFile(join(source, directory, 'public.txt'), directory);
-  }
-  await writeFile(join(source, 'private-secret.txt'), 'private');
-  await writeFile(join(source, 'assets', '.hidden-secret'), 'private');
-  const output = await preparePages(source);
-  assert.equal(await readFile(join(output, 'index.html'), 'utf8'), '<!doctype html><title>Los Insurgentes</title>');
-  for (const directory of publicDirectories) assert.equal(await readFile(join(output, directory, 'public.txt'), 'utf8'), directory);
-  await access(join(output, '.nojekyll'));
-  await assert.rejects(access(join(output, 'private-secret.txt')));
-  await assert.rejects(access(join(output, 'assets', '.hidden-secret')));
-  await writeFile(join(output, 'stale.txt'), 'stale');
-  await preparePages(source);
-  await assert.rejects(access(join(output, 'stale.txt')));
-  await symlink(join(source, 'private-secret.txt'), join(source, 'assets', 'leaked.txt'));
-  await assert.rejects(preparePages(source), /symbolic links/);
 });

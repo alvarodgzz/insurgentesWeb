@@ -44,6 +44,6 @@ Conviene que una sola persona suba cambios de textos a la vez. Avísense antes d
 
 La conexión automática de Drive a GitHub no está configurada. GitHub Pages ya está publicado: después de importar y revisar los cambios, un push a `main` ejecuta las pruebas y el deploy automáticamente. Repetir un deploy sin importar primero las fotos de Drive vuelve a publicar las imágenes anteriores. Consulta [la guía de GitHub Pages](GITHUB_PAGES.md).
 
-Las fotos de Inicio, La banda y Galería pertenecen al sitio completo, actualmente detrás de **Acceso de la banda**. No aparecen en el registro público ni en el banner de Maratón. Si el sitio ya estaba abierto durante una publicación, recarga y vuelve a entrar para descargar la versión actualizada.
+En el recorrido público autorizado el 23 de noviembre, las fotos de Inicio, La banda y Galería aparecen en `/sitio/`. El banner está en `/` y el registro opcional en `/registro/`; esas páginas no usan las fotos de esas secciones. El acceso con contraseña fue el modo anterior. Si el sitio ya estaba abierto durante una publicación, recárgalo para descargar la versión actualizada. La apertura pública debe confirmarse con su nuevo deploy, no solo con los archivos locales.
 
 No guardes contraseñas ni documentos personales en esta carpeta. El correo invitado se usa como cuenta de colaboración; no se agrega como correo público de contacto sin confirmación del dueño.

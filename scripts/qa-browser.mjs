@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { prepareLandingPages } from './private-preview.mjs';
+import { preparePages } from './prepare-pages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const toolsRoot = resolve(process.env.BROWSER_TOOLS_DIR || join(process.env.RUNNER_TEMP || (process.platform === 'darwin' ? '/private/tmp' : tmpdir()), 'insurgentes-browser-tools'));
@@ -72,6 +73,54 @@ async function controls(page, label) {
     assert.ok(bounds.x >= -1 && bounds.x + bounds.width <= width + 1, `${label}: control fits ${selector}`);
   }
 }
+async function galleryControls(page, label, touch, protectedPreview = false) {
+  const trigger = page.locator('.gallery-trigger').nth(2);
+  const activate = locator => touch ? locator.tap({ timeout: 5000 }) : locator.click({ timeout: 5000 });
+  const closed = async () => {
+    await page.locator('#lightbox[aria-hidden="true"]').waitFor({ state: 'hidden' });
+    if (protectedPreview) {
+      assert.equal(await page.locator('#band-site').evaluate(site => site.inert), false, `${label}: site restored`);
+      assert.equal(await page.locator('#previewLock').evaluate(button => button.inert), false, `${label}: preview control restored`);
+    } else {
+      assert.equal(await page.locator('#main').evaluate(main => main.inert), false, `${label}: public site restored`);
+    }
+    assert.equal(await trigger.evaluate(button => button === document.activeElement), true, `${label}: focus returns to the photo`);
+    assert.equal(await page.locator('body').evaluate(body => body.classList.contains('lightbox-open')), false, `${label}: scroll unlocked`);
+  };
+  await activate(trigger);
+  await page.locator('#lightbox').waitFor({ state: 'visible' });
+  assert.equal(await page.locator('#lightboxClose').evaluate(button => button.closest('[inert]') === null && document.activeElement === button), true, `${label}: close is interactive and focused inside the decrypted preview`);
+  if (protectedPreview) {
+    assert.equal(await page.locator('#band-site').evaluate(site => site.inert), true, `${label}: background site disabled`);
+    assert.equal(await page.locator('#previewLock').evaluate(button => button.inert), true, `${label}: late preview control disabled`);
+  } else {
+    assert.equal(await page.locator('#main').evaluate(main => main.inert), true, `${label}: background content disabled`);
+  }
+  assert.equal(await page.locator('#lightboxCaption').count(), 0, `${label}: no visible photo description`);
+  assert.ok(await page.locator('#lightboxImg').getAttribute('alt'), `${label}: accessible photo description retained`);
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#lightboxPrev').evaluate(button => document.activeElement === button), true, `${label}: keyboard reaches viewer controls`);
+  await page.keyboard.press('Shift+Tab');
+  assert.equal(await page.locator('#lightboxClose').evaluate(button => document.activeElement === button), true);
+  await page.keyboard.press('Shift+Tab');
+  assert.equal(await page.locator('#lightbox').evaluate(dialog => dialog.contains(document.activeElement)), true, `${label}: focus stays in viewer`);
+  const counter = await page.locator('#lightboxCounter').textContent();
+  await activate(page.locator('#lightboxNext'));
+  assert.notEqual(await page.locator('#lightboxCounter').textContent(), counter, `${label}: next photo`);
+  await activate(page.locator('#lightboxPrev'));
+  assert.equal(await page.locator('#lightboxCounter').textContent(), counter, `${label}: previous photo`);
+  await page.locator('#lightboxImg').evaluate(image => image.decode());
+  await screenshot(page, `${label}-gallery`, false);
+  await activate(page.locator('#lightboxClose'));
+  await closed();
+  await activate(trigger);
+  await page.locator('#lightboxBackdrop').click({ position: { x: 4, y: 4 }, timeout: 5000 });
+  await closed();
+  await activate(trigger);
+  await page.keyboard.press('Escape');
+  await closed();
+  console.log(`PASS ${label}: gallery closes by ${touch ? 'tap' : 'click'}, backdrop and Escape; focus, scroll and inert restored`);
+}
 async function screenshot(page, label, fullPage = true) {
   const name = `${label}.png`;
   await page.screenshot({ path: join(output, name), fullPage, animations: 'disabled' });
@@ -98,16 +147,27 @@ try {
   await cp(join(root, 'admin/estadisticas/index.html'), join(source, 'admin/estadisticas/index.html'));
   await writeFile(join(source, 'content/newsletter.json'), JSON.stringify({ version: 1, enabled: true, provider: 'brevo', formUrl: 'https://band.sibforms.com/v2/serve/browser_qa_hosted==', submitUrl: formAction }));
   await writeFile(join(source, 'content/analytics.json'), JSON.stringify({ version: 1, enabled: false, websiteId: '' }));
-  const site = await prepareLandingPages(source, { password });
+  const privateOutput = await prepareLandingPages(source, { password, siteUrl: 'https://example.test/qa-private/' });
+  const privateSite = join(workspace, 'private-site');
+  await cp(privateOutput, privateSite, { recursive: true });
+  const publicOutput = await preparePages(source, { siteUrl: 'https://losinsurgentes.mx/' });
+  const site = join(workspace, 'public-site');
+  await cp(publicOutput, site, { recursive: true });
+  const subpathOutput = await preparePages(source, { siteUrl: 'https://example.github.io/insurgentesWeb/' });
+  const subpathSite = join(workspace, 'subpath-site');
+  await cp(subpathOutput, subpathSite, { recursive: true });
   await mkdir(output, { recursive: true });
-  const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.ttf': 'font/ttf', '.otf': 'font/otf' };
+  const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.png': 'image/png', '.ttf': 'font/ttf', '.otf': 'font/otf' };
   server = createServer(async (request, response) => {
     try {
       if (!['GET', 'HEAD'].includes(request.method)) throw new Error('Method not allowed');
       let path = decodeURIComponent(new URL(request.url, 'http://localhost').pathname).replace(/^\/+/, '');
+      let mount = site;
+      if (path.startsWith('qa-private/')) { mount = privateSite; path = path.slice('qa-private/'.length); }
+      else if (path.startsWith('insurgentesWeb/')) { mount = subpathSite; path = path.slice('insurgentesWeb/'.length); }
       if (!path || path.endsWith('/')) path += 'index.html';
-      const target = await realpath(resolve(site, path));
-      const local = relative(site, target);
+      const target = await realpath(resolve(mount, path));
+      const local = relative(mount, target);
       if (local.startsWith(`..${sep}`) || local === '..' || local.split(sep).some(part => part.startsWith('.'))) throw new Error('Outside fixture');
       if (!(await stat(target)).isFile()) throw new Error('Not a file');
       response.writeHead(200, { 'Content-Type': types[extname(target)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
@@ -124,7 +184,7 @@ try {
         const context = await contextFor(browser, engine, { width, height: width < 700 ? 844 : 1000 });
         try {
           const page = await context.newPage();
-          assert.equal((await page.goto(origin)).status(), 200, 'QA registration fixture must load');
+          assert.equal((await page.goto(`${origin}/registro/`)).status(), 200, 'QA registration fixture must load');
           await page.evaluate(() => document.fonts.ready);
           await layout(page, '.maraton-title-logo', `${engine}/${width}/registration`);
           await controls(page, `${engine}/${width}`);
@@ -142,10 +202,52 @@ try {
           }
         } finally { await context.close(); }
       }
+      const publicContext = await contextFor(browser, engine, { width: 390, height: 844 });
+      try {
+        const page = await publicContext.newPage();
+        await page.goto(origin);
+        assert.equal(await page.locator('form').count(), 0, 'Banner does not require registration');
+        assert.equal(await page.locator('.band-intro-door').count(), 1);
+        assert.equal((await page.locator('.band-intro-caption').textContent()).trim(), 'Esa calavera que ya viene por ti...');
+        for (const [width, height] of [[320, 568], [390, 844], [768, 1000], [1440, 900]]) {
+          await page.setViewportSize({ width, height });
+          await layout(page, '#band-intro-title img', `${engine}/${width}/public banner`);
+          const entry = await page.locator('#band-intro-enter').boundingBox();
+          assert.ok(entry && entry.y >= 0 && entry.y + entry.height <= height + 1, 'Public entry fits viewport');
+          const signup = page.getByRole('link', { name: /Recibir comunicados/ });
+          assert.equal(await signup.isVisible(), true, 'Optional signup is visible on the banner');
+          const signupBox = await signup.boundingBox();
+          assert.ok(signupBox && signupBox.height >= 44 && signupBox.x >= 0 && signupBox.x + signupBox.width <= width + 1, 'Optional signup is usable and fits the banner');
+          await screenshot(page, `${engine}-${width}-public-banner`);
+        }
+        await page.locator('#band-intro-enter').click();
+        await page.waitForURL(`${origin}/sitio/`);
+        assert.equal(await page.locator('#main').isVisible(), true);
+        assert.equal(await page.locator('input[type="password"], form[data-newsletter-form]').count(), 0, 'Site opens without a password or signup');
+        for (const width of [320, 390, 768, 820, 1024, 1440]) {
+          await page.setViewportSize({ width, height: width < 700 ? 844 : 1000 });
+          await page.evaluate(() => window.scrollTo(0, 0));
+          await layout(page, '.hero-title-mark', `${engine}/${width}/public site`);
+          await layout(page, '.nav-brand img', `${engine}/${width}/public navigation logo`);
+          const brand = await page.locator('.nav-brand img').boundingBox();
+          assert.ok(brand.width >= 130 && brand.height >= 48, 'Public navigation logo is legible');
+          await screenshot(page, `${engine}-${width}-public-site`, false);
+          await galleryControls(page, `${engine}-public-${width}`, width < 700);
+        }
+        await page.locator('.site-header .nav-newsletter').click();
+        await page.waitForURL(`${origin}/registro/`);
+        assert.equal(await page.locator('#EMAIL').isVisible(), true);
+        await page.locator('.maraton-band-access').click();
+        await page.waitForURL(`${origin}/sitio/`);
+        await page.goto(`${origin}/banda/`);
+        await page.waitForURL(`${origin}/sitio/`);
+        console.log(`PASS ${engine}: public banner → site without signup, optional registration from banner/site, legacy band link redirects`);
+      } finally { await publicContext.close(); }
+
       const context = await contextFor(browser, engine, { width: 390, height: 844 });
       try {
         const page = await context.newPage();
-        await page.goto(`${origin}/banda/`);
+        await page.goto(`${origin}/qa-private/banda/`);
         await page.locator('#access-password').fill('Deliberately incorrect QA password');
         await page.locator('#access-submit').click();
         await page.getByText('La contraseña no es correcta. Inténtalo de nuevo.').waitFor();
@@ -153,11 +255,12 @@ try {
         await page.locator('#access-submit').click();
         await page.locator('#band-intro').waitFor({ state: 'visible', timeout: 30000 });
         assert.equal(await page.locator('#band-site').isVisible(), false);
+        assert.equal(await page.locator('.band-intro-door').count(), 1, 'Banner has one entry skull');
         for (const [width, height] of [[320, 844], [320, 568], [390, 844], [768, 1000], [1440, 900]]) {
           await page.setViewportSize({ width, height });
           await layout(page, '#band-intro-title img', `${engine}/${width}x${height}/banner`);
           await layout(page, '.band-intro-brand', `${engine}/${width}x${height}/band logo`);
-          for (const id of ['enter', 'music', 'gallery', 'shows']) {
+          for (const id of ['enter']) {
             await layout(page, `#band-intro-${id} img`, `${engine}/${width}x${height}/${id} object`);
             const label = await page.locator(`#band-intro-${id} .band-intro-door-label`).boundingBox();
             assert.ok(label && label.height >= 40 && label.x >= 0 && label.x + label.width <= width + 1, 'Object labels must fit and have usable touch targets');
@@ -170,31 +273,17 @@ try {
         await page.locator('#band-site').waitFor({ state: 'visible' });
         assert.equal(await page.locator('#band-intro').isVisible(), false);
         assert.equal(await page.locator('#main').evaluate(main => main === document.activeElement), true);
-        for (const width of [320, 390, 768, 1440]) {
+        for (const width of [320, 390, 768, 820, 1024, 1440]) {
           await page.setViewportSize({ width, height: width < 700 ? 844 : 1000 });
+          await page.evaluate(() => window.scrollTo(0, 0));
           await layout(page, '.hero-title-mark', `${engine}/${width}/site`);
+          await layout(page, '.nav-brand img', `${engine}/${width}/navigation logo`);
+          const brand = await page.locator('.nav-brand img').boundingBox();
+          assert.ok(brand.width >= 130 && brand.height >= 48, 'Navigation logo must remain legible');
           await screenshot(page, `${engine}-${width}-site`, false);
-        }
-        for (const section of ['music', 'gallery', 'shows']) {
-          // Restore the already decrypted banner to exercise each destination.
-          // No password or private document is requested again.
-          await page.evaluate(() => {
-            document.getElementById('band-intro').hidden = false;
-            const site = document.getElementById('band-site');
-            site.hidden = true; site.setAttribute('inert', '');
-            window.scrollTo(0, 0);
-          });
-          await page.locator(`#band-intro-${section}`).focus();
-          await page.keyboard.press('Enter');
-          assert.equal(await page.locator('#band-intro').isVisible(), false);
-          assert.equal(await page.locator('#band-site').isVisible(), true);
-          assert.equal(await page.locator(`#${section}`).evaluate(target => {
-            const bounds = target.getBoundingClientRect();
-            return document.activeElement === target && bounds.bottom > 0 && bounds.top < innerHeight;
-          }), true, `${section} must receive focus and scroll into view`);
+          await galleryControls(page, `${engine}-protected-${width}`, width < 700, true);
         }
         console.log(`PASS ${engine}: password → responsive banner → existing site, keyboard focus preserved`);
-        console.log(`PASS ${engine}: all three skull shortcuts open their sections with keyboard navigation`);
       } finally { await context.close(); }
 
       const signupContext = await contextFor(browser, engine, { width: 390, height: 844 });
@@ -213,7 +302,7 @@ try {
           await pending;
           await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"success":true}' });
         });
-        await page.goto(origin);
+        await page.goto(`${origin}/registro/`);
         await page.locator('#EMAIL').fill('browser-qa@example.invalid');
         await page.locator('.newsletter-button').click();
         await page.locator('form[aria-busy="true"]').waitFor();
@@ -222,7 +311,7 @@ try {
         accept();
         await page.locator('[data-newsletter-status][data-state="success"]').waitFor();
         assert.equal(received, 1, 'No duplicate signup request');
-        assert.equal(new URL(page.url()).pathname, '/');
+        assert.equal(new URL(page.url()).pathname, '/registro/');
         await screenshot(page, `${engine}-signup-success`);
         console.log(`PASS ${engine}: pending/success inline, duplicate blocked, provider response simulated`);
       } finally { await signupContext.close(); }
@@ -230,11 +319,34 @@ try {
       const noJs = await contextFor(browser, engine, { width: 390, height: 844 }, false);
       try {
         const page = await noJs.newPage();
-        await page.goto(origin);
+        await page.goto(`${origin}/registro/`);
         assert.equal(await page.locator('form[data-newsletter-form]').getAttribute('method'), 'post');
         assert.equal(await page.locator('#EMAIL').isVisible(), true);
         await layout(page, '.maraton-title-logo', `${engine}/no-js`);
+        await page.goto(origin);
+        await page.locator('#band-intro-enter').click();
+        await page.waitForURL(`${origin}/sitio/`);
+        assert.equal(await page.locator('#main').isVisible(), true);
+        await layout(page, '.hero-title-mark', `${engine}/no-js public site`);
+        await page.locator('.site-header .nav-newsletter').click();
+        await page.waitForURL(`${origin}/registro/`);
         console.log(`PASS ${engine}: native signup remains usable without JavaScript`);
+        await page.goto(`${origin}/insurgentesWeb/`);
+        await page.locator('#band-intro-enter').click();
+        await page.waitForURL(`${origin}/insurgentesWeb/sitio/`);
+        await layout(page, '.nav-brand img', `${engine}/subpath navigation`);
+        await page.locator('.nav-links a[href="#gallery"]').click();
+        assert.equal(new URL(page.url()).pathname, '/insurgentesWeb/sitio/');
+        assert.equal(new URL(page.url()).hash, '#gallery');
+        await page.locator('.site-header .nav-newsletter').click();
+        await page.waitForURL(`${origin}/insurgentesWeb/registro/`);
+        await layout(page, '.maraton-title-logo', `${engine}/subpath signup`);
+        await page.locator('.maraton-jump').click();
+        assert.equal(new URL(page.url()).pathname, '/insurgentesWeb/registro/');
+        assert.equal(new URL(page.url()).hash, '#registro');
+        await page.locator('.maraton-band-access').click();
+        await page.waitForURL(`${origin}/insurgentesWeb/sitio/`);
+        console.log(`PASS ${engine}: banner/site/optional signup and local hash navigation work without JavaScript, including Pages subpath`);
       } finally { await noJs.close(); }
     } finally { await browser.close(); }
   }

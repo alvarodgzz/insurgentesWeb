@@ -99,11 +99,8 @@ else
   fi
 fi
 
-# Keep the preview password out of Git and command-line arguments. The ignored
-# local file is only read by gh on stdin; Actions receives a repository secret.
-if [[ -s .env.preview-password ]]; then
-  gh secret set PREVIEW_PASSWORD --repo "$repository" < .env.preview-password
-fi
+# Public publication does not read or synchronize a preview password.
+# Existing local/repository passwords remain available for deliberate rollback.
 
 # Push first: GitHub Pages cannot be initialized reliably on an empty repository.
 # Reuse gh authentication for HTTPS without changing global Git credentials.
@@ -147,5 +144,6 @@ gh workflow run pages.yml --repo "$repository" --ref main
 
 printf '\nChanges pushed and deployment requested. Check the GitHub Actions result:\n'
 printf 'https://github.com/%s/actions\n' "$repository"
-printf 'Expected public signup after a successful deployment: https://losinsurgentes.mx/\n'
-printf 'Password-protected band site: https://losinsurgentes.mx/banda/\n'
+printf 'Public Maratón banner: https://losinsurgentes.mx/\n'
+printf 'Band website: https://losinsurgentes.mx/sitio/\n'
+printf 'Optional signup: https://losinsurgentes.mx/registro/\n'

@@ -97,7 +97,7 @@ try {
     const css = (await read(file)).replace(/\/\*[\s\S]*?\*\//g, '');
     for (const value of cssURLs(css)) await localReference(value, file);
   }
-  for (const file of ['js/main.js', 'js/spotify.js', 'js/access.js', 'js/analytics.js', 'js/analytics-render.mjs', 'js/maraton.js', 'js/newsletter-render.mjs', 'js/site-render.mjs', 'js/lyrics-render.mjs', 'js/music-render.mjs', 'js/update-bundle.mjs', 'admin/editor.mjs', 'scripts/build.mjs', 'scripts/preview.mjs', 'scripts/prepare-pages.mjs', 'scripts/private-preview.mjs', 'scripts/analytics-config.mjs', 'scripts/configure-analytics.mjs', 'scripts/newsletter-config.mjs', 'scripts/configure-newsletter.mjs', 'scripts/lookup-lyrics.mjs']) {
+  for (const file of ['js/main.js', 'js/spotify.js', 'js/access.js', 'js/analytics.js', 'js/analytics-render.mjs', 'js/maraton.js', 'js/newsletter-render.mjs', 'js/site-render.mjs', 'js/lyrics-render.mjs', 'js/music-render.mjs', 'js/update-bundle.mjs', 'admin/editor.mjs', 'scripts/build.mjs', 'scripts/preview.mjs', 'scripts/prepare-pages.mjs', 'scripts/public-pages.mjs', 'scripts/private-preview.mjs', 'scripts/analytics-config.mjs', 'scripts/configure-analytics.mjs', 'scripts/newsletter-config.mjs', 'scripts/configure-newsletter.mjs', 'scripts/lookup-lyrics.mjs']) {
     const result = spawnSync(process.execPath, ['--check', resolve(root, file)], { encoding: 'utf8' });
     if (result.status !== 0) errors.push(`${file}: syntax check failed\n${result.stderr}`);
   }

@@ -1,6 +1,6 @@
 # Revisar responsive antes de publicar
 
-El registro conserva su diseño original. Los cambios de HTML, CSS, logos o navegación deben pasar las pruebas de navegador y una revisión de capturas antes del push.
+El recorrido público autorizado el 23 de noviembre es banner → sitio, con registro opcional desde ambos. El registro conserva su diseño original. La ampliación de esta suite y su resultado final deben verificarse antes de declarar el lanzamiento publicado. Los cambios de HTML, CSS, logos o navegación deben pasar las pruebas de navegador y una revisión de capturas antes del push.
 
 ## Ejecutar
 
@@ -22,22 +22,23 @@ El instalador prepara Playwright 1.65.0, Chromium y WebKit en una carpeta tempor
 
 - Registro a 320, 360, 390, 430, 768 y 1440 px, en Chromium y WebKit, con emulación móvil en los tamaños pequeños.
 - Logo completo dentro de la pantalla y de los ancestros que puedan recortarlo. Comprobar solo el ancho del documento no detecta una imagen gigante oculta con overflow.
-- Campo de correo, botón y acceso de la banda visibles, con límites y tamaños utilizables.
-- Contraseña incorrecta, reintento correcto, banner privado y entrada al sitio existente. Banner y logo del sitio se revisan a 320, 390, 768 y 1440 px; el banner incluye además 320 × 568 y escritorio de 900 px de alto. Logos y objetos completos, etiquetas utilizables y botón principal dentro de la pantalla. Cada acceso de Música, Galería y En vivo se activa con teclado y debe abrir, desplazar y enfocar su sección.
-- Registro nativo sin JavaScript y estados de envío pendiente/éxito con una respuesta simulada, sin navegar a JSON ni duplicar peticiones.
+- Campo de correo, botón de envío y enlace para volver al sitio desde `/registro/`, con límites y tamaños utilizables.
+- Banner público → sitio sin contraseña ni registro obligatorio, acceso opcional a `/registro/` desde ambos, y redirect compatible desde `/banda/`. El modo protegido de reversión mantiene además contraseña incorrecta, reintento correcto y entrada al documento descifrado. El banner se revisa a 320, 390, 768 y 1440 px; el banner incluye además 320 × 568 y escritorio de 900 px de alto. Un solo acceso con calavera, logos completos y botón principal dentro de la pantalla. El logo del menú se comprueba además a 820 y 1024 px para detectar problemas entre móvil y escritorio.
+- Galería pública y dentro del documento descifrado de reversión a 320, 390, 768, 820, 1024 y 1440 px: apertura, flechas, cierre con clic/toque real en la X, fondo y Escape; foco de teclado y bloqueo/restauración del fondo y del control tardío de vista previa. Se comprueba que no hay descripción visible y que las imágenes conservan su alt. Este caso reproduce el bug que bloqueaba el propio modal al volver inert su contenedor de vista previa.
+- Recorrido público completo y formulario nativo sin JavaScript; enlaces de recursos y hashes locales bajo el subpath de GitHub Pages. Estados de envío pendiente/éxito con una respuesta simulada, sin navegar a JSON ni duplicar peticiones.
 - Una prueba deliberadamente agranda el logo y exige que el detector falle. Después verifica que un logo con atributos antiguos también cabe en el contenedor.
 
 Son navegadores reales con tamaños/dispositivos emulados, no una prueba en un iPhone físico. Las respuestas del proveedor se simulan: no prueban CORS de Brevo, inclusión en la lista ni llegada de correos.
 
 ## Capturas y storyboard
 
-El reporte local queda en `_qa/index.html`, con capturas enlazadas del registro, banner, sitio y estados del formulario. Ábrelo después de las pruebas y revisa la composición, no solo el resultado automático. No hace falta añadir Storybook ni un framework a este sitio estático.
+El reporte local queda en `_qa/index.html`, con capturas enlazadas del banner público, sitio, galería, registro opcional y estados del formulario, además de la regresión del modo protegido. Ábrelo después de las pruebas y revisa la composición, no solo el resultado automático. No hace falta añadir Storybook ni un framework a este sitio estático.
 
 `_qa/` está ignorado por Git y fuera de la lista de publicación. Las capturas del sitio protegido y el branding son material exclusivo de este proyecto: no subirlas como artifacts públicos ni reutilizarlas fuera del proyecto.
 
 ## Aislamiento y CI
 
-El runner prepara una copia temporal con contraseña, dirección de formulario y respuesta de proveedor sintéticas. Bloquea todo el tráfico externo y nunca envía un registro real. Comprueba que el paquete de publicación y la configuración reales no hayan cambiado. La carpeta original de branding, ZIP, Git y `.env` no se copian a esa prueba.
+El runner prepara copias temporales del recorrido público (raíz y subpath de Pages) y del modo protegido de reversión, con contraseña, dirección de formulario y respuesta de proveedor sintéticas. Bloquea todo el tráfico externo y nunca envía un registro real. Comprueba que el paquete de publicación y la configuración reales no hayan cambiado. La carpeta original de branding, ZIP, Git y `.env` no se copian a esa prueba.
 
 GitHub Actions instala las herramientas en su carpeta temporal y ejecuta la misma prueba **antes de subir el artifact y desplegar Pages**. Si falla, no hay deploy. El runner de build se fija a Ubuntu 24.04 para hacer reproducibles los navegadores. No se publican reportes ni capturas; los archivos temporales del CI se eliminan al terminar.
 
