@@ -206,20 +206,33 @@ try {
       try {
         const page = await publicContext.newPage();
         await page.goto(origin);
-        assert.equal(await page.locator('form').count(), 0, 'Banner does not require registration');
-        assert.equal(await page.locator('.band-intro-door').count(), 1);
-        assert.equal((await page.locator('.band-intro-caption').textContent()).trim(), 'Esa calavera que ya viene por ti...');
+        assert.equal(await page.locator('form[data-newsletter-form]').count(), 1, 'Landing includes one optional native signup');
+        assert.equal(await page.locator('.landing-enter').count(), 1, 'One large skull enters the site');
+        assert.equal((await page.locator('.maraton-intro').textContent()).trim(), 'Esa calavera que ya viene por ti...');
         for (const [width, height] of [[320, 568], [390, 844], [768, 1000], [1440, 900]]) {
           await page.setViewportSize({ width, height });
-          await layout(page, '#band-intro-title img', `${engine}/${width}/public banner`);
+          await screenshot(page, `${engine}-${width}-public-banner`);
+          await layout(page, '.maraton-title-logo', `${engine}/${width}/public banner`);
           const entry = await page.locator('#band-intro-enter').boundingBox();
           assert.ok(entry && entry.y >= 0 && entry.y + entry.height <= height + 1, 'Public entry fits viewport');
-          const signup = page.getByRole('link', { name: /Recibir comunicados/ });
+          const signup = page.getByRole('link', { name: /Quiero enterarme más/ });
           assert.equal(await signup.isVisible(), true, 'Optional signup is visible on the banner');
           const signupBox = await signup.boundingBox();
           assert.ok(signupBox && signupBox.height >= 44 && signupBox.x >= 0 && signupBox.x + signupBox.width <= width + 1, 'Optional signup is usable and fits the banner');
-          await screenshot(page, `${engine}-${width}-public-banner`);
+          assert.ok(signupBox.y >= 0 && signupBox.y + signupBox.height <= height + 1, 'Signup CTA and skull entry share the first screen');
+          assert.equal(await page.locator('.landing-skull img').evaluate(image => image.complete && image.naturalWidth > 0), true, 'Official skull image loads');
         }
+        await page.locator('.landing-signup').click();
+        assert.equal(new URL(page.url()).pathname, '/');
+        assert.equal(new URL(page.url()).hash, '#registro');
+        assert.equal(await page.locator('#EMAIL').evaluate(input => document.activeElement === input), true, 'Landing signup focuses email without navigating away');
+        await page.emulateMedia({ reducedMotion: 'no-preference' });
+        await page.locator('.landing-signup').focus();
+        assert.notEqual(await page.locator('.landing-skull').evaluate(skull => getComputedStyle(skull).animationName), 'none', 'Skull animates when motion is allowed');
+        await page.locator('#band-intro-enter').focus();
+        assert.equal(await page.locator('.landing-skull').evaluate(skull => getComputedStyle(skull).animationPlayState), 'paused', 'Skull pauses for keyboard focus');
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        assert.equal(await page.locator('.landing-skull').evaluate(skull => getComputedStyle(skull).animationName), 'none', 'Reduced motion disables skull animation');
         await page.locator('#band-intro-enter').click();
         await page.waitForURL(`${origin}/sitio/`);
         assert.equal(await page.locator('#main').isVisible(), true);
@@ -241,7 +254,7 @@ try {
         await page.waitForURL(`${origin}/sitio/`);
         await page.goto(`${origin}/banda/`);
         await page.waitForURL(`${origin}/sitio/`);
-        console.log(`PASS ${engine}: public banner → site without signup, optional registration from banner/site, legacy band link redirects`);
+        console.log(`PASS ${engine}: combined landing offers inline signup or skull entry; motion preferences and optional registration work`);
       } finally { await publicContext.close(); }
 
       const context = await contextFor(browser, engine, { width: 390, height: 844 });
@@ -286,35 +299,37 @@ try {
         console.log(`PASS ${engine}: password → responsive banner → existing site, keyboard focus preserved`);
       } finally { await context.close(); }
 
-      const signupContext = await contextFor(browser, engine, { width: 390, height: 844 });
-      try {
-        const page = await signupContext.newPage();
-        let accept, received = 0;
-        const pending = new Promise(resolve => { accept = resolve; });
-        await signupContext.route(formAction, async route => {
-          received++;
-          const request = route.request();
-          assert.equal(request.method(), 'POST');
-          assert.equal(request.headers().referer, undefined);
-          assert.equal(request.headers().cookie, undefined);
-          const fields = new URLSearchParams(request.postData());
-          assert.deepEqual([...fields.keys()].sort(), ['EMAIL', 'email_address_check', 'html_type', 'locale']);
-          await pending;
-          await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"success":true}' });
-        });
-        await page.goto(`${origin}/registro/`);
-        await page.locator('#EMAIL').fill('browser-qa@example.invalid');
-        await page.locator('.newsletter-button').click();
-        await page.locator('form[aria-busy="true"]').waitFor();
-        await page.locator('form').dispatchEvent('submit');
-        await screenshot(page, `${engine}-signup-pending`);
-        accept();
-        await page.locator('[data-newsletter-status][data-state="success"]').waitFor();
-        assert.equal(received, 1, 'No duplicate signup request');
-        assert.equal(new URL(page.url()).pathname, '/registro/');
-        await screenshot(page, `${engine}-signup-success`);
-        console.log(`PASS ${engine}: pending/success inline, duplicate blocked, provider response simulated`);
-      } finally { await signupContext.close(); }
+      for (const signupPath of ['/', '/registro/']) {
+        const signupContext = await contextFor(browser, engine, { width: 390, height: 844 });
+        try {
+          const page = await signupContext.newPage();
+          let accept, received = 0;
+          const pending = new Promise(resolve => { accept = resolve; });
+          await signupContext.route(formAction, async route => {
+            received++;
+            const request = route.request();
+            assert.equal(request.method(), 'POST');
+            assert.equal(request.headers().referer, undefined);
+            assert.equal(request.headers().cookie, undefined);
+            const fields = new URLSearchParams(request.postData());
+            assert.deepEqual([...fields.keys()].sort(), ['EMAIL', 'email_address_check', 'html_type', 'locale']);
+            await pending;
+            await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"success":true}' });
+          });
+          await page.goto(`${origin}${signupPath}`);
+          await page.locator('#EMAIL').fill('browser-qa@example.invalid');
+          await page.locator('.newsletter-button').click();
+          await page.locator('form[aria-busy="true"]').waitFor();
+          await page.locator('form').dispatchEvent('submit');
+          await screenshot(page, `${engine}-${signupPath === '/' ? 'landing' : 'signup'}-pending`);
+          accept();
+          await page.locator('[data-newsletter-status][data-state="success"]').waitFor();
+          assert.equal(received, 1, 'No duplicate signup request');
+          assert.equal(new URL(page.url()).pathname, signupPath);
+          await screenshot(page, `${engine}-${signupPath === '/' ? 'landing' : 'signup'}-success`);
+          console.log(`PASS ${engine} ${signupPath}: pending/success inline, duplicate blocked, provider response simulated`);
+        } finally { await signupContext.close(); }
+      }
 
       const noJs = await contextFor(browser, engine, { width: 390, height: 844 }, false);
       try {
@@ -324,6 +339,9 @@ try {
         assert.equal(await page.locator('#EMAIL').isVisible(), true);
         await layout(page, '.maraton-title-logo', `${engine}/no-js`);
         await page.goto(origin);
+        await page.locator('.landing-signup').click();
+        assert.equal(new URL(page.url()).pathname, '/');
+        assert.equal(new URL(page.url()).hash, '#registro');
         await page.locator('#band-intro-enter').click();
         await page.waitForURL(`${origin}/sitio/`);
         assert.equal(await page.locator('#main').isVisible(), true);
@@ -332,6 +350,9 @@ try {
         await page.waitForURL(`${origin}/registro/`);
         console.log(`PASS ${engine}: native signup remains usable without JavaScript`);
         await page.goto(`${origin}/insurgentesWeb/`);
+        await page.locator('.landing-signup').click();
+        assert.equal(new URL(page.url()).pathname, '/insurgentesWeb/');
+        assert.equal(new URL(page.url()).hash, '#registro');
         await page.locator('#band-intro-enter').click();
         await page.waitForURL(`${origin}/insurgentesWeb/sitio/`);
         await layout(page, '.nav-brand img', `${engine}/subpath navigation`);

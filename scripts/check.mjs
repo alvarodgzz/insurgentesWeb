@@ -93,7 +93,7 @@ try {
     const attrs = attributes(tag[0]);
     for (const attribute of ['href', 'src']) if (attrs[attribute]) await localReference(attrs[attribute], 'admin/index.html');
   }
-  for (const file of ['css/style.css', 'css/spotify.css', 'css/access.css', 'css/stats.css', 'css/maraton.css', 'admin/editor.css']) {
+  for (const file of ['css/style.css', 'css/spotify.css', 'css/access.css', 'css/stats.css', 'css/maraton.css', 'css/landing.css', 'admin/editor.css']) {
     const css = (await read(file)).replace(/\/\*[\s\S]*?\*\//g, '');
     for (const value of cssURLs(css)) await localReference(value, file);
   }

@@ -1,12 +1,12 @@
 # Publicar el sitio de Los Insurgentes
 
-El repositorio es [alvarodgzz/insurgentesWeb](https://github.com/alvarodgzz/insurgentesWeb), rama `main`. GitHub Pages usa GitHub Actions y `losinsurgentes.mx`. El 23 de noviembre de 2026 el propietario autorizó abrir el sitio completo y eligió **banner → sitio, con registro opcional desde ambos**. El lanzamiento nuevo está pendiente de confirmar con su Actions run y las rutas del dominio; guardar archivos localmente no lo publica.
+El repositorio es [alvarodgzz/insurgentesWeb](https://github.com/alvarodgzz/insurgentesWeb), rama `main`. GitHub Pages usa GitHub Actions y `losinsurgentes.mx`. El 23 de noviembre de 2026 el propietario autorizó abrir el sitio completo y eligió **banner → sitio, con registro opcional desde ambos**. Cada publicación se verifica en Actions y en el dominio.
 
 ## Recorrido público autorizado
 
 | Ruta | Contenido |
 | --- | --- |
-| `/` | Banner de Maratón: una calavera para **Entrar al sitio** y enlace **Recibir comunicados** |
+| `/` | Banner de Maratón: una calavera para **Entrar al sitio** y **Quiero enterarme más** para saltar al formulario de la misma página |
 | `/sitio/` | Sitio completo público, sin contraseña ni registro obligatorio |
 | `/registro/` | Registro opcional de Maratón, con su diseño y formulario nativo existentes |
 | `/banda/` | Redirect compatible hacia `/sitio/` |
@@ -78,8 +78,8 @@ El propietario configuró `losinsurgentes.mx` en **Settings → Pages** y confir
 
 La captura de octubre mostraba **DNS check successful** y el certificado TLS en emisión. El 7 de noviembre se verificó HTTPS correcto en `https://losinsurgentes.mx` y `https://www.losinsurgentes.mx`, con el registro público desplegado por el commit `456f7b2` (Actions `42446937743`, terminado correctamente). Se comprobó también el gate de `/banda/`, el descifrado local del paquete publicado con la contraseña existente y el rechazo de una contraseña incorrecta. No se envió ningún registro. El ajuste **Enforce HTTPS** de la interfaz de GitHub no se modificó ni comprobó; no omitas una advertencia de certificado del navegador. El aviso de Squarespace que pide restaurar **Squarespace Defaults** corresponde a su alojamiento anterior; restaurarlo cambiaría estos destinos.
 
-## Verificación pendiente del lanzamiento
+## Apertura pública
 
-El último deploy confirmado antes de esta apertura completa es `fe2a446`, Actions `45317446487`: incorporó las cuatro fotos de Drive y mantuvo el modo protegido anterior. El lanzamiento nuevo debe registrar su propio SHA/run y comprobar el recorrido público, los recursos necesarios y las exclusiones del artifact.
+La apertura pública inicial se verificó en el dominio con el commit `79e4484` y la ejecución `45321777839`.
 
 Confirma navegación móvil, galería (X, fondo, Escape y foco de teclado), entrada sin registrarse y navegación sin JavaScript. Las pruebas del formulario usan respuestas simuladas; no establecen CORS real de Brevo, inclusión en la lista ni entrega de la bienvenida. Confirma con el propietario cualquier cambio del estado de Maratón o del próximo sencillo; no inventes una fecha o título.

@@ -6,7 +6,7 @@ import { readNewsletter } from './newsletter-config.mjs';
 import { readAnalytics } from './analytics-config.mjs';
 
 const publicScripts = new Set(['js/main.js', 'js/spotify.js', 'js/maraton.js', 'js/analytics.js']);
-const publicStyles = new Set(['css/style.css', 'css/spotify.css', 'css/maraton.css', 'css/band-intro.css', 'css/stats.css']);
+const publicStyles = new Set(['css/style.css', 'css/spotify.css', 'css/maraton.css', 'css/landing.css', 'css/stats.css']);
 const remote = value => /^(?:https?:|data:|#|\/\/)/i.test(value);
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
@@ -41,7 +41,7 @@ function pageMetadata(html, canonical, image) {
   return html.replace(/<\/head>/i, `<link rel="canonical" href="${escape(canonical)}">\n<meta property="og:url" content="${escape(canonical)}">\n<meta property="og:image" content="${escape(image)}">\n<meta name="twitter:image" content="${escape(image)}">\n</head>`);
 }
 
-/** Public launch: a campaign entrance, the complete site and optional signup.
+/** Public launch: campaign/signup landing, complete site and signup permalink.
  * Copy only resources referenced by those pages (and their CSS), never trees.
  */
 export async function preparePublicPages(sourceRoot, { siteUrl = 'https://losinsurgentes.mx/' } = {}) {
@@ -92,25 +92,25 @@ export async function preparePublicPages(sourceRoot, { siteUrl = 'https://losins
     return html.replace(/\bhref=(["'])(\.\/|\.\.\/\.\.\/|banda\/)\1/gi, (_, quote, value) => `href=${quote}${value === 'banda/' ? sitePath : base}${quote}`);
   }
 
-  const [sourceSite, introTemplate, signupTemplate, notFoundTemplate, statsTemplate] = await Promise.all([
-    'index.html', 'templates/band-intro.html', 'templates/maraton.html', 'templates/404.html', 'admin/estadisticas/index.html',
+  const [sourceSite, landingTemplate, signupTemplate, notFoundTemplate, statsTemplate] = await Promise.all([
+    'index.html', 'templates/landing.html', 'templates/maraton.html', 'templates/404.html', 'admin/estadisticas/index.html',
   ].map(async path => (await safeRead(root, path)).toString('utf8')));
-  const intro = introTemplate.replaceAll('{{REGISTRATION_URL}}', registrationPath).replaceAll('{{SITE_URL}}', sitePath)
-    .replace(/\bhref=["']#main["']/g, `href="${sitePath}"`).replaceAll('Volver al registro', 'Recibir comunicados');
-  let banner = `<!doctype html><html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#000000"><meta name="referrer" content="no-referrer"><title>Los Insurgentes · Maratón</title><meta name="description" content="Maratón, el nuevo álbum de Los Insurgentes. Entra al sitio y recibe los comunicados de la banda."><link rel="icon" href="images/favicon-32.png" sizes="32x32" type="image/png"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/band-intro.css"></head><body><main id="contenido">${intro}</main></body></html>`;
-  banner = pageMetadata(banner, location.href, image).replace('</head>', `${renderAnalytics(await readAnalytics(root))}\n</head>`);
+  const newsletter = renderNewsletter(await readNewsletter(root));
+  const landing = pageMetadata(landingTemplate.replaceAll('{{BASE}}', base).replaceAll('{{SITE_URL}}', sitePath)
+    .replaceAll('{{NEWSLETTER}}', newsletter).replaceAll('{{TELEMETRY}}', ''), location.href, image)
+    .replace('</head>', `${renderAnalytics(await readAnalytics(root))}\n</head>`);
 
   const registrationLink = `<a class="nav-newsletter" href="${registrationPath}">Recibir comunicados</a>`;
   let site = pageMetadata(sourceSite, siteCanonical, image)
     .replace(/(<ul\b[^>]*\bid=["']navLinks["'][^>]*>)([\s\S]*?)(<\/ul>)/i, (_, opening, links, closing) => `${opening}${links}<li>${registrationLink}</li>${closing}`)
     .replace(/(<footer\b[^>]*\bclass=["'][^"']*\bsite-footer\b[^"']*["'][^>]*>)([\s\S]*?)(<\/footer>)/i, (_, opening, content, closing) => `${opening}${content}${registrationLink}${closing}`);
   const signup = pageMetadata(signupTemplate.replaceAll('{{BASE}}', base).replaceAll('{{TELEMETRY}}', '')
-    .replaceAll('{{NEWSLETTER}}', renderNewsletter(await readNewsletter(root))).replaceAll('Acceso de la banda', 'Ir al sitio'), registrationCanonical, image);
+    .replaceAll('{{NEWSLETTER}}', newsletter).replaceAll('Acceso de la banda', 'Ir al sitio'), registrationCanonical, image);
   const notFound = withoutAnalytics(notFoundTemplate.replaceAll('{{BASE}}', base)).replace(/<base\b[^>]*>/gi, '')
     .replaceAll('Acceso de la banda', 'Ir al sitio').replaceAll('Vuelve al registro de Maratón.', 'Vuelve al inicio de Los Insurgentes.').replaceAll('Volver al registro', 'Volver al inicio');
   const redirect = `<!doctype html><html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,follow"><meta name="referrer" content="no-referrer"><meta http-equiv="refresh" content="0;url=${sitePath}"><link rel="canonical" href="${escape(siteCanonical)}"><title>Los Insurgentes · Entrar al sitio</title></head><body><a href="${sitePath}">Entrar al sitio</a></body></html>`;
   const pages = new Map([
-    ['index.html', rewrite(banner)], ['sitio/index.html', rewrite(site)], ['registro/index.html', rewrite(signup)],
+    ['index.html', rewrite(landing)], ['sitio/index.html', rewrite(site)], ['registro/index.html', rewrite(signup)],
     ['banda/index.html', redirect], ['404.html', rewrite(notFound)],
     ['admin/estadisticas/index.html', rewrite(withoutAnalytics(statsTemplate), 'admin/estadisticas/index.html')],
   ]);

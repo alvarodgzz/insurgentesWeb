@@ -1,6 +1,6 @@
 # Revisar responsive antes de publicar
 
-El recorrido público autorizado el 23 de noviembre es banner → sitio, con registro opcional desde ambos. El registro conserva su diseño original. La ampliación de esta suite y su resultado final deben verificarse antes de declarar el lanzamiento publicado. Los cambios de HTML, CSS, logos o navegación deben pasar las pruebas de navegador y una revisión de capturas antes del push.
+El recorrido público autorizado el 23 de noviembre es banner → sitio, con registro opcional desde ambos. El registro conserva su diseño original. En la portada se comprueban ambas opciones desde 320 × 568, el foco en el correo al pulsar «Quiero enterarme más» y la preferencia de movimiento reducido. Los cambios de HTML, CSS, logos o navegación deben pasar las pruebas de navegador y una revisión de capturas antes del push.
 
 ## Ejecutar
 
@@ -23,9 +23,9 @@ El instalador prepara Playwright 1.65.0, Chromium y WebKit en una carpeta tempor
 - Registro a 320, 360, 390, 430, 768 y 1440 px, en Chromium y WebKit, con emulación móvil en los tamaños pequeños.
 - Logo completo dentro de la pantalla y de los ancestros que puedan recortarlo. Comprobar solo el ancho del documento no detecta una imagen gigante oculta con overflow.
 - Campo de correo, botón de envío y enlace para volver al sitio desde `/registro/`, con límites y tamaños utilizables.
-- Banner público → sitio sin contraseña ni registro obligatorio, acceso opcional a `/registro/` desde ambos, y redirect compatible desde `/banda/`. El modo protegido de reversión mantiene además contraseña incorrecta, reintento correcto y entrada al documento descifrado. El banner se revisa a 320, 390, 768 y 1440 px; el banner incluye además 320 × 568 y escritorio de 900 px de alto. Un solo acceso con calavera, logos completos y botón principal dentro de la pantalla. El logo del menú se comprueba además a 820 y 1024 px para detectar problemas entre móvil y escritorio.
+- Banner público → sitio sin contraseña ni registro obligatorio, acceso a `/#registro` en la portada y a `/registro/` desde el sitio, y redirect compatible desde `/banda/`. El modo protegido de reversión mantiene además contraseña incorrecta, reintento correcto y entrada al documento descifrado. El banner se revisa a 320, 390, 768 y 1440 px; el banner incluye además 320 × 568 y escritorio de 900 px de alto. Un solo acceso con calavera, logos completos y botón principal dentro de la pantalla. El logo del menú se comprueba además a 820 y 1024 px para detectar problemas entre móvil y escritorio.
 - Galería pública y dentro del documento descifrado de reversión a 320, 390, 768, 820, 1024 y 1440 px: apertura, flechas, cierre con clic/toque real en la X, fondo y Escape; foco de teclado y bloqueo/restauración del fondo y del control tardío de vista previa. Se comprueba que no hay descripción visible y que las imágenes conservan su alt. Este caso reproduce el bug que bloqueaba el propio modal al volver inert su contenedor de vista previa.
-- Recorrido público completo y formulario nativo sin JavaScript; enlaces de recursos y hashes locales bajo el subpath de GitHub Pages. Estados de envío pendiente/éxito con una respuesta simulada, sin navegar a JSON ni duplicar peticiones.
+- Recorrido público completo y formulario nativo sin JavaScript; enlaces de recursos y hashes locales bajo el subpath de GitHub Pages. Estados de envío pendiente/éxito en la portada y en el enlace permanente con una respuesta simulada, sin navegar a JSON ni duplicar peticiones.
 - Una prueba deliberadamente agranda el logo y exige que el detector falle. Después verifica que un logo con atributos antiguos también cabe en el contenedor.
 
 Son navegadores reales con tamaños/dispositivos emulados, no una prueba en un iPhone físico. Las respuestas del proveedor se simulan: no prueban CORS de Brevo, inclusión en la lista ni llegada de correos.

@@ -1,12 +1,10 @@
-# Project status — November 23, 2026
+# Project status — November 24, 2026
 
-## November 23 full public launch authorized — verification pending
+## Combined Maratón landing and optional signup
 
-The owner explicitly authorized removing the band password and opening the complete site to the public. They selected **banner → site, with optional registration from both**, and confirmed the exact slogan **Esa calavera que ya viene por ti...**. The public package being prepared uses `/` for the one-skull Maratón banner, `/sitio/` for the full band website, `/registro/` for the existing optional native signup form, and `/banda/` as a compatibility redirect to `/sitio/`. Registration is never a required step. The approved black signup design, official marks and real photography remain.
+The homepage offers two actions in the first viewport. “Quiero enterarme más” focuses the email field at `/#registro`. The large animated official skull opens `/sitio/`. The site links to the same native form at `/registro/`. Both routes support native navigation and submission without JavaScript. The slogan is **Esa calavera que ya viene por ti...**.
 
-Default `prepare-pages` and its `--public` alias now target this authorized public flow. Only used resources/photos and the public statistics entry belong in the artifact; editor, templates, content/config JSON, original branding folders/ZIPs, `.env` and encrypted preview packages remain excluded. Existing opt-in analytics stays restricted to the HTTPS root banner, with no measurement on the site, registration, redirect or 404. `--signup-only` retains the former signup-at-root/protected-band package and `--gated` retains the two-gate rollback.
-
-All 78 Node tests, build, checks, public packaging and local Chromium QA passed for the expanded launch. Public entry without registration/password, optional signup, no-JavaScript navigation, Pages subpath handling and public/rollback gallery controls were verified; desktop/mobile captures were visually reviewed. Chromium and WebKit must still pass the deployment run, followed by live-route checks, before claiming the public launch is deployed. The last confirmed deployed state is still the four-photo update `fe2a446`, Pages run `45317446487`, in the former protected mode. No real signup/email was sent as part of these automated checks.
+The initial public launch at `79e4484` was deployed by successful Pages run `45321777839`. Live checks covered mobile and desktop entry, gallery dismissal and excluded private paths. For the combined homepage, 78 Node tests and local Chromium QA passed, including both actions at 320 × 568, keyboard focus, reduced motion and simulated registration. Automated QA sends no real signup or email.
 
 ## November 23 banner, navigation and gallery corrections prepared before public launch
 
@@ -63,7 +61,7 @@ The preceding `841b7bd` contains the three email HTML templates and their guides
 
 The authorized default `node scripts/prepare-pages.mjs` now prepares the public banner/site/optional-signup flow. `--public` is an alias:
 
-- `/`: one-skull Maratón banner with entry to the site and optional **Recibir comunicados** link.
+- `/`: Maratón banner with direct skull entry and **Quiero enterarme más** linking to its inline signup.
 - `/sitio/`: complete public website; no password, forced registration or hidden preview wrapper.
 - `/registro/`: optional native Brevo signup with the existing visual design and clear entry back to the website.
 - `/banda/`: compatibility redirect to `/sitio/`.

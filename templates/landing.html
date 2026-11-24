@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="theme-color" content="#000000">
+  <meta name="referrer" content="no-referrer">
+  <base href="{{BASE}}">
+  <title>Maratón · Los Insurgentes</title>
+  <meta name="description" content="Maratón, el siguiente movimiento de Los Insurgentes. Recibe los comunicados del nuevo álbum.">
+  {{TELEMETRY}}
+  <link rel="icon" href="images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="stylesheet" href="css/maraton.css?v=20261112-responsive">
+  <link rel="stylesheet" href="css/landing.css">
+  <script src="js/maraton.js" defer></script>
+</head>
+<body class="landing">
+  <a class="maraton-skip" href="#contenido">Saltar al contenido</a>
+  <div class="maraton-shell">
+    <header class="maraton-header">
+      <a class="maraton-brand" href="./" aria-label="Los Insurgentes — inicio"><img src="assets/logos/logo-full-white.png" width="1600" height="561" alt="Los Insurgentes"></a>
+      <span class="landing-origin">Desde Monterrey, N. L.</span>
+    </header>
+
+    <main class="maraton-main" id="contenido">
+      <section class="maraton-banner" aria-labelledby="maraton-title">
+        <div class="maraton-banner-copy">
+          <p class="maraton-eyebrow"><span aria-hidden="true"></span> El nuevo álbum de Los Insurgentes</p>
+          <h1 id="maraton-title"><img class="maraton-title-logo" src="assets/maraton/maraton-wordmark-paper.png" width="2000" height="403" alt="Maratón" fetchpriority="high"></h1>
+          <div class="maraton-release"><span class="maraton-status-dot" aria-hidden="true"></span><p>Próximamente</p></div>
+          <p class="maraton-intro">Esa calavera que ya viene por ti...</p>
+        </div>
+        <a class="maraton-jump landing-signup" href="#registro" data-signup-start>Quiero enterarme más <span aria-hidden="true">↓</span></a>
+        <a class="landing-enter" id="band-intro-enter" href="{{SITE_URL}}" aria-label="Entrar al sitio de Los Insurgentes">
+          <span class="landing-skull"><img src="assets/logos/skull-icon-orange.png" width="1600" height="1400" alt="" fetchpriority="high"></span>
+          <span class="landing-enter-label">Entrar al sitio <span aria-hidden="true">↗</span></span>
+        </a>
+        <div class="maraton-banner-edge" aria-hidden="true"><span>LOS INSURGENTES</span><span>MONTERREY, N. L.</span><span>MARATÓN</span></div>
+      </section>
+
+      <section class="maraton-signup" id="registro" aria-labelledby="signup-title" tabindex="-1">
+        <div class="maraton-signup-copy">
+          <p class="maraton-eyebrow">Directo desde la banda</p>
+          <h2 id="signup-title">Que la señal<br>no se pierda.</h2>
+          <p>Maratón es el siguiente movimiento. Deja tu correo para recibir los lanzamientos y noticias de Los Insurgentes.</p>
+        </div>
+        <div class="maraton-signup-panel">
+          {{NEWSLETTER}}
+        </div>
+      </section>
+    </main>
+
+    <footer class="maraton-footer"><span>© 2026 Los Insurgentes</span><span>Rock desde Monterrey, N. L.</span></footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+/* One campaign entrance: signup in this page, or the skull to the full site. */
+.landing-origin{max-width:160px;color:var(--maraton-muted);font-size:10px;line-height:1.6;letter-spacing:.08em;text-align:right;text-transform:uppercase}
+.landing .maraton-banner{grid-template-columns:1.1fr 1fr;grid-template-rows:1fr auto;column-gap:30px;min-height:clamp(540px,74svh,760px)}
+.landing .maraton-banner-copy{grid-column:1;grid-row:1;align-self:end;padding:50px 0 0}
+.landing-signup{grid-column:1;grid-row:2;align-self:start;justify-self:start;justify-content:space-between;gap:24px;min-height:52px;margin:28px 0 86px;padding:14px 22px;background:var(--maraton-orange);color:#000;border:1px solid var(--maraton-orange);font-size:14px;line-height:1.5}
+.landing-signup:hover{background:#ff8a51;color:#000}
+.landing-enter{grid-column:2;grid-row:1 / span 2;align-self:center;display:flex;flex-direction:column;align-items:center;gap:22px;min-width:0;padding:30px 20px 54px;color:var(--maraton-beige);text-decoration:none;outline-offset:4px}
+/* Crop only transparent padding from the supplied official PNG. */
+.landing-skull{position:relative;display:block;width:min(100%,410px);aspect-ratio:843 / 926;overflow:hidden;transform:rotate(-5deg);animation:landing-skull-float 5s ease-in-out infinite}
+.landing-skull img{position:absolute;display:block;width:189.8%;max-width:none;height:auto;left:-44.84%;top:-25.59%;pointer-events:none}
+.landing-enter-label{display:inline-flex;align-items:center;justify-content:center;gap:22px;min-height:48px;border-bottom:1px solid var(--maraton-orange);font-size:16px;line-height:1.5}
+.landing-enter-label>span{color:var(--maraton-orange);font-family:Arial,sans-serif;font-size:24px}
+.landing-enter:hover .landing-skull,.landing-enter:focus .landing-skull{animation-play-state:paused}
+.landing-enter:hover .landing-enter-label,.landing-enter:focus-visible .landing-enter-label{color:var(--maraton-orange)}
+@keyframes landing-skull-float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+@media(max-width:1000px) and (min-width:681px){.landing .maraton-banner{column-gap:16px;min-height:570px}.landing-enter{padding-inline:10px}.landing-signup{padding-inline:18px;font-size:13px}}
+@media(max-width:680px){
+  .landing-origin{max-width:120px;font-size:8px}
+  .landing .maraton-banner{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;column-gap:18px;min-height:0;padding-bottom:58px}
+  .landing .maraton-banner-copy{grid-column:1 / -1;grid-row:1;padding:32px 0 0}
+  .landing .maraton-banner .maraton-eyebrow{max-width:none;margin-bottom:18px;font-size:9px}
+  .landing .maraton-banner h1{margin-bottom:17px}
+  .landing .maraton-title-logo{width:100%;max-width:420px}
+  .landing .maraton-release{margin-bottom:15px}
+  .landing .maraton-intro{font-size:15px}
+  .landing-signup{grid-column:1;grid-row:2;align-self:center;justify-self:stretch;gap:8px;margin:18px 0 0;padding:13px 12px;min-height:58px;font-size:13px}
+  .landing-enter{grid-column:2;grid-row:2;gap:8px;padding:24px 6px 0}
+  .landing-skull{width:min(100%,180px)}
+  .landing-enter-label{gap:9px;min-height:44px;font-size:12px;white-space:nowrap}
+  .landing-enter-label>span{font-size:20px}
+  .landing .maraton-signup{padding-top:38px}
+}
+@media(max-width:360px){.landing .maraton-banner{column-gap:12px;padding-bottom:48px}.landing .maraton-banner-copy{padding-top:25px}.landing .maraton-banner .maraton-eyebrow{font-size:8px;letter-spacing:.08em}.landing-signup{padding-inline:10px;font-size:12px}.landing-enter{padding-inline:3px}.landing-enter-label{gap:7px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.landing-skull{animation:none;transform:none}}

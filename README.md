@@ -54,9 +54,9 @@ Las letras pueden ser texto proporcionado por la banda o enlaces verificados a G
 
 ## Banner de Maratón, sitio y registro opcional
 
-El 23 de noviembre de 2026 el propietario autorizó abrir el sitio completo al público y eligió **banner → sitio, con registro opcional desde ambos**. La implementación de este recorrido debe comprobarse en Actions y en el dominio antes de anunciarla como publicada.
+El 23 de noviembre de 2026 el propietario autorizó abrir el sitio completo al público y eligió **banner → sitio, con registro opcional desde ambos**. La portada reúne ahora las dos opciones en la primera pantalla.
 
-- `/`: banner de Maratón con una sola calavera naranja para **Entrar al sitio** y el enlace **Recibir comunicados**.
+- `/`: banner de Maratón con la calavera naranja animada para **Entrar al sitio** y **Quiero enterarme más** para bajar al formulario de esa misma página.
 - `/sitio/`: página completa pública, sin contraseña ni registro obligatorio.
 - `/registro/`: formulario de Maratón con el diseño negro original; se puede volver al sitio sin enviar un correo.
 - `/banda/`: enlace compatible que redirige a `/sitio/`.
@@ -73,7 +73,7 @@ Para publicar los cambios revisados:
 bash scripts/publish-github.sh
 ```
 
-Cada push a `main` activa automáticamente las pruebas y el deploy de Pages. No hace falta otro comando de deploy después de un push correcto. Revisa los trabajos `build` y `deploy` y comprueba las rutas reales; un commit o un build local no demuestran publicación. El último despliegue confirmado antes de este lanzamiento es `fe2a446`, Actions `45317446487`, con las cuatro fotos importadas desde Drive y el modo protegido anterior.
+Cada push a `main` activa automáticamente las pruebas y el deploy de Pages. No hace falta otro comando de deploy después de un push correcto. Revisa los trabajos `build` y `deploy` y comprueba las rutas reales; un commit o un build local no demuestran publicación. La apertura pública inicial se verificó en `79e4484`, Actions `45321777839`.
 
 Para revisar el recorrido público localmente: `node scripts/preview.mjs --public --open`. La publicación predeterminada con `node scripts/prepare-pages.mjs` y su alias `--public` no necesita contraseña. `--signup-only` conserva deliberadamente el registro en raíz y la banda protegida; `--gated` conserva ambas vistas protegidas. La contraseña ignorada `.env.preview-password` y el secreto existente `PREVIEW_PASSWORD` son para esos modos de reversión. Consulta [publicación y reversión](docs/GITHUB_PAGES.md).
 

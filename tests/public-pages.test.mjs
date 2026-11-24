@@ -20,6 +20,7 @@ async function fixture(t) {
     'index.html': `<!doctype html><html lang="es"><head><title>Los Insurgentes</title><meta name="description" content="La banda"><meta name="robots" content="noindex"><link rel="canonical" href="https://old.example/"><meta property="og:url" content="https://old.example/"><meta property="og:image" content="https://old.example/assets/og-image.jpg"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/spotify.css"><script id="analytics-config" type="application/json">{"enabled":true}</script><script src="js/analytics.js" defer></script></head><body><nav><ul id="navLinks"><li><a href="#gallery">Galería</a></li></ul></nav><main id="main"><section id="top" style="background-image:url('content/photos/01-inicio.jpg')"></section><section id="gallery"><img src="content/photos/galeria/01.jpg" srcset="content/photos/galeria/01.jpg 600w, content/photos/galeria/large.jpg 1200w" alt="Los Insurgentes"></section><a href="https://open.spotify.com/artist/example">Spotify</a></main><footer class="site-footer">Los Insurgentes</footer><script src="js/main.js" defer></script><script src="js/spotify.js" defer></script></body></html>`,
     'css/style.css': '@font-face{font-family:Fixture;src:url("../assets/fonts/fixture.woff2")}body{background:url("../assets/logos/skull-pattern.png")}.noise{background:url("data:image/svg+xml,%3Csvg%3E")}',
     'css/band-intro.css': '.band-intro{background:url("../assets/logos/skull-icon-orange.png")}',
+    'css/landing.css': '.landing-skull{background:url("../assets/logos/skull-icon-orange.png")}',
     'css/maraton.css': 'body{font-family:Arial}',
     'css/spotify.css': '.music{display:block}',
     'css/stats.css': 'body{font-family:Arial}',
@@ -62,7 +63,7 @@ async function fixture(t) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await writeFile(join(root, path), value);
   }
-  for (const path of ['templates/band-intro.html', 'templates/maraton.html', 'templates/404.html', 'admin/estadisticas/index.html']) {
+  for (const path of ['templates/landing.html', 'templates/maraton.html', 'templates/404.html', 'admin/estadisticas/index.html']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(join(projectRoot, path), join(root, path));
   }
@@ -79,29 +80,35 @@ async function outputFiles(root, prefix = '') {
   return files.sort();
 }
 
-test('public launch publishes banner, complete site, optional signup and the compatible band redirect', async t => {
+test('public landing combines native signup and direct site entry without requiring registration', async t => {
   const root = await fixture(t);
   const output = await preparePages(root);
-  const banner = await readFile(join(output, 'index.html'), 'utf8');
+  const landing = await readFile(join(output, 'index.html'), 'utf8');
   const site = await readFile(join(output, 'sitio/index.html'), 'utf8');
   const signup = await readFile(join(output, 'registro/index.html'), 'utf8');
   const redirect = await readFile(join(output, 'banda/index.html'), 'utf8');
-  assert.match(banner, /id="band-intro"/);
-  assert.match(banner, /<main id="contenido">/);
-  assert.match(banner, /href="\/sitio\/"/);
-  assert.match(banner, /href="\/registro\/"/);
-  assert.match(banner, /Recibir comunicados/);
-  assert.doesNotMatch(banner, /data-newsletter-form|band-site|access-password|band-intro\.js/);
+  assert.match(landing, /<main\b[^>]*id="contenido"/);
+  assert.match(landing, /<a\b(?=[^>]*class="[^"]*\blanding-enter\b)[^>]*href="\/sitio\/"/);
+  assert.match(landing, /class="[^"]*\blanding-skull\b/);
+  assert.match(landing, /src="\/assets\/logos\/skull-icon-orange\.png"/);
+  assert.match(landing, /<a\b(?=[^>]*class="[^"]*\blanding-signup\b)[^>]*href="#registro"/);
+  assert.match(landing, /Quiero enterarme más/);
+  assert.match(landing, /Esa calavera que ya viene por ti\.\.\./);
+  assert.match(landing, /id="registro"/);
+  assert.doesNotMatch(landing, /band-site|access-password|Acceso de la banda|band-intro\.js|<base\b/);
   assert.match(site, /<main id="main">/);
   assert.match(site, /href="#gallery"/);
   assert.equal((site.match(/class="nav-newsletter"/g) || []).length, 2);
   assert.match(site, /href="\/registro\/">Recibir comunicados/);
   assert.doesNotMatch(site, /band-site|hidden inert|access-password|preview\.json|noindex|<base\b/);
-  assert.match(signup, /data-newsletter-form/);
-  assert.match(signup, /<form[^>]+method="post"/);
-  assert.match(signup, /<form[^>]+action="https:\/\/band\.sibforms\.com\/serve\/public_signup_fixture=="/);
-  assert.equal((signup.match(/name="EMAIL"/g) || []).length, 1);
-  for (const field of ['email_address_check', 'locale', 'html_type']) assert.match(signup, new RegExp(`name="${field}"`));
+  for (const html of [landing, signup]) {
+    assert.match(html, /data-newsletter-form/);
+    assert.equal((html.match(/<form\b/g) || []).length, 1);
+    assert.match(html, /<form[^>]+method="post"/);
+    assert.match(html, /<form[^>]+action="https:\/\/band\.sibforms\.com\/serve\/public_signup_fixture=="/);
+    assert.equal((html.match(/name="EMAIL"/g) || []).length, 1);
+    for (const field of ['email_address_check', 'locale', 'html_type']) assert.match(html, new RegExp(`name="${field}"`));
+  }
   assert.match(signup, /href="#registro"/);
   assert.match(signup, /href="\/sitio\/">Ir al sitio/);
   assert.doesNotMatch(signup, /Acceso de la banda|access-password|<base\b|noindex/);
@@ -121,12 +128,16 @@ test('public URLs, fragments and canonical metadata resolve under a GitHub Pages
     for (const match of html.matchAll(/\b(?:src|href)="(\/(?:assets|css|js|images|content)\/[^"#?]*)/g)) assert.fail(`Resource lost its subpath: ${match[1]}`);
   }
   const site = await readFile(join(output, 'sitio/index.html'), 'utf8');
+  const landing = await readFile(join(output, 'index.html'), 'utf8');
   const signup = await readFile(join(output, 'registro/index.html'), 'utf8');
   assert.match(site, /src="\/insurgentesWeb\/content\/photos\/galeria\/01\.jpg"/);
   assert.match(site, /srcset="\/insurgentesWeb\/content\/photos\/galeria\/01\.jpg 600w, \/insurgentesWeb\/content\/photos\/galeria\/large\.jpg 1200w"/);
   assert.match(site, /url\('\/insurgentesWeb\/content\/photos\/01-inicio\.jpg'\)/);
   assert.equal(new URL('#gallery', 'https://example.github.io/insurgentesWeb/sitio/').pathname, '/insurgentesWeb/sitio/');
   assert.match(signup, /href="#contenido"/);
+  assert.match(landing, /href="#registro"/);
+  assert.match(landing, /href="\/insurgentesWeb\/sitio\/"/);
+  assert.equal(new URL('#registro', 'https://example.github.io/insurgentesWeb/').pathname, '/insurgentesWeb/');
   assert.equal(new URL('#registro', 'https://example.github.io/insurgentesWeb/registro/').pathname, '/insurgentesWeb/registro/');
   const stats = await readFile(join(output, 'admin/estadisticas/index.html'), 'utf8');
   assert.match(stats, /href="\/insurgentesWeb\/css\/stats\.css"/);
@@ -137,7 +148,8 @@ test('public package follows referenced resources and CSS dependencies without l
   const root = await fixture(t);
   const output = await preparePages(root);
   const paths = await outputFiles(output);
-  for (const path of ['index.html', 'sitio/index.html', 'registro/index.html', 'banda/index.html', '404.html', 'admin/estadisticas/index.html', 'robots.txt', '.nojekyll', 'assets/fonts/fixture.woff2', 'assets/logos/skull-pattern.png', 'assets/maraton/door-skull-orange.png', 'content/photos/01-inicio.jpg', 'content/photos/galeria/01.jpg', 'content/photos/galeria/large.jpg']) assert.ok(paths.includes(path), path);
+  for (const path of ['index.html', 'sitio/index.html', 'registro/index.html', 'banda/index.html', '404.html', 'admin/estadisticas/index.html', 'robots.txt', '.nojekyll', 'css/landing.css', 'assets/fonts/fixture.woff2', 'assets/logos/skull-pattern.png', 'content/photos/01-inicio.jpg', 'content/photos/galeria/01.jpg', 'content/photos/galeria/large.jpg']) assert.ok(paths.includes(path), path);
+  for (const path of ['css/band-intro.css', 'assets/maraton/door-skull-orange.png']) assert.ok(!paths.includes(path), 'Unused banner exports are not published');
   for (const path of paths) {
     assert.ok(!path.endsWith('.json'), 'Raw JSON is not a public resource');
     assert.ok(!/^(?:templates\/|scripts\/|MARATON BRANDING\/|admin\/(?!estadisticas\/index\.html$))/.test(path), path);
@@ -149,7 +161,7 @@ test('public package follows referenced resources and CSS dependencies without l
   assert.ok(!(await outputFiles(output)).includes('stale-from-first-build.html'));
 });
 
-test('opt-in analytics appears only on the banner; 404 has no signup or tracker', async t => {
+test('opt-in analytics appears only on the root landing; 404 has no signup or tracker', async t => {
   const root = await fixture(t);
   const output = await preparePages(root);
   const banner = await readFile(join(output, 'index.html'), 'utf8');
@@ -174,13 +186,16 @@ test('missing newsletter configuration keeps the optional registration coming-so
   await rm(join(root, 'content/newsletter.json'));
   const output = await preparePages(root);
   const signup = await readFile(join(output, 'registro/index.html'), 'utf8');
+  const landing = await readFile(join(output, 'index.html'), 'utf8');
   assert.doesNotMatch(signup, /<form|data-newsletter-form/);
   assert.match(signup, /pronto|Próximamente|próximamente/);
-  assert.match(await readFile(join(output, 'index.html'), 'utf8'), /href="\/sitio\/"/);
+  assert.doesNotMatch(landing, /<form|data-newsletter-form/);
+  assert.match(landing, /pronto|Próximamente|próximamente/);
+  assert.match(landing, /href="\/sitio\/"/);
 });
 
 test('public packaging rejects referenced symlinks and unsafe resources while preserving the previous build', async t => {
-  for (const path of ['content/photos/01-inicio.jpg', 'assets/fonts/fixture.woff2', 'templates/band-intro.html']) {
+  for (const path of ['content/photos/01-inicio.jpg', 'assets/fonts/fixture.woff2', 'templates/landing.html']) {
     const root = await fixture(t);
     await rm(join(root, path));
     await symlink(join(root, '.env.preview-password'), join(root, path));
