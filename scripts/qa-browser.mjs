@@ -223,9 +223,9 @@ try {
           assert.equal(await page.locator('.landing-skull img').evaluate(image => image.complete && image.naturalWidth > 0), true, 'Official skull image loads');
         }
         await page.locator('.landing-signup').click();
-        assert.equal(new URL(page.url()).pathname, '/');
-        assert.equal(new URL(page.url()).hash, '#registro');
-        assert.equal(await page.locator('#EMAIL').evaluate(input => document.activeElement === input), true, 'Landing signup focuses email without navigating away');
+        await page.waitForURL(`${origin}/#registro`);
+        // The signup handler transfers focus on the next animation frame.
+        await page.locator('#EMAIL:focus').waitFor({ state: 'visible' });
         await page.emulateMedia({ reducedMotion: 'no-preference' });
         await page.locator('.landing-signup').focus();
         assert.notEqual(await page.locator('.landing-skull').evaluate(skull => getComputedStyle(skull).animationName), 'none', 'Skull animates when motion is allowed');
