@@ -34,6 +34,7 @@ async function fixture(t) {
     'assets/logos/skull-icon-orange.png': 'fixture orange skull',
     'assets/logos/skull-pattern.png': 'fixture pattern',
     'assets/maraton/maraton-wordmark-paper.png': 'fixture album wordmark',
+    'assets/maraton/maraton-stamp-rust.png': 'official email stamp',
     'assets/maraton/door-skull-orange.png': 'fixture entry skull',
     'assets/og-image.jpg': 'fixture sharing image',
     'content/photos/01-inicio.jpg': 'fixture main photo',
@@ -41,7 +42,7 @@ async function fixture(t) {
     'content/photos/galeria/large.jpg': 'fixture full-size photo',
     'content/newsletter.json': JSON.stringify({ version: 1, enabled: true, provider: 'brevo', formUrl: 'https://band.sibforms.com/v2/serve/public_hosted_fixture==', submitUrl }),
     'content/analytics.json': JSON.stringify({ version: 1, enabled: true, websiteId }),
-    'content/site.json': '{"notPublic":"band config"}',
+    'content/site.json': '{"hero":{"announcement":"Siguiente sencillo","presaveUrl":"https://ffm.to/test"}}',
     'content/releases.json': '["not public raw config"]',
     'content/photos/unused.jpg': 'unreferenced photo',
     'content/photos/00-guia.html': '<h1>Private editing guide</h1>',
@@ -87,6 +88,7 @@ test('public landing combines native signup and direct site entry without requir
   const site = await readFile(join(output, 'sitio/index.html'), 'utf8');
   const signup = await readFile(join(output, 'registro/index.html'), 'utf8');
   const redirect = await readFile(join(output, 'banda/index.html'), 'utf8');
+  assert.match(landing, /Siguiente sencillo · <a href="https:\/\/ffm\.to\/test"[^>]*>Pre-save<\/a>/);
   assert.match(landing, /<main\b[^>]*id="contenido"/);
   assert.match(landing, /<a\b(?=[^>]*class="[^"]*\blanding-enter\b)[^>]*href="\/sitio\/"/);
   assert.match(landing, /class="[^"]*\blanding-skull\b/);
@@ -149,6 +151,7 @@ test('public package follows referenced resources and CSS dependencies without l
   const output = await preparePages(root);
   const paths = await outputFiles(output);
   for (const path of ['index.html', 'sitio/index.html', 'registro/index.html', 'banda/index.html', '404.html', 'admin/estadisticas/index.html', 'robots.txt', '.nojekyll', 'css/landing.css', 'assets/fonts/fixture.woff2', 'assets/logos/skull-pattern.png', 'content/photos/01-inicio.jpg', 'content/photos/galeria/01.jpg', 'content/photos/galeria/large.jpg']) assert.ok(paths.includes(path), path);
+  assert.ok(paths.includes('assets/maraton/maraton-stamp-rust.png'), 'Official stamp for absolute email image URLs');
   for (const path of ['css/band-intro.css', 'assets/maraton/door-skull-orange.png']) assert.ok(!paths.includes(path), 'Unused banner exports are not published');
   for (const path of paths) {
     assert.ok(!path.endsWith('.json'), 'Raw JSON is not a public resource');
@@ -217,7 +220,7 @@ test('public packaging validates canonical origins and base paths', async t => {
 
 test('Pages CLI defaults to the public launch without a password, and --public is an alias', async t => {
   const root = await fixture(t);
-  for (const path of ['scripts/prepare-pages.mjs', 'scripts/public-pages.mjs', 'scripts/private-preview.mjs', 'scripts/analytics-config.mjs', 'scripts/newsletter-config.mjs', 'js/analytics-render.mjs', 'js/newsletter-render.mjs']) {
+  for (const path of ['scripts/prepare-pages.mjs', 'scripts/public-pages.mjs', 'scripts/private-preview.mjs', 'scripts/analytics-config.mjs', 'scripts/newsletter-config.mjs', 'js/analytics-render.mjs', 'js/newsletter-render.mjs', 'js/site-render.mjs', 'js/music-render.mjs', 'js/lyrics-render.mjs']) {
     await mkdir(dirname(join(root, path)), { recursive: true });
     await cp(join(projectRoot, path), join(root, path));
   }

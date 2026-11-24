@@ -1,4 +1,5 @@
 /* One campaign entrance: signup in this page, or the skull to the full site. */
+.maraton-release .presave-link{color:var(--maraton-orange);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .landing-origin{max-width:160px;color:var(--maraton-muted);font-size:10px;line-height:1.6;letter-spacing:.08em;text-align:right;text-transform:uppercase}
 .landing .maraton-banner{grid-template-columns:1.1fr 1fr;grid-template-rows:1fr auto;column-gap:30px;min-height:clamp(540px,74svh,760px)}
 .landing .maraton-banner-copy{grid-column:1;grid-row:1;align-self:end;padding:50px 0 0}

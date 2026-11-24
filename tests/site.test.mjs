@@ -87,7 +87,8 @@ test('site rendering honors a GitHub Pages subpath in metadata', () => {
   assert.match(html, /<link[^>]+rel="canonical"[^>]+href="https:\/\/example\.github\.io\/insurgentesWeb\/"/);
   assert.match(html, /https:\/\/example\.github\.io\/insurgentesWeb\/assets\/og-image\.jpg/);
   assert.doesNotMatch(html, /https:\/\/losinsurgentes\.mx/);
-  assert.match(html, /Noviembre 2026/);
+  assert.ok(html.includes(site.hero.announcement));
+  assert.ok(html.includes(`href="${site.hero.presaveUrl}"`));
   assert.match(html, /El nuevo álbum — Próximamente/);
 });
 

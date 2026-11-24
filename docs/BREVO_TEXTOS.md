@@ -30,6 +30,16 @@ Usa [email-bienvenida-maraton.html](email-bienvenida-maraton.html) como **Simple
 
 Para los anuncios queda [email-campana-maraton.html](email-campana-maraton.html). Es una base reutilizable, con marcadores que se deben completar y un aviso de borrador que hay que retirar. Mantén los enlaces de baja y vista en navegador. Cada noticia se prepara como campaña y se revisan su lista, contenido y destino antes de enviar; guardar una plantilla no envía una campaña.
 
+## Viejo Lobo de Mar · 26 de noviembre de 2026
+
+[HTML del comunicado de pre-save](email-viejo-lobo-de-mar.html). Para quienes se registren antes del estreno, pega el HTML completo en la bienvenida **Simple confirmation**. Para un envío puntual a quienes ya están en la lista Maratón, el mismo texto sirve como campaña.
+
+- **Asunto** — Viejo Lobo de Mar · Este jueves 26 de noviembre
+- **Vista previa** — El próximo sencillo de Maratón ya tiene fecha. Aquí va el pre-save.
+- **Botón** — Hacer el pre-save · https://ffm.to/viejolobo
+
+Al estrenarse el sencillo, vuelve a la bienvenida habitual o actualiza el comunicado con el enlace de escucha confirmado.
+
 ## Formulario ya diseñado
 
 La landing muestra **Los próximos movimientos de Maratón**, correo obligatorio y **Quiero enterarme**, con los colores de la banda. Solo hay un envío, sin enlace alternativo. Se envían `EMAIL`, antispam, `locale=es` y `html_type=simple`. Con JavaScript, el resultado aparece en la página y el éxito requiere HTTP correcto y JSON `success === true`; sin JavaScript se abre la respuesta nativa del proveedor. No se almacena el correo ni se manda a estadísticas.

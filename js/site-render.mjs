@@ -35,6 +35,7 @@ export function validateSite(site) {
     if (typeof value !== 'string' || !value.trim()) errors.push(`${label}: escribe un texto.`);
   }
   if (!secureUrl(site.site?.url)) errors.push('La dirección del sitio debe usar HTTPS.');
+  if (site.hero?.presaveUrl && !secureUrl(site.hero.presaveUrl)) errors.push('El pre-save debe tener un enlace HTTPS válido.');
   if (!Array.isArray(site.about?.paragraphs) || !site.about.paragraphs.every(p => typeof p === 'string')) errors.push('La biografía debe contener párrafos de texto.');
   if (!Array.isArray(site.about?.members) || !site.about.members.every(m => m && typeof m.name === 'string' && typeof m.role === 'string')) errors.push('Revisa los nombres y roles de la banda.');
   if (!Array.isArray(site.gallery)) errors.push('La galería debe ser una lista.');
@@ -91,6 +92,13 @@ const stamp = '<img src="assets/logos/skull-stamp-orange.png" alt="" class="labe
 const external = (url, label, cls = '') => `<a href="${e(url)}" target="_blank" rel="noopener noreferrer"${cls ? ` class="${e(cls)}"` : ''}>${label}</a>`;
 const photoImage = (path, alt, cls = '', width = 1400, height = 933) => `<img src="${e(photoPath(path))}" alt="${e(alt)}"${cls ? ` class="${cls}"` : ''} width="${Number(width) || 1400}" height="${Number(height) || 933}" loading="lazy" decoding="async">`;
 
+export function renderReleaseNotice(hero) {
+  if (!hero?.announcement) return '';
+  const url = secureUrl(hero.presaveUrl);
+  const link = url ? ` · ${external(url, 'Pre-save', 'presave-link')}` : '';
+  return e(hero.announcement) + link;
+}
+
 function renderHero(site) {
   const title = site.hero.title === 'Maratón'
     ? '<img class="hero-title-mark" src="assets/maraton/maraton-wordmark-paper.png" alt="Maratón" width="2000" height="403" fetchpriority="high">'
@@ -100,7 +108,7 @@ function renderHero(site) {
       <img src="assets/logos/logo-full-white.png" alt="Los Insurgentes" class="hero-mark" width="1600" height="561" fetchpriority="high">
       <h1>${title}</h1>
       <p class="hero-tagline">${e(site.hero.tagline)}</p>
-      ${site.hero.announcement ? `<p class="hero-announcement">${e(site.hero.announcement)}</p>` : ''}
+      ${site.hero.announcement ? `<p class="hero-announcement">${renderReleaseNotice(site.hero)}</p>` : ''}
       <div class="hero-ctas"><a href="#sencillos" class="btn btn-solid">Escuchar sencillos <span aria-hidden="true">↗</span></a><a href="#shows" class="btn btn-outline">Ver fechas</a></div>
     </div>
   </section>`;

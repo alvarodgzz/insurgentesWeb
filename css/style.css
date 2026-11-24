@@ -394,6 +394,13 @@ section { padding: var(--section-space) 0; position: relative; }
   text-transform: uppercase;
 }
 
+.hero-announcement .presave-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
 .hero-ctas {
   display: flex;
   gap: 16px;

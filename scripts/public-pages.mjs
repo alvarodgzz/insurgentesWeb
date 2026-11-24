@@ -1,5 +1,6 @@
 import { lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, posix, resolve } from 'node:path';
+import { renderReleaseNotice } from '../js/site-render.mjs';
 import { renderNewsletter } from '../js/newsletter-render.mjs';
 import { renderAnalytics } from '../js/analytics-render.mjs';
 import { readNewsletter } from './newsletter-config.mjs';
@@ -57,7 +58,8 @@ export async function preparePublicPages(sourceRoot, { siteUrl = 'https://losins
   const siteCanonical = new URL('sitio/', location).href;
   const registrationCanonical = new URL('registro/', location).href;
   const image = new URL('assets/og-image.jpg', location).href;
-  const assets = new Set(['assets/og-image.jpg']);
+  // The Maratón stamp is referenced by absolute URL in the subscriber emails.
+  const assets = new Set(['assets/og-image.jpg', 'assets/maraton/maraton-stamp-rust.png']);
 
   function assetReference(value, from) {
     if (remote(value)) return null;
@@ -95,8 +97,10 @@ export async function preparePublicPages(sourceRoot, { siteUrl = 'https://losins
   const [sourceSite, landingTemplate, signupTemplate, notFoundTemplate, statsTemplate] = await Promise.all([
     'index.html', 'templates/landing.html', 'templates/maraton.html', 'templates/404.html', 'admin/estadisticas/index.html',
   ].map(async path => (await safeRead(root, path)).toString('utf8')));
+  const { hero } = JSON.parse(await safeRead(root, 'content/site.json'));
   const newsletter = renderNewsletter(await readNewsletter(root));
   const landing = pageMetadata(landingTemplate.replaceAll('{{BASE}}', base).replaceAll('{{SITE_URL}}', sitePath)
+    .replace('{{RELEASE_NOTICE}}', () => renderReleaseNotice(hero) || 'Próximamente')
     .replaceAll('{{NEWSLETTER}}', newsletter).replaceAll('{{TELEMETRY}}', ''), location.href, image)
     .replace('</head>', `${renderAnalytics(await readAnalytics(root))}\n</head>`);
 

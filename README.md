@@ -2,7 +2,7 @@
 
 Sitio oficial de la banda: rock desde Monterrey. Mantiene la identidad naranja/negro, los logotipos y tipografías oficiales, y las fotografías reales del proyecto original.
 
-**Maratón sigue próximo a salir. El siguiente sencillo está previsto para noviembre de 2026.** No hay título ni día de lanzamiento anunciados en estos archivos.
+El siguiente sencillo de **Maratón** es **Viejo Lobo de Mar**. Sale el jueves 26 de noviembre de 2026. [Pre-save oficial](https://ffm.to/viejolobo).
 
 ## Abrir el sitio y el editor
 
