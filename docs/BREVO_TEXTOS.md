@@ -32,13 +32,13 @@ Para los anuncios queda [email-campana-maraton.html](email-campana-maraton.html)
 
 ## Viejo Lobo de Mar · 26 de noviembre de 2026
 
-[HTML del comunicado de pre-save](email-viejo-lobo-de-mar.html). Para quienes se registren antes del estreno, pega el HTML completo en la bienvenida **Simple confirmation**. Para un envío puntual a quienes ya están en la lista Maratón, el mismo texto sirve como campaña.
+[HTML del comunicado de estreno](email-viejo-lobo-de-mar.html). Para que el anuncio llegue a quienes se registren, pega el HTML completo en la bienvenida **Simple confirmation**. Para un envío puntual a quienes ya están en la lista Maratón, el mismo texto sirve como campaña.
 
-- **Asunto** — Viejo Lobo de Mar · Este jueves 26 de noviembre
-- **Vista previa** — El próximo sencillo de Maratón ya tiene fecha. Aquí va el pre-save.
-- **Botón** — Hacer el pre-save · https://ffm.to/viejolobo
+- **Asunto** — Ya salió Viejo Lobo de Mar
+- **Vista previa** — Escucha el nuevo sencillo de Los Insurgentes en Spotify.
+- **Botón** — Escuchar en Spotify · https://open.spotify.com/track/1nJMxvH3szfrWdGN7uYNKI
 
-Al estrenarse el sencillo, vuelve a la bienvenida habitual o actualiza el comunicado con el enlace de escucha confirmado.
+Si usaste la versión de pre-save, reemplaza el HTML, el asunto y la vista previa en Brevo.
 
 ## Formulario ya diseñado
 

@@ -49,7 +49,7 @@ All 70 tests passed for this correction. Local Chrome additionally verified the 
 ## Current direction
 
 - The owner explicitly authorized the full public launch on November 23: banner at `/`, complete website at `/sitio/`, optional registration at `/registro/`, and `/banda/` redirecting to the public site. The November 7 signup-only/protected-band authorization is historical; its package remains a deliberate rollback mode.
-- The owner confirmed “Viejo Lobo de Mar” as the next Maratón single, due Thursday, November 26, 2026. The official pre-save is https://ffm.to/viejolobo.
+- The owner confirmed “Viejo Lobo de Mar” is available. The single is featured on the homepage and listed in Sencillos and Discografía. Spotify track: https://open.spotify.com/track/1nJMxvH3szfrWdGN7uYNKI.
 - Preserve the official artwork, real photography, Spanish language, black/orange/beige identity and existing static HTML/CSS/JS stack. GitHub Pages and `losinsurgentes.mx` remain the chosen hosting/domain.
 - The owner supplied the Spotify description as the editorial reference: a collective, defiant band speaking from a resistance, drawing on La Resistencia. `docs/VOZ_DE_LA_BANDA.md` records the direction for future content. Keep functional and accessible instructions clear.
 

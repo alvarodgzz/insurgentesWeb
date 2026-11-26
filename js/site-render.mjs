@@ -35,6 +35,7 @@ export function validateSite(site) {
     if (typeof value !== 'string' || !value.trim()) errors.push(`${label}: escribe un texto.`);
   }
   if (!secureUrl(site.site?.url)) errors.push('La dirección del sitio debe usar HTTPS.');
+  if (site.hero?.listenUrl && !secureUrl(site.hero.listenUrl, ['open.spotify.com'])) errors.push('Revisa el enlace de escucha en Spotify.');
   if (site.hero?.presaveUrl && !secureUrl(site.hero.presaveUrl)) errors.push('El pre-save debe tener un enlace HTTPS válido.');
   if (!Array.isArray(site.about?.paragraphs) || !site.about.paragraphs.every(p => typeof p === 'string')) errors.push('La biografía debe contener párrafos de texto.');
   if (!Array.isArray(site.about?.members) || !site.about.members.every(m => m && typeof m.name === 'string' && typeof m.role === 'string')) errors.push('Revisa los nombres y roles de la banda.');
@@ -94,8 +95,10 @@ const photoImage = (path, alt, cls = '', width = 1400, height = 933) => `<img sr
 
 export function renderReleaseNotice(hero) {
   if (!hero?.announcement) return '';
-  const url = secureUrl(hero.presaveUrl);
-  const link = url ? ` · ${external(url, 'Pre-save', 'presave-link')}` : '';
+  const listenUrl = secureUrl(hero.listenUrl, ['open.spotify.com']);
+  const url = listenUrl || secureUrl(hero.presaveUrl);
+  const label = listenUrl ? 'Escuchar en Spotify' : 'Pre-save';
+  const link = url ? ` · ${external(url, label, 'release-link')}` : '';
   return e(hero.announcement) + link;
 }
 

@@ -2,7 +2,7 @@
 
 Sitio oficial de la banda: rock desde Monterrey. Mantiene la identidad naranja/negro, los logotipos y tipografías oficiales, y las fotografías reales del proyecto original.
 
-El siguiente sencillo de **Maratón** es **Viejo Lobo de Mar**. Sale el jueves 26 de noviembre de 2026. [Pre-save oficial](https://ffm.to/viejolobo).
+**Viejo Lobo de Mar**, el nuevo sencillo de **Maratón**, ya está disponible. [Escuchar en Spotify](https://open.spotify.com/track/1nJMxvH3szfrWdGN7uYNKI).
 
 ## Abrir el sitio y el editor
 

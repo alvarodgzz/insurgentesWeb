@@ -8,8 +8,8 @@
   "hero": {
     "title": "Maratón",
     "tagline": "El nuevo álbum — Próximamente",
-    "announcement": "Próximo sencillo · Viejo Lobo de Mar · Jueves 26 de noviembre",
-    "presaveUrl": "https://ffm.to/viejolobo",
+    "announcement": "Viejo Lobo de Mar · Ya disponible",
+    "listenUrl": "https://open.spotify.com/track/1nJMxvH3szfrWdGN7uYNKI",
     "image": "content/photos/01-inicio.jpg",
     "position": "center 35%"
   },
@@ -43,6 +43,13 @@
     "height": 1338
   },
   "singles": [
+    {
+      "title": "Viejo Lobo de Mar",
+      "year": 2026,
+      "spotifyUrl": "https://open.spotify.com/album/6sWQB7lQrI3Lb7STlnwHyF",
+      "appleMusicUrl": "https://music.apple.com/mx/album/viejo-lobo-de-mar/6828984340?i=6828984341",
+      "youtubeUrl": ""
+    },
     {
       "title": "Tácticas de Guerra",
       "year": 2025,
