@@ -12,14 +12,14 @@
   {{TELEMETRY}}
   <link rel="icon" href="images/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="stylesheet" href="css/maraton.css?v=20261112-responsive">
-  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/landing.css?v=entrada-2">
   <script src="js/maraton.js" defer></script>
 </head>
 <body class="landing">
   <a class="maraton-skip" href="#contenido">Saltar al contenido</a>
   <div class="maraton-shell">
     <header class="maraton-header">
-      <a class="maraton-brand" href="./" aria-label="Los Insurgentes — inicio"><img src="assets/logos/logo-full-white.png" width="1600" height="561" alt="Los Insurgentes"></a>
+      <a class="maraton-brand" href="{{SITE_URL}}" aria-label="Ir al sitio de Los Insurgentes"><img src="assets/logos/logo-full-white.png" width="1600" height="561" alt="Los Insurgentes"></a>
       <span class="landing-origin">Desde Monterrey, N. L.</span>
     </header>
 
@@ -31,11 +31,14 @@
           <div class="maraton-release"><span class="maraton-status-dot" aria-hidden="true"></span><p>{{RELEASE_NOTICE}}</p></div>
           <p class="maraton-intro">Esa calavera que ya viene por ti...</p>
         </div>
-        <a class="maraton-jump landing-signup" href="#registro" data-signup-start>Quiero enterarme más <span aria-hidden="true">↓</span></a>
-        <a class="landing-enter" id="band-intro-enter" href="{{SITE_URL}}" aria-label="Entrar al sitio de Los Insurgentes">
+        <a class="landing-enter" id="band-intro-enter" href="{{SITE_URL}}" aria-label="Entrar al sitio de Los Insurgentes" aria-describedby="site-preview">
           <span class="landing-skull"><img src="assets/logos/skull-icon-orange.png" width="1600" height="1400" alt="" fetchpriority="high"></span>
-          <span class="landing-enter-label">Entrar al sitio <span aria-hidden="true">↗</span></span>
+          <span class="landing-enter-copy">
+            <span class="landing-enter-label">Entrar al sitio <span aria-hidden="true">→</span></span>
+            <span class="landing-enter-detail" id="site-preview">Música, fotos y fechas</span>
+          </span>
         </a>
+        <a class="maraton-jump landing-signup" href="#registro" data-signup-start>Quiero enterarme más <span aria-hidden="true">↓</span></a>
         <div class="maraton-banner-edge" aria-hidden="true"><span>LOS INSURGENTES</span><span>MONTERREY, N. L.</span><span>MARATÓN</span></div>
       </section>
 
